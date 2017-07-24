@@ -12,7 +12,6 @@ class ApplicationController < ActionController::Base
   # before_filter :secure_cookies_check
   layout "default"
   force_ssl :if => :ssl_login?
-  helper_method :show_moderation_notice?
 
   rescue_from Exception, :with => :rescue_exception
   rescue_from User::PrivilegeError, :with => :access_denied
@@ -20,10 +19,6 @@ class ApplicationController < ActionController::Base
   rescue_from Danbooru::Paginator::PaginationError, :with => :render_pagination_limit
 
   protected
-
-  def show_moderation_notice?
-    CurrentUser.can_approve_posts? && (cookies[:moderated].blank? || Time.at(cookies[:moderated].to_i) < 20.hours.ago)
-  end
 
   def ssl_login?
     cookies[:ssl_login].present?

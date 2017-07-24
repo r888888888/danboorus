@@ -153,7 +153,7 @@
   <meta name="favorites" content="<%= @post.fav_string %>">
   <meta name="pools" content="<%= @post.pool_string %>">
   <meta name="post-id" content="<%= @post.id %>">
-  <% if CurrentUser.can_approve_posts? %>
+  <% if CurrentUser.is_moderator? %>
     <meta name="post-is-approvable" content="<%= @post.is_approvable? %>">
   <% end %>
   <meta name="post-is-deleted" content="<%= @post.is_deleted? %>">

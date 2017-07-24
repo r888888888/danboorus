@@ -19,9 +19,6 @@ class User < ApplicationRecord
   Roles = Levels.constants.map(&:downcase) + [
     :anonymous,
     :banned,
-    :approver,
-    :voter,
-    :super_voter,
     :verified,
   ]
 
@@ -39,10 +36,7 @@ class User < ApplicationRecord
     enable_auto_complete
     show_deleted_children
     has_saved_searches
-    can_approve_posts
-    can_upload_free
     disable_categorized_saved_searches
-    is_super_voter
     disable_tagged_filenames
     enable_recent_searches
   )
@@ -83,7 +77,6 @@ class User < ApplicationRecord
 
   has_one :api_key
   has_one :dmail_filter
-  has_one :super_voter
   has_one :token_bucket
   has_many :subscriptions, lambda {order("tag_subscriptions.name")}, :class_name => "TagSubscription", :foreign_key => "creator_id"
   has_many :note_versions, :foreign_key => "updater_id"
@@ -118,13 +111,7 @@ class User < ApplicationRecord
   end
 
   module InvitationMethods
-    def invite!(level, can_upload_free)
-      if can_upload_free
-        self.can_upload_free = true
-      else
-        self.can_upload_free = false
-      end
-
+    def invite!(level)
       if level.to_i <= Levels::BUILDER
         self.level = level
         self.inviter_id = CurrentUser.id
@@ -359,9 +346,6 @@ class User < ApplicationRecord
 
       if User.count == 0
         self.level = Levels::ADMIN
-        self.can_approve_posts = true
-        self.can_upload_free = true
-        self.is_super_voter = true
       else
         self.level = Levels::MEMBER
       end
@@ -417,14 +401,6 @@ class User < ApplicationRecord
 
     def is_admin?
       level >= Levels::ADMIN
-    end
-
-    def is_voter?
-      is_gold? || is_super_voter?
-    end
-
-    def is_approver?
-      can_approve_posts?
     end
 
     def create_mod_action
@@ -502,84 +478,43 @@ class User < ApplicationRecord
     end
 
     def can_upload?
-      if can_upload_free?
-        true
-      elsif is_admin?
-        true
-      elsif created_at > 1.week.ago
-        false
-      else
-        upload_limit > 0
-      end
+      true
     end
 
     def upload_limited_reason
-      if created_at > 1.week.ago
-        "cannot upload during your first week of registration"
-      else
-        "have reached your upload limit for the day"
-      end
+      nil
     end
 
     def can_comment?
-      if is_gold?
-        true
-      else
-        created_at <= Danbooru.config.member_comment_time_threshold
-      end
+      true
     end
 
     def is_comment_limited?
-      if is_gold?
-        false
-      else
-        Comment.where("creator_id = ? and created_at > ?", id, 1.hour.ago).count >= Danbooru.config.member_comment_limit
-      end
+      false
     end
 
     def can_comment_vote?
-      CommentVote.where("user_id = ? and created_at > ?", id, 1.hour.ago).count < 10
+      true
     end
 
     def can_remove_from_pools?
-      created_at <= 1.week.ago
+      true
     end
 
     def can_view_flagger?(flagger_id)
-      is_moderator? || flagger_id == id
+      true
     end
 
     def base_upload_limit
-      if created_at >= 1.month.ago
-        10
-      elsif created_at >= 2.months.ago
-        20
-      elsif created_at >= 3.months.ago
-        30
-      elsif created_at >= 4.months.ago
-        40
-      else
-        50
-      end
+      nil
     end
 
     def max_upload_limit
-      dcon = [deletion_confidence(60), 15].min
-      [(base_upload_limit * (1 - (dcon / 15.0))).ceil, 10].max
+      nil
     end
 
     def upload_limit
-      @upload_limit ||= begin
-        uploaded_count = Post.for_user(id).where("created_at >= ?", 24.hours.ago).count
-        uploaded_comic_count = Post.for_user(id).tag_match("comic").where("created_at >= ?", 24.hours.ago).count / 3
-        limit = max_upload_limit - (uploaded_count - uploaded_comic_count)
-
-        if limit < 0
-          limit = 0
-        end
-
-        limit
-      end
+      nil
     end
 
     def tag_query_limit
@@ -660,8 +595,7 @@ class User < ApplicationRecord
       list = super + [
         :id, :created_at, :name, :inviter_id, :level, :base_upload_limit,
         :post_upload_count, :post_update_count, :note_update_count,
-        :is_banned, :can_approve_posts, :can_upload_free, :is_super_voter,
-        :level_string,
+        :is_banned, :level_string,
       ]
 
       if id == CurrentUser.user.id
@@ -672,8 +606,7 @@ class User < ApplicationRecord
           :custom_style, :favorite_count,
           :api_regen_multiplier, :api_burst_limit, :remaining_api_limit,
           :statement_timeout, :favorite_group_limit, :favorite_limit,
-          :tag_query_limit, :can_comment_vote?, :can_remove_from_pools?,
-          :is_comment_limited?, :can_comment?, :can_upload?, :max_saved_searches,
+          :tag_query_limit, :max_saved_searches,
         ]
       end
 
@@ -730,10 +663,6 @@ class User < ApplicationRecord
 
     def favorite_group_count
       FavoriteGroup.for_creator(id).count
-    end
-
-    def appeal_count
-      PostAppeal.for_creator(id).count
     end
 
     def flag_count
@@ -823,19 +752,6 @@ class User < ApplicationRecord
       bitprefs_length = BOOLEAN_ATTRIBUTES.length
       bitprefs_include = nil
       bitprefs_exclude = nil
-
-      [:can_approve_posts, :can_upload_free, :is_super_voter].each do |x|
-        if params[x].present?
-          attr_idx = BOOLEAN_ATTRIBUTES.index(x.to_s)
-          if params[x] == "true"
-            bitprefs_include ||= "0"*bitprefs_length
-            bitprefs_include[attr_idx] = '1'
-          elsif params[x] == "false"
-            bitprefs_exclude ||= "0"*bitprefs_length
-            bitprefs_exclude[attr_idx] = '1'
-          end
-        end
-      end
 
       if bitprefs_include
         bitprefs_include.reverse!

@@ -1,7 +1,7 @@
 class Tag < ApplicationRecord
   COSINE_SIMILARITY_RELATED_TAG_THRESHOLD = 1000
-  METATAGS = "-user|user|-approver|approver|commenter|comm|noter|noteupdater|artcomm|-pool|pool|ordpool|-favgroup|favgroup|-fav|fav|ordfav|md5|-rating|rating|-locked|locked|width|height|mpixels|ratio|score|favcount|filesize|source|-source|id|-id|date|age|order|limit|-status|status|tagcount|gentags|arttags|chartags|copytags|parent|-parent|child|pixiv_id|pixiv|search|upvote|downvote|filetype|-filetype|flagger|-flagger|appealer|-appealer"
-  SUBQUERY_METATAGS = "commenter|comm|noter|noteupdater|artcomm|flagger|-flagger|appealer|-appealer"
+  METATAGS = "-user|user|commenter|comm|noter|noteupdater|artcomm|-pool|pool|ordpool|-favgroup|favgroup|-fav|fav|ordfav|md5|-rating|rating|-locked|locked|width|height|mpixels|ratio|score|favcount|filesize|source|-source|id|-id|date|age|order|limit|-status|status|tagcount|gentags|arttags|chartags|copytags|parent|-parent|child|pixiv_id|pixiv|search|upvote|downvote|filetype|-filetype|flagger|-flagger"
+  SUBQUERY_METATAGS = "commenter|comm|noter|noteupdater|artcomm|flagger|-flagger"
   attr_accessible :category, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :builder, :admin]
   attr_accessible :is_locked, :as => [:moderator, :admin]
   has_one :wiki_page, :foreign_key => "title", :primary_key => "name"
@@ -435,27 +435,6 @@ class Tag < ApplicationRecord
             user_id = User.name_to_id($2)
             q[:uploader_id] = user_id unless user_id.blank?
 
-          when "-approver"
-            if $2 == "none"
-              q[:approver_id] = "any"
-            elsif $2 == "any"
-              q[:approver_id] = "none"
-            else
-              q[:approver_id_neg] ||= []
-              user_id = User.name_to_id($2)
-              q[:approver_id_neg] << user_id unless user_id.blank?
-            end
-
-          when "approver"
-            if $2 == "none"
-              q[:approver_id] = "none"
-            elsif $2 == "any"
-              q[:approver_id] = "any"
-            else
-              user_id = User.name_to_id($2)
-              q[:approver_id] = user_id unless user_id.blank?
-            end
-
           when "flagger"
             q[:flagger_ids] ||= []
 
@@ -479,31 +458,6 @@ class Tag < ApplicationRecord
               q[:flagger_ids_neg] ||= []
               user_id = User.name_to_id($2)
               q[:flagger_ids_neg] << user_id unless user_id.blank?
-            end
-
-          when "appealer"
-            q[:appealer_ids] ||= []
-
-            if $2 == "none"
-              q[:appealer_ids] << "none"
-            elsif $2 == "any"
-              q[:appealer_ids] << "any"
-            else
-              user_id = User.name_to_id($2)
-              q[:appealer_ids] << user_id unless user_id.blank?
-            end
-
-          when "-appealer"
-            if $2 == "none"
-              q[:appealer_ids] ||= []
-              q[:appealer_ids] << "any"
-            elsif $2 == "any"
-              q[:appealer_ids] ||= []
-              q[:appealer_ids] << "none"
-            else
-              q[:appealer_ids_neg] ||= []
-              user_id = User.name_to_id($2)
-              q[:appealer_ids_neg] << user_id unless user_id.blank?
             end
 
           when "commenter", "comm"

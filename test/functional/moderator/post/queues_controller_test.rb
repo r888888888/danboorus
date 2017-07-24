@@ -9,7 +9,7 @@ module Moderator
           CurrentUser.user = @admin
           CurrentUser.ip_addr = "127.0.0.1"
 
-          @post = FactoryGirl.create(:post, :is_pending => true)
+          @post = FactoryGirl.create(:post, :is_flagged => true)
         end
 
         context "show action" do

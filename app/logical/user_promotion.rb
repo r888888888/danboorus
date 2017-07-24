@@ -1,5 +1,5 @@
 class UserPromotion
-  attr_reader :user, :promoter, :new_level, :options, :old_can_approve_posts, :old_can_upload_free
+  attr_reader :user, :promoter, :new_level, :options
 
   def initialize(user, promoter, new_level, options = {})
     @user = user
@@ -10,41 +10,15 @@ class UserPromotion
 
   def promote!
     validate
-
-    @old_can_approve_posts = user.can_approve_posts?
-    @old_can_upload_free = user.can_upload_free?
-
     user.level = new_level
-
-    if options.has_key?(:can_approve_posts)
-      user.can_approve_posts = options[:can_approve_posts]
-    end
-
-    if options.has_key?(:can_upload_free)
-      user.can_upload_free = options[:can_upload_free]
-    end
-    
     user.inviter_id = promoter.id
-
     create_user_feedback unless options[:skip_feedback]
     create_dmail unless options[:skip_dmail]
-    create_mod_actions
-
     user.save
   end
 
 private
-  
-  def create_mod_actions
-    if old_can_approve_posts != user.can_approve_posts?
-      ModAction.log("\"#{promoter.name}\":/users/#{promoter.id} changed approval privileges for \"#{user.name}\":/users/#{user.id} from #{old_can_approve_posts} to [b]#{user.can_approve_posts?}[/b]")
-    end
-
-    if old_can_upload_free != user.can_upload_free?
-      ModAction.log("\"#{promoter.name}\":/users/#{promoter.id} changed unlimited upload privileges for \"#{user.name}\":/users/#{user.id} from #{old_can_upload_free} to [b]#{user.can_upload_free?}[/b]")
-    end
-  end
-  
+    
   def validate
     # admins can do anything
     return if promoter.is_admin?
@@ -65,18 +39,6 @@ private
       elsif user.level < user.level_was
         messages << "You have been demoted to a #{user.level_string} level account from #{user.level_string_was}."
       end
-    end
-
-    if user.can_approve_posts? && !old_can_approve_posts
-      messages << "You gained the ability to approve posts."
-    elsif !user.can_approve_posts? && old_can_approve_posts
-      messages << "You lost the ability to approve posts."
-    end
-
-    if user.can_upload_free? && !old_can_upload_free
-      messages << "You gained the ability to upload posts without limit."
-    elsif !user.can_upload_free? && old_can_upload_free
-      messages << "You lost the ability to upload posts without limit."
     end
 
     messages.join("\n")

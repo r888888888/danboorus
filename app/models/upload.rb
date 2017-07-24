@@ -188,10 +188,6 @@ class Upload < ApplicationRecord
         p.uploader_id = uploader_id
         p.uploader_ip_addr = uploader_ip_addr
         p.parent_id = parent_id
-
-        if !uploader.can_upload_free? || upload_as_pending?
-          p.is_pending = true
-        end
       end
     end
   end

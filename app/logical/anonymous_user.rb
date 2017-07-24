@@ -120,12 +120,8 @@ class AnonymousUser
     false
   end
 
-  def can_approve_posts?
-    false
-  end
-
   def blacklisted_tags
-    ["spoilers", "guro", "scat", "furry -rating:s"].join("\n")
+    ["spoilers"].join("\n")
   end
 
   def time_zone
@@ -239,10 +235,6 @@ class AnonymousUser
 
   def favorite_groups
     []
-  end
-
-  def can_upload_free?
-    false
   end
 
   def disable_categorized_saved_searches?

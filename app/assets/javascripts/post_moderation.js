@@ -11,7 +11,6 @@
   Danbooru.PostModeration.hide_or_show_approve_and_disapprove_links = function() {
     if (Danbooru.meta("post-is-approvable") !== "true") {
       $("#approve").hide();
-      $("#disapprove").hide();
     }
   }
 

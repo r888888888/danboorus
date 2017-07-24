@@ -122,28 +122,20 @@ class PostQueryBuilder
       relation = relation.where(["posts.md5 IN (?)", q[:md5]])
     end
 
-    if q[:status] == "pending"
-      relation = relation.where("posts.is_pending = TRUE")
-    elsif q[:status] == "flagged"
+    if q[:status] == "flagged"
       relation = relation.where("posts.is_flagged = TRUE")
     elsif q[:status] == "deleted"
       relation = relation.where("posts.is_deleted = TRUE")
-    elsif q[:status] == "banned"
-      relation = relation.where("posts.is_banned = TRUE")
     elsif q[:status] == "active"
-      relation = relation.where("posts.is_pending = FALSE AND posts.is_deleted = FALSE AND posts.is_banned = FALSE")
+      relation = relation.where("posts.is_deleted = FALSE")
     elsif q[:status] == "all" || q[:status] == "any"
       # do nothing
-    elsif q[:status_neg] == "pending"
-      relation = relation.where("posts.is_pending = FALSE")
     elsif q[:status_neg] == "flagged"
       relation = relation.where("posts.is_flagged = FALSE")
     elsif q[:status_neg] == "deleted"
       relation = relation.where("posts.is_deleted = FALSE")
-    elsif q[:status_neg] == "banned"
-      relation = relation.where("posts.is_banned = FALSE")
     elsif q[:status_neg] == "active"
-      relation = relation.where("posts.is_pending = TRUE OR posts.is_deleted = TRUE OR posts.is_banned = TRUE")
+      relation = relation.where("posts.is_deleted = TRUE")
     elsif CurrentUser.user.hide_deleted_posts? && !CurrentUser.admin_mode?
       relation = relation.where("posts.is_deleted = FALSE")
     end
@@ -201,20 +193,6 @@ class PostQueryBuilder
       relation = relation.where("posts.uploader_id = ?", q[:uploader_id])
     end
 
-    if q[:approver_id_neg]
-      relation = relation.where("posts.approver_id not in (?)", q[:approver_id_neg])
-    end
-
-    if q[:approver_id]
-      if q[:approver_id] == "any"
-        relation = relation.where("posts.approver_id is not null")
-      elsif q[:approver_id] == "none"
-        relation = relation.where("posts.approver_id is null")
-      else
-        relation = relation.where("posts.approver_id = ?", q[:approver_id])
-      end
-    end
-
     if q[:flagger_ids_neg]
       q[:flagger_ids_neg].each do |flagger_id|
         if CurrentUser.can_view_flagger?(flagger_id)
@@ -234,24 +212,6 @@ class PostQueryBuilder
           relation = relation.where('NOT EXISTS (' + PostFlag.unscoped.search({:category => "normal"}).where('post_id = posts.id').reorder('').select('1').to_sql + ')')
         elsif CurrentUser.can_view_flagger?(flagger_id)
             relation = relation.where("posts.id IN (?)", PostFlag.unscoped.search({:creator_id => flagger_id, :category => "normal"}).reorder("").select(:post_id).distinct)
-        end
-      end
-    end
-
-    if q[:appealer_ids_neg]
-      q[:appealer_ids_neg].each do |appealer_id|
-        relation = relation.where("posts.id NOT IN (?)", PostAppeal.unscoped.where(creator_id: appealer_id).select(:post_id).distinct)
-      end
-    end
-
-    if q[:appealer_ids]
-      q[:appealer_ids].each do |appealer_id|
-        if appealer_id == "any"
-          relation = relation.where('EXISTS (' + PostAppeal.unscoped.where('post_id = posts.id').select('1').to_sql + ')')
-        elsif appealer_id == "none"
-          relation = relation.where('NOT EXISTS (' + PostAppeal.unscoped.where('post_id = posts.id').select('1').to_sql + ')')
-        else
-          relation = relation.where("posts.id IN (?)", PostAppeal.unscoped.where(creator_id: appealer_id).select(:post_id).distinct)
         end
       end
     end

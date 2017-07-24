@@ -107,9 +107,6 @@ module ApplicationHelper
 
   def link_to_user(user, options = {})
     user_class = user.level_class
-    user_class = user_class + " user-post-approver" if user.can_approve_posts?
-    user_class = user_class + " user-post-uploader" if user.can_upload_free?
-    user_class = user_class + " user-super-voter" if user.is_super_voter?
     user_class = user_class + " user-banned" if user.is_banned?
     user_class = user_class + " with-style" if CurrentUser.user.style_usernames?
     if options[:raw_name]
@@ -166,7 +163,7 @@ module ApplicationHelper
   end
 
   def body_attributes(user = CurrentUser.user)
-    attributes = [:id, :name, :level, :level_string, :can_approve_posts?, :can_upload_free?]
+    attributes = [:id, :name, :level, :level_string]
     attributes += User::Roles.map { |role| :"is_#{role}?" }
 
     attributes.map do |attr|

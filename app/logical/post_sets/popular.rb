@@ -10,7 +10,7 @@ module PostSets
     def posts
       @posts ||= begin
         query = ::Post.where("created_at between ? and ?", min_date.beginning_of_day, max_date.end_of_day).order("score desc").limit(limit)
-        query.each # hack to force rails to eager load
+        query.to_a
         query
       end
     end

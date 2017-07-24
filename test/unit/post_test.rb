@@ -1,12 +1,10 @@
 require 'test_helper'
 require 'helpers/pool_archive_test_helper'
 require 'helpers/saved_search_test_helper'
-require 'helpers/iqdb_test_helper'
 
 class PostTest < ActiveSupport::TestCase
   include PoolArchiveTestHelper
   include SavedSearchTestHelper
-  include IqdbTestHelper
 
   def assert_tag_match(posts, query)
     assert_equal(posts.map(&:id), Post.tag_match(query).pluck(:id))
@@ -59,15 +57,6 @@ class PostTest < ActiveSupport::TestCase
         end
 
         assert_equal(0, Favorite.for_user(@user.id).where("post_id = ?", @post.id).count)
-      end
-
-      should "remove the post from iqdb" do
-        mock_iqdb_service!
-        Post.iqdb_sqs_service.expects(:send_message).with("remove\n#{@post.id}")
-
-        TestAfterCommit.with_commits(true) do
-          @post.expunge!
-        end
       end
 
       context "that is status locked" do
@@ -126,20 +115,6 @@ class PostTest < ActiveSupport::TestCase
           @post.delete!("test")
           assert_equal(["Is status locked ; cannot delete post"], @post.errors.full_messages)
           assert_equal(1, Post.where("id = ?", @post.id).count)
-        end
-      end
-
-      context "that is pending" do
-        setup do
-          @post = FactoryGirl.create(:post, is_pending: true)
-        end
-
-        should "succeed" do
-          @post.delete!("test")
-
-          assert_equal(true, @post.is_deleted)
-          assert_equal(1, @post.flags.size)
-          assert_match(/test/, @post.flags.last.reason)
         end
       end
 
@@ -488,7 +463,7 @@ class PostTest < ActiveSupport::TestCase
 
     context "An unapproved post" do
       should "preserve the approver's identity when approved" do
-        post = FactoryGirl.create(:post, :is_pending => true)
+        post = FactoryGirl.create(:post, :is_flagged => true)
         post.approve!
         assert_equal(post.approver_id, CurrentUser.id)
       end
@@ -534,7 +509,6 @@ class PostTest < ActiveSupport::TestCase
           assert(post.errors.empty?, post.errors.full_messages.join(", "))
           post.reload
           assert_equal(false, post.is_flagged?)
-          assert_equal(false, post.is_pending?)
         end
       end
     end
@@ -1951,24 +1925,18 @@ class PostTest < ActiveSupport::TestCase
     end
 
     should "return posts for the status:<type> metatag" do
-      pending = FactoryGirl.create(:post, is_pending: true)
       flagged = FactoryGirl.create(:post, is_flagged: true)
       deleted = FactoryGirl.create(:post, is_deleted: true)
-      banned  = FactoryGirl.create(:post, is_banned: true)
       all = [banned, deleted, flagged, pending]
 
-      assert_tag_match([pending], "status:pending")
       assert_tag_match([flagged], "status:flagged")
       assert_tag_match([deleted], "status:deleted")
-      assert_tag_match([banned],  "status:banned")
       assert_tag_match([flagged], "status:active")
       assert_tag_match(all, "status:any")
       assert_tag_match(all, "status:all")
 
-      assert_tag_match(all - [pending], "-status:pending")
       assert_tag_match(all - [flagged], "-status:flagged")
       assert_tag_match(all - [deleted], "-status:deleted")
-      assert_tag_match(all - [banned],  "-status:banned")
       assert_tag_match(all - [flagged], "-status:active")
     end
 

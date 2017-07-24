@@ -68,13 +68,8 @@
   <div class="input">
     <%= f.label :source %>
     <%= f.text_field :source %>
-    <%= button_tag "Similar", :id => "similar-button", :type => "button" %>
     <%= button_tag "Artist", :id => "find-artist-button", :type => "button" %>
   </div>
-
-  <% if Danbooru.config.iqdbs_server %>
-    <div class="input" id="iqdb-similar" style="display: none;"></div>
-  <% end %>
 
   <div class="input">
     <div>

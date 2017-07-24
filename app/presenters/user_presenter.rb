@@ -26,21 +26,7 @@ class UserPresenter
   end
 
   def permissions
-    permissions = []
-
-    if user.can_approve_posts?
-      permissions << "approve posts"
-    end
-
-    if user.can_upload_free?
-      permissions << "unrestricted uploads"
-    end
-
-    if user.is_super_voter?
-      permissions << "super voter"
-    end
-
-    permissions.join(", ")
+    ""
   end
 
   def posts_for_saved_search_category(category)
@@ -64,17 +50,7 @@ class UserPresenter
   end
 
   def upload_limit
-    if user.can_upload_free?
-      return "none"
-    end
-
-    dcon = [user.deletion_confidence(60), 15].min
-    multiplier = (1 - (dcon / 15.0))
-    max_count = [(user.base_upload_limit * multiplier).ceil, 5].max
-    uploaded_count = Post.for_user(user.id).where("created_at >= ?", 24.hours.ago).count
-    uploaded_comic_count = Post.for_user(user.id).tag_match("comic").where("created_at >= ?", 24.hours.ago).count / 3
-
-    "(#{user.base_upload_limit} * #{'%0.2f' % multiplier}) - #{uploaded_count - uploaded_comic_count} = #{user.upload_limit}"
+    nil
   end
 
   def uploads
@@ -177,10 +153,6 @@ class UserPresenter
     else
       "None"
     end
-  end
-
-  def appeal_count(template)
-    template.link_to(user.appeal_count, template.post_appeals_path(:search => {:creator_name => user.name}))
   end
 
   def flag_count(template)

@@ -3,7 +3,6 @@ require 'google/apis/pubsub_v1'
 
 class Post < ApplicationRecord
   class ApprovalError < Exception ; end
-  class DisapprovalError < Exception ; end
   class RevertError < Exception ; end
   class SearchError < Exception ; end
   class DeletionError < Exception ; end
@@ -23,16 +22,12 @@ class Post < ApplicationRecord
   before_save :update_tag_post_counts
   before_save :set_tag_counts
   before_save :set_pool_category_pseudo_tags
-  before_create :autoban
   after_save :queue_backup, if: :md5_changed?
   after_save :create_version
   after_save :update_parent_on_save
   after_save :apply_post_metatags
   after_save :expire_essential_tag_string_cache
   after_commit :delete_files, :on => :destroy
-  after_commit :remove_iqdb_async, :on => :destroy
-  after_commit :update_iqdb_async, :on => :create
-  after_commit :notify_pubsub
 
   belongs_to :updater, :class_name => "User"
   belongs_to :approver, :class_name => "User"
@@ -48,7 +43,6 @@ class Post < ApplicationRecord
   has_many :comments, lambda {includes(:creator, :updater).order("comments.id")}, :dependent => :destroy
   has_many :children, lambda {order("posts.id")}, :class_name => "Post", :foreign_key => "parent_id"
   has_many :approvals, :class_name => "PostApproval", :dependent => :destroy
-  has_many :disapprovals, :class_name => "PostDisapproval", :dependent => :destroy
   has_many :favorites
   has_many :replacements, class_name: "PostReplacement", :dependent => :destroy
 
@@ -331,7 +325,7 @@ class Post < ApplicationRecord
 
   module ApprovalMethods
     def is_approvable?(user = CurrentUser.user)
-      !is_status_locked? && (is_pending? || is_flagged? || is_deleted?) && !approved_by?(user)
+      !is_status_locked? && (is_flagged? || is_deleted?) && !approved_by?(user)
     end
 
     def flag!(reason, options = {})
@@ -361,16 +355,6 @@ class Post < ApplicationRecord
     def approved_by?(user)
       approver == user || approvals.where(user: user).exists?
     end
-
-    def disapproved_by?(user)
-      PostDisapproval.where(:user_id => user.id, :post_id => id).exists?
-    end
-
-    def autoban
-      if has_tag?("banned_artist")
-        self.is_banned = true
-      end
-    end
   end
 
   module PresenterMethods
@@ -380,10 +364,8 @@ class Post < ApplicationRecord
 
     def status_flags
       flags = []
-      flags << "pending" if is_pending?
       flags << "flagged" if is_flagged?
       flags << "deleted" if is_deleted?
-      flags << "banned" if is_banned?
       flags.join(" ")
     end
 
@@ -1399,12 +1381,10 @@ class Post < ApplicationRecord
         flag!(reason, is_deletion: true)
 
         self.is_deleted = true
-        self.is_pending = false
         self.is_flagged = false
         self.is_banned = true if options[:ban] || has_tag?("banned_artist")
         update_columns(
           :is_deleted => is_deleted,
-          :is_pending => is_pending,
           :is_flagged => is_flagged,
           :is_banned => is_banned
         )
@@ -1479,12 +1459,6 @@ class Post < ApplicationRecord
     def revert_to!(target)
       revert_to(target)
       save!
-    end
-
-    def notify_pubsub
-      return unless Danbooru.config.google_api_project
-
-      PostUpdate.insert(id)
     end
   end
 
@@ -1578,9 +1552,7 @@ class Post < ApplicationRecord
     end
 
     def status
-      if is_pending?
-        "pending"
-      elsif is_deleted?
+      if is_deleted?
         "deleted"
       elsif is_flagged?
         "flagged"
@@ -1616,16 +1588,12 @@ class Post < ApplicationRecord
       joins("CROSS JOIN unnest(string_to_array(tag_string, ' ')) AS tag")
     end
 
-    def pending
-      where("is_pending = ?", true)
-    end
-
     def flagged
       where("is_flagged = ?", true)
     end
 
     def pending_or_flagged
-      where("(is_pending = ? or (is_flagged = ? and id in (select _.post_id from post_flags _ where _.created_at >= ?)))", true, true, 1.week.ago)
+      where("(is_flagged = ? and id in (select _.post_id from post_flags _ where _.created_at >= ?))", true, 1.week.ago)
     end
 
     def undeleted
@@ -1642,14 +1610,6 @@ class Post < ApplicationRecord
 
     def for_user(user_id)
       where("uploader_id = ?", user_id)
-    end
-
-    def available_for_moderation(hidden)
-      if hidden.present?
-        where("posts.id IN (SELECT pd.post_id FROM post_disapprovals pd WHERE pd.user_id = ?)", CurrentUser.id)
-      else
-        where("posts.id NOT IN (SELECT pd.post_id FROM post_disapprovals pd WHERE pd.user_id = ?)", CurrentUser.id)
-      end
     end
 
     def raw_tag_match(tag)
@@ -1673,36 +1633,6 @@ class Post < ApplicationRecord
   module PixivMethods
     def parse_pixiv_id
       self.pixiv_id = Sources::Strategies::Pixiv.new(source).illust_id_from_url
-    end
-  end
-
-  module IqdbMethods
-    extend ActiveSupport::Concern
-
-    module ClassMethods
-      def iqdb_sqs_service
-        SqsService.new(Danbooru.config.aws_sqs_iqdb_url)
-      end
-
-      def iqdb_enabled?
-        Danbooru.config.aws_sqs_iqdb_url.present?
-      end
-
-      def remove_iqdb(post_id)
-        if iqdb_enabled?
-          iqdb_sqs_service.send_message("remove\n#{post_id}")
-        end
-      end
-    end
-
-    def update_iqdb_async
-      if File.exists?(preview_file_path) && Post.iqdb_enabled?
-        Post.iqdb_sqs_service.send_message("update\n#{id}\n#{complete_preview_file_url}")
-      end
-    end
-
-    def remove_iqdb_async
-      Post.remove_iqdb(id)
     end
   end
 
@@ -1759,7 +1689,6 @@ class Post < ApplicationRecord
   include ApiMethods
   extend SearchMethods
   include PixivMethods
-  include IqdbMethods
   include ValidationMethods
   include Danbooru::HasBitFlags
 

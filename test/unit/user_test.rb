@@ -79,52 +79,6 @@ class UserTest < ActiveSupport::TestCase
       assert_equal("IP address is banned", user.errors.full_messages.join)
     end
 
-    should "limit post uploads" do
-      assert(!@user.can_upload?)
-      @user.update_column(:created_at, 15.days.ago)
-      assert(@user.can_upload?)
-      assert_equal(10, @user.upload_limit)
-
-      9.times do
-        FactoryGirl.create(:post, :uploader => @user, :is_pending => true)
-      end
-
-      @user = User.find(@user.id)
-      assert_equal(1, @user.upload_limit)
-      assert(@user.can_upload?)
-      FactoryGirl.create(:post, :uploader => @user, :is_pending => true)
-      @user = User.find(@user.id)
-      assert(!@user.can_upload?)
-    end
-
-    should "limit comment votes" do
-      Danbooru.config.stubs(:member_comment_time_threshold).returns(1.week.from_now)
-      Danbooru.config.stubs(:member_comment_limit).returns(10)
-      assert(@user.can_comment_vote?)
-      10.times do
-        comment = FactoryGirl.create(:comment)
-        FactoryGirl.create(:comment_vote, :comment_id => comment.id, :score => -1)
-      end
-
-      assert(!@user.can_comment_vote?)
-      CommentVote.update_all("created_at = '1990-01-01'")
-      assert(@user.can_comment_vote?)
-    end
-
-    should "limit comments" do
-      assert(!@user.can_comment?)
-      @user.update_column(:level, User::Levels::GOLD)
-      assert(@user.can_comment?)
-      @user.update_column(:level, User::Levels::MEMBER)
-      @user.update_column(:created_at, 1.year.ago)
-      assert(@user.can_comment?)
-      assert(!@user.is_comment_limited?)
-      (Danbooru.config.member_comment_limit).times do
-        FactoryGirl.create(:comment)
-      end
-      assert(@user.is_comment_limited?)
-    end
-
     should "verify" do
       assert(@user.is_verified?)
       @user = FactoryGirl.create(:user)

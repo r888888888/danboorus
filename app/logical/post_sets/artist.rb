@@ -9,8 +9,8 @@ module PostSets
 
     def posts
       @posts ||= begin
-        query = ::Post.tag_match(@artist.name).where("true /* PostSets::Artist#posts */").limit(10)
-        query.each # hack to force rails to eager load
+        query = ::Post.tag_match(@artist.name).where("true").limit(10)
+        query.to_a
         query
       end
     rescue ::Post::SearchError

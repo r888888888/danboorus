@@ -20,10 +20,6 @@
         e.preventDefault();
       });
     }
-
-    if ($("#iqdb-similar").length) {
-      this.initialize_iqdb_source();
-    }
   }
 
   Danbooru.Upload.initialize_shortcuts = function() {
@@ -33,12 +29,6 @@
     });
   };
 
-  Danbooru.Upload.initialize_iqdb_source = function() {
-    if (/^https?:\/\//.test($("#normalized_url").val())) {
-      $.post("/iqdb_queries", {"url": $("#normalized_url").val()}).done(function(html) {$("#iqdb-similar").html(html)});
-    }
-  }
-
   Danbooru.Upload.initialize_enter_on_tags = function() {
     $("#upload_tag_string,#post_tag_string").on("keydown.danbooru.submit", null, "return", function(e) {
       if (!Danbooru.autocompleting) {
@@ -47,13 +37,6 @@
         $("#upload_tag_string,#post_tag_string").off(".submit");
       }
 
-      e.preventDefault();
-    });
-  }
-
-  Danbooru.Upload.initialize_similar = function() {
-    $("#similar-button").click(function(e) {
-      $.post("/iqdb_queries", {"url": $("#upload_source").val()}).done(function(html) {$("#iqdb-similar").html(html).show()});
       e.preventDefault();
     });
   }

@@ -10,8 +10,6 @@
   <% end %>
   <meta name="current-user-name" content="<%= CurrentUser.name %>">
   <meta name="current-user-id" content="<%= CurrentUser.id %>">
-  <meta name="current-user-can-approve-posts" content="<%= CurrentUser.can_approve_posts? %>">
-  <meta name="user-comment-threshold" content="<%= CurrentUser.comment_threshold %>">
   <% if CurrentUser.user.blacklisted_tags.present? %>
     <meta name="blacklisted-tags" content="<%= CurrentUser.user.blacklisted_tags.gsub(/(?:\r|\n)+/, ",") %>">
   <% end %>
@@ -98,10 +96,6 @@
 
     <% if CurrentUser.has_mail? && CurrentUser.dmails.unread.first.present? && cookies[:hide_dmail_notice].to_i != CurrentUser.dmails.unread.first.id %>
       <%= render "users/dmail_notice" %>
-    <% end %>
-
-    <% if CurrentUser.user.can_approve_posts? %>
-      <%= render "moderator/post/queues/notice" %>
     <% end %>
 
     <% if cookies["accepted_tos"].blank? && !CurrentUser.is_gold? %>

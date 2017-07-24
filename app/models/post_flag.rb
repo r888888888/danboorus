@@ -1,18 +1,11 @@
 class PostFlag < ApplicationRecord
   class Error < Exception ; end
 
-  module Reasons
-    UNAPPROVED = "Unapproved in three days"
-    REJECTED = "Unapproved in three days after returning to moderation queue%"
-    BANNED = "Artist requested removal"
-  end
-
   COOLDOWN_PERIOD = 3.days
 
   belongs_to :creator, :class_name => "User"
   belongs_to :post
   validates_presence_of :reason, :creator_id, :creator_ip_addr
-  validate :validate_creator_is_not_limited
   validate :validate_post
   before_validation :initialize_creator, :on => :create
   validates_uniqueness_of :creator_id, :scope => :post_id, :on => :create, :unless => :is_deletion, :message => "have already flagged this post"
@@ -100,21 +93,6 @@ class PostFlag < ApplicationRecord
         q = q.unresolved
       end
 
-      case params[:category]
-      when "normal"
-        q = q.where("reason NOT IN (?) AND reason NOT LIKE ?", [Reasons::UNAPPROVED, Reasons::BANNED], Reasons::REJECTED)
-      when "unapproved"
-        q = q.where(reason: Reasons::UNAPPROVED)
-      when "banned"
-        q = q.where(reason: Reasons::BANNED)
-      when "rejected"
-        q = q.where("reason LIKE ?", Reasons::REJECTED)
-      when "deleted"
-        q = q.where("reason = ? OR reason LIKE ?", Reasons::UNAPPROVED, Reasons::REJECTED)
-      when "duplicate"
-        q = q.duplicate
-      end
-
       q
     end
   end
@@ -127,53 +105,16 @@ class PostFlag < ApplicationRecord
       end
       super + list
     end
-
-    def method_attributes
-      super + [:category]
-    end
   end
 
   extend SearchMethods
   include ApiMethods
 
-  def category
-    case reason
-    when Reasons::UNAPPROVED
-      :unapproved
-    when /#{Reasons::REJECTED.gsub("%", ".*")}/
-      :rejected
-    when Reasons::BANNED
-      :banned
-    else
-      :normal
-    end
-  end
-
   def update_post
     post.update_column(:is_flagged, true) unless post.is_flagged?
   end
 
-  def validate_creator_is_not_limited
-    return if is_deletion
-
-    if CurrentUser.can_approve_posts?
-      # do nothing
-    elsif creator.created_at > 1.week.ago
-      errors[:creator] << "cannot flag within the first week of sign up"
-    elsif creator.is_gold? && flag_count_for_creator >= 10
-      errors[:creator] << "can flag 10 posts a day"
-    elsif !creator.is_gold? && flag_count_for_creator >= 1
-      errors[:creator] << "can flag 1 post a day"
-    end
-
-    flag = post.flags.in_cooldown.last
-    if flag.present?
-      errors[:post] << "cannot be flagged more than once every #{COOLDOWN_PERIOD.inspect} (last flagged: #{flag.created_at.to_s(:long)})"
-    end
-  end
-
   def validate_post
-    errors[:post] << "is pending and cannot be flagged" if post.is_pending? && !is_deletion
     errors[:post] << "is locked and cannot be flagged" if post.is_status_locked?
     errors[:post] << "is deleted" if post.is_deleted?
   end

@@ -53,7 +53,6 @@ class PostReplacement < ApplicationRecord
     # point of no return: these things can't be rolled back, so we do them
     # only after the transaction successfully commits.
     post.distribute_files
-    post.update_iqdb_async
   end
 
   def rescale_notes

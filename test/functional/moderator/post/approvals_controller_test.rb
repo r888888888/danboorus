@@ -9,7 +9,7 @@ module Moderator
           CurrentUser.user = @admin
           CurrentUser.ip_addr = "127.0.0.1"
 
-          @post = FactoryGirl.create(:post, :is_pending => true)
+          @post = FactoryGirl.create(:post, :is_flagged => true)
         end
 
         context "create action" do
@@ -17,7 +17,7 @@ module Moderator
             post :create, {:post_id => @post.id, :format => "js"}, {:user_id => @admin.id}
             assert_response :success
             @post.reload
-            assert(!@post.is_pending?)
+            assert(!@post.is_flagged?)
           end
         end
       end

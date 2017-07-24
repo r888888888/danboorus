@@ -11,11 +11,8 @@
         <li><%= link_to("Upload Listing", uploads_path) %></li>
         <li><%= link_to("Appeals", post_appeals_path) %></li>
         <li><%= link_to("Flags", post_flags_path) %></li>
-        <li><%= link_to("Replacements", post_replacements_path) %></li>
-        <% if CurrentUser.can_approve_posts? %>
-          <li><%= link_to("Moderate", moderator_post_queue_path) %></li>
-        <% end %>
         <% if CurrentUser.is_moderator? %>
+          <li><%= link_to("Moderate", moderator_post_queue_path) %></li>
           <li><%= link_to("Mass Edit", edit_moderator_tag_path) %></li>
         <% end %>
       </ul>

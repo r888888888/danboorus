@@ -35,19 +35,6 @@ article.post-preview {
   }
 }
 
-#iqdb-similar {
-  overflow: hidden;
-
-  .post-preview {
-    height: auto;
-    margin-bottom: 0;
-  }
-
-  p {
-    margin-bottom: 0;
-  }
-}
-
 #saved-searches-nav {
   margin-top: 1em;
 }
@@ -526,12 +513,6 @@ div#c-explore-posts {
       color: #AAA;
       margin-left: 0;
     }
-  }
-}
-
-div#unapprove-dialog {
-  p {
-    margin-bottom: 1em;
   }
 }
 

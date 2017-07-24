@@ -7,10 +7,6 @@
         <%= format_text(@upload_notice_wiki.try(&:body)) %>
       </div>
 
-      <% unless CurrentUser.can_upload_free? %>
-        <p>You can upload <strong><%= pluralize CurrentUser.upload_limit, "more post" %></strong> today.</p>
-      <% end %>
-
       <%= render "image" %>
       <%= render "post", :post => @post %>
       <%= render "sources/info", :source => @source %>
@@ -22,15 +18,6 @@
         <%= hidden_field_tag :ref, params[:ref] %>
         <%= hidden_field_tag :normalized_url, @normalized_url %>
         <%= f.hidden_field :referer_url, :value => @source.try(:referer_url) %>
-
-        <% if CurrentUser.can_upload_free? %>
-          <div class="input">
-            <label for="upload_as_pending">
-              <%= f.check_box :as_pending %>
-              Upload for approval
-            </label>
-          </div>
-        <% end %>
 
         <div class="input">
           <%= f.label :file %>
@@ -44,7 +31,6 @@
           <% else %>
             <%= f.text_field :source, :size => 50 %>
           <% end %>
-          <%= button_tag "Similar", :id => "similar-button", :type => "button" %>
           <%= button_tag "Artist", :id => "find-artist-button", :type => "button" %>
           <span class="hint">You can enter a URL to have <%= Danbooru.config.app_name %> automatically download and process it</span>
         </div>
@@ -90,16 +76,6 @@
             </label>
           </div>
         </div>
-
-        <% if Danbooru.config.iqdbs_server %>
-          <% if params[:url] %>
-            <div class="input" id="iqdb-similar">
-              <p><em>Loading similar...</em></p>
-            </div>
-          <% else %>
-            <div class="input" id="iqdb-similar" style="display: none;"></div>
-          <% end %>
-        <% end %>
 
         <div class="input">
           <div>

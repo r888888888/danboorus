@@ -10,16 +10,6 @@
         <%= user_level_select(:user, :level) %>
       </div>
 
-      <div class="input">
-        <label for="user_can_upload_free" class="optional">Unrestricted Uploads</label>
-        <%= select(:user, :can_upload_free, [["Yes", true], ["No", false]]) %>
-      </div>
-
-      <div class="input">
-        <label for="user_can_approve_posts" class="optional">Approve Posts</label>
-        <%= select(:user, :can_approve_posts, [["Yes", true], ["No", false]]) %>
-      </div>
-
       <%= submit_tag "Update" %>
     <% end %>
   </div>

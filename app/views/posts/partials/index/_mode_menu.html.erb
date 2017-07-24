@@ -13,11 +13,9 @@
         <option value="rating-e">Rate explicit</option>
         <option value="vote-up">Vote up</option>
         <option value="vote-down">Vote down</option>
-        <% if CurrentUser.is_builder? %>
+        <% if CurrentUser.is_moderator? %>
           <option value="lock-rating">Lock rating</option>
           <option value="lock-note">Lock notes</option>
-        <% end %>
-        <% if CurrentUser.can_approve_posts? %>
           <option value="approve">Approve</option>
         <% end %>
         <% if CurrentUser.is_admin? %>

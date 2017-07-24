@@ -32,10 +32,6 @@ module PostSets
       false
     end
 
-    def use_sequential_paginator?
-      false
-    end
-
     def presenter
       raise NotImplementedError
     end

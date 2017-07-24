@@ -344,8 +344,8 @@ class Artist < ApplicationRecord
           ti.destroy if ti
 
           begin
-            Post.tag_match(name).where("true /* Artist.unban */").each do |post|
-              post.unban!
+            Post.tag_match(name).find_each do |post|
+              post.undelete!
               fixed_tags = post.tag_string.sub(/(?:\A| )banned_artist(?:\Z| )/, " ").strip
               post.update_attributes(:tag_string => fixed_tags)
             end
@@ -362,8 +362,8 @@ class Artist < ApplicationRecord
       Post.transaction do
         CurrentUser.without_safe_mode do
           begin
-            Post.tag_match(name).where("true /* Artist.ban */").each do |post|
-              post.ban!
+            Post.tag_match(name).find_each do |post|
+              post.delete!
             end
           rescue Post::SearchError
             # swallow

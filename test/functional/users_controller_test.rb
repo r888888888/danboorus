@@ -37,7 +37,7 @@ class UsersControllerTest < ActionController::TestCase
     context "show action" do
       setup do
         # flesh out profile to get more test coverage of user presenter.
-        @user = FactoryGirl.create(:banned_user, can_approve_posts: true, is_super_voter: true)
+        @user = FactoryGirl.create(:banned_user)
         FactoryGirl.create(:saved_search, user: @user)
         FactoryGirl.create(:post, uploader: @user, tag_string: "fav:#{@user.name}")
       end

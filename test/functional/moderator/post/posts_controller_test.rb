@@ -65,7 +65,7 @@ module Moderator
             CurrentUser.ip_addr = nil
           end
 
-          should "1234 render" do
+          should "render" do
             parent = FactoryGirl.create(:post)
             child = FactoryGirl.create(:post, parent: parent)
             users = FactoryGirl.create_list(:user, 2)
@@ -86,32 +86,6 @@ module Moderator
 
             assert_response :success
             assert_equal(false, ::Post.exists?(@post.id))
-          end
-        end
-
-        context "confirm_ban action" do
-          should "render" do
-            get :confirm_ban, { id: @post.id }, { user_id: @admin.id }
-            assert_response :success
-          end
-        end
-
-        context "ban action" do
-          should "render" do
-            put :ban, { id: @post.id, commit: "Ban", format: "js" }, { user_id: @admin.id }
-
-            assert_response :success
-            assert_equal(true, @post.reload.is_banned?)
-          end
-        end
-
-        context "unban action" do
-          should "render" do
-            @post.ban!
-            put :unban, { id: @post.id, format: "js" }, { user_id: @admin.id }
-
-            assert_redirected_to(@post)
-            assert_equal(false, @post.reload.is_banned?)
           end
         end
       end

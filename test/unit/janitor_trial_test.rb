@@ -38,12 +38,6 @@ class JanitorTrialTest < ActiveSupport::TestCase
           @janitor_trial.demote!
         end
       end
-
-      should "revoke approval privileges" do
-        @janitor_trial.demote!
-        @user.reload
-        assert_equal(false, @user.can_approve_posts?)
-      end
     end
 
     context "upon promotion" do

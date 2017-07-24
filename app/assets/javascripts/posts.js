@@ -120,13 +120,6 @@
     $tag_string.css({"resize": "", "width": ""});
   }
 
-  Danbooru.Post.initialize_similar = function() {
-    $("#similar-button").click(function(e) {
-      $.post("/iqdb_queries", {"url": $("#post_source").val()}).done(function(html) {$("#iqdb-similar").html(html).show()});
-      e.preventDefault();
-    });
-  }
-
   Danbooru.Post.nav_prev = function(e) {
     if ($("#search-seq-nav").length) {
       var href = $("#search-seq-nav a[rel~=prev]").attr("href");
@@ -481,22 +474,6 @@
       },
       error: function(data) {
         Danbooru.Post.notice_update("dec");
-        Danbooru.error('There was an error updating <a href="/posts/' + post_id + '">post #' + post_id + '</a>');
-      }
-    });
-  }
-
-  Danbooru.Post.ban = function(post_id) {
-    $.ajax({
-      type: "POST",
-      url: "/moderator/post/posts/" + post_id + "/ban.js",
-      data: {
-        commit: "Ban"
-      },
-      success: function(data) {
-        $("#post_" + post_id).remove();
-      },
-      error: function(data) {
         Danbooru.error('There was an error updating <a href="/posts/' + post_id + '">post #' + post_id + '</a>');
       }
     });

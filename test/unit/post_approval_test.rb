@@ -7,15 +7,12 @@ class PostApprovalTest < ActiveSupport::TestCase
       CurrentUser.user = @user
       CurrentUser.ip_addr = "127.0.0.1"
 
-      @post = FactoryGirl.create(:post, uploader_id: @user.id, is_pending: true)
+      @post = FactoryGirl.create(:post, uploader_id: @user.id, is_flagged: true)
 
-      @approver = FactoryGirl.create(:user)
-      @approver.can_approve_posts = true
+      @approver = FactoryGirl.create(:mod_user)
       @approver.save
       CurrentUser.user = @approver
-
-      CurrentUser.stubs(:can_approve_posts?).returns(true)
-    end
+   end
 
     teardown do
       CurrentUser.user = nil
@@ -38,7 +35,6 @@ class PostApprovalTest < ActiveSupport::TestCase
           @user2 = FactoryGirl.create(:user)
           @user3 = FactoryGirl.create(:user)
           @approver2 = FactoryGirl.create(:user)
-          @approver2.can_approve_posts = true
           @approver2.save
         end
 
