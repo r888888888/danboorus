@@ -2,22 +2,13 @@ require 'socket'
 
 module Danbooru
   class Configuration
-    # The version of this Danbooru.
-    def version
-      "2.105.0"
-    end
-
     # The name of this Danbooru.
     def app_name
-      if CurrentUser.safe_mode?
-        "Safebooru"
-      else
-        "Danbooru"
-      end
+      "Danboorus"
     end
 
     def description
-      "Find good anime art fast"
+      "Build your own Booru"
     end
 
     # The canonical hostname of the site.
@@ -76,8 +67,8 @@ module Danbooru
     end
 
     # This is a salt used to make dictionary attacks on account passwords harder.
-    def password_salt
-      "choujin-steiner"
+    def password_salt(user)
+      CityHash.hash64(user.id).to_s(36)
     end
 
     # Set the default level, permissions, and other settings for new users here.
@@ -107,13 +98,6 @@ module Danbooru
       end
     end
 
-    # What method to use to store images.
-    # local_flat: Store every image in one directory.
-    # local_hierarchy: Store every image in a hierarchical directory, based on the post's MD5 hash. On some file systems this may be faster.
-    def image_store
-      :local_flat
-    end
-
     # Thumbnail size
     def small_image_width
       150
@@ -125,7 +109,7 @@ module Danbooru
     end
 
     def large_image_prefix
-      "sample-"
+      ""
     end
 
     # When calculating statistics based on the posts table, gather this many posts to sample from.
@@ -136,21 +120,6 @@ module Danbooru
     # List of memcached servers
     def memcached_servers
       %w(127.0.0.1:11211)
-    end
-
-    # After a post receives this many comments, new comments will no longer bump the post in comment/index.
-    def comment_threshold
-      40
-    end
-
-    # Members cannot post more than X comments in an hour.
-    def member_comment_limit
-      2
-    end
-
-    # Determines who can see ads.
-    def can_see_ads?(user)
-      !user.is_gold?
     end
 
     # Users cannot search for more than X regular tags at a time.
@@ -166,28 +135,9 @@ module Danbooru
       end
     end
 
-    # Max number of posts to cache
-    def tag_subscription_post_limit
-      200
-    end
-
     # After this many pages, the paginator will switch to sequential mode.
     def max_numbered_pages
       1_000
-    end
-
-    # Max number of tag subscriptions per user
-    def max_tag_subscriptions
-      5
-    end
-
-    # Maximum size of an upload.
-    def max_file_size
-      35.megabytes
-    end
-
-    def member_comment_time_threshold
-      1.week.ago
     end
 
     # The name of the server the app is hosted on.
@@ -418,7 +368,7 @@ module Danbooru
     # services will fail if you don't set a valid User-Agent.
     def http_headers
       {
-        "User-Agent" => "#{Danbooru.config.safe_app_name}/#{Danbooru.config.version}",
+        "User-Agent" => "#{Danbooru.config.safe_app_name}",
       }
     end
 

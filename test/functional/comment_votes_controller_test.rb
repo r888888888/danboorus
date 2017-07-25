@@ -5,7 +5,6 @@ class CommentVotesControllerTest < ActionController::TestCase
     setup do
       CurrentUser.user = @user = FactoryGirl.create(:user)
       CurrentUser.ip_addr = "127.0.0.1"
-      Danbooru.config.stubs(:member_comment_time_threshold).returns(1.week.from_now)
       @comment = FactoryGirl.create(:comment)
     end
 

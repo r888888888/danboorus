@@ -62,12 +62,12 @@ class ArtistTest < ActiveSupport::TestCase
         @post.reload
         @artist.reload
         assert(!@artist.is_banned?, "artist should not be banned")
-        assert(!@post.is_banned?, "post should not be banned")
+        assert(!@post.is_deleted?, "post should not be deleted")
         assert_equal("aaa", @post.tag_string)
       end
 
-      should "ban the post" do
-        assert(@post.is_banned?)
+      should "delete the post" do
+        assert(@post.is_deleted?)
       end
 
       should "not delete the post" do

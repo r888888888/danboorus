@@ -1385,8 +1385,7 @@ class Post < ApplicationRecord
         self.is_banned = true if options[:ban] || has_tag?("banned_artist")
         update_columns(
           :is_deleted => is_deleted,
-          :is_flagged => is_flagged,
-          :is_banned => is_banned
+          :is_flagged => is_flagged
         )
         give_favorites_to_parent if options[:move_favorites]
         update_parent_on_save
@@ -1743,18 +1742,6 @@ class Post < ApplicationRecord
 
     self.tag_string = tags.join(" ")
     save
-  end
-
-  def update_column(name, value)
-    ret = super(name, value)
-    notify_pubsub
-    ret
-  end
-
-  def update_columns(attributes)
-    ret = super(attributes)
-    notify_pubsub
-    ret
   end
 end
 

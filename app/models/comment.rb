@@ -2,7 +2,6 @@ class Comment < ApplicationRecord
   include Mentionable
 
   validate :validate_post_exists, :on => :create
-  validate :validate_creator_is_not_limited, :on => :create
   validates_format_of :body, :with => /\S/, :message => 'has no content'
   belongs_to :post
   belongs_to :creator, :class_name => "User"
@@ -191,24 +190,8 @@ class Comment < ApplicationRecord
     errors.add(:post, "must exist") unless Post.exists?(post_id)
   end
 
-  def validate_creator_is_not_limited
-    if creator.is_comment_limited? && !do_not_bump_post?
-      errors.add(:base, "You can only post #{Danbooru.config.member_comment_limit} comments per hour")
-      false
-    elsif creator.can_comment?
-      true
-    else
-      errors.add(:base, "You can not post comments within 1 week of sign up")
-      false
-    end
-  end
-
   def update_last_commented_at_on_create
     Post.where(:id => post_id).update_all(:last_commented_at => created_at)
-    if Comment.where("post_id = ?", post_id).count <= Danbooru.config.comment_threshold && !do_not_bump_post?
-      Post.where(:id => post_id).update_all(:last_comment_bumped_at => created_at)
-    end
-    true
   end
 
   def update_last_commented_at_on_destroy

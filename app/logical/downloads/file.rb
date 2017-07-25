@@ -68,7 +68,7 @@ module Downloads
     end
 
     def http_get_streaming(src, datums = {}, options = {}, &block)
-      max_size = options[:max_size] || Danbooru.config.max_file_size
+      max_size = options[:max_size]
       max_size = nil if max_size == 0 # unlimited
       limit = 4
       tries = 0

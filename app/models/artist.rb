@@ -363,7 +363,7 @@ class Artist < ApplicationRecord
         CurrentUser.without_safe_mode do
           begin
             Post.tag_match(name).find_each do |post|
-              post.delete!
+              post.delete!("Requested by artist")
             end
           rescue Post::SearchError
             # swallow
