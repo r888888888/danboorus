@@ -97,7 +97,6 @@
         <li><h1>Admin</h1></li>
         <li><%= link_to("Mod Actions", mod_actions_path) %></li>
         <li><%= link_to("Jobs", delayed_jobs_path) %></li>
-        <li><%= link_to("Janitor Trials", janitor_trials_path) %></li>
 
         <% if CurrentUser.is_moderator? %>
           <li><%= link_to("IP Bans", ip_bans_path) %></li>

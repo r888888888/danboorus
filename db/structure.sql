@@ -3629,14 +3629,6 @@ ALTER TABLE ONLY ip_bans
 
 
 --
--- Name: janitor_trials_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY janitor_trials
-    ADD CONSTRAINT janitor_trials_pkey PRIMARY KEY (id);
-
-
---
 -- Name: mod_actions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5380,13 +5372,6 @@ CREATE INDEX index_forum_topics_on_updated_at ON forum_topics USING btree (updat
 --
 
 CREATE UNIQUE INDEX index_ip_bans_on_ip_addr ON ip_bans USING btree (ip_addr);
-
-
---
--- Name: index_janitor_trials_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_janitor_trials_on_user_id ON janitor_trials USING btree (user_id);
 
 
 --

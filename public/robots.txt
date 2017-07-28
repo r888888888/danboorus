@@ -8,7 +8,6 @@ Disallow: /delayed_jobs
 Disallow: /dmails
 Disallow: /favorite
 Disallow: /ip_bans
-Disallow: /janitor_trials
 Disallow: /maintenance
 Disallow: /mobile/
 Disallow: /m/
