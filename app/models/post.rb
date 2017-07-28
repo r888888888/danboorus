@@ -618,7 +618,6 @@ class Post < ApplicationRecord
       normalized_tags = remove_negated_tags(normalized_tags)
       normalized_tags = normalized_tags.map {|x| Tag.find_or_create_by_name(x).name}
       normalized_tags = %w(tagme) if normalized_tags.empty?
-      normalized_tags = TagAlias.to_aliased(normalized_tags)
       normalized_tags = add_automatic_tags(normalized_tags)
       normalized_tags = normalized_tags + TagImplication.automatic_tags_for(normalized_tags)
       normalized_tags = TagImplication.with_descendants(normalized_tags)
@@ -630,7 +629,6 @@ class Post < ApplicationRecord
     def remove_negated_tags(tags)
       negated_tags, tags = tags.partition {|x| x =~ /\A-/i}
       negated_tags = negated_tags.map {|x| x[1..-1]}
-      negated_tags = TagAlias.to_aliased(negated_tags)
       return tags - negated_tags
     end
 

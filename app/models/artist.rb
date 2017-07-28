@@ -16,7 +16,6 @@ class Artist < ApplicationRecord
   has_many :urls, :dependent => :destroy, :class_name => "ArtistUrl"
   has_many :versions, lambda {order("artist_versions.id ASC")}, :class_name => "ArtistVersion"
   has_one :wiki_page, :foreign_key => "title", :primary_key => "name"
-  has_one :tag_alias, :foreign_key => "antecedent_name", :primary_key => "name"
   has_one :tag, :foreign_key => "name", :primary_key => "name"
   attr_accessible :body, :notes, :name, :url_string, :other_names, :other_names_comma, :group_name, :notes, :as => [:member, :gold, :builder, :platinum, :moderator, :default, :admin]
   attr_accessible :is_active, :as => [:builder, :moderator, :default, :admin]
@@ -317,14 +316,6 @@ class Artist < ApplicationRecord
   end
 
   module TagMethods
-    def has_tag_alias?
-      TagAlias.active.exists?(["antecedent_name = ?", name])
-    end
-
-    def tag_alias_name
-      TagAlias.active.find_by_antecedent_name(name).consequent_name
-    end
-
     def category_name
       Tag.category_for(name)
     end

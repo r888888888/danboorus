@@ -5,8 +5,6 @@ class Tag < ApplicationRecord
   attr_accessible :category, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :builder, :admin]
   attr_accessible :is_locked, :as => [:moderator, :admin]
   has_one :wiki_page, :foreign_key => "title", :primary_key => "name"
-  has_one :antecedent_alias, lambda {active}, :class_name => "TagAlias", :foreign_key => "antecedent_name", :primary_key => "name"
-  has_many :consequent_aliases, lambda {active}, :class_name => "TagAlias", :foreign_key => "consequent_name", :primary_key => "name"
   has_many :antecedent_implications, lambda {active}, :class_name => "TagImplication", :foreign_key => "antecedent_name", :primary_key => "name"
   has_many :consequent_implications, lambda {active}, :class_name => "TagImplication", :foreign_key => "consequent_name", :primary_key => "name"
 
@@ -67,11 +65,7 @@ class Tag < ApplicationRecord
 
       def clean_up_negative_post_counts!
         Tag.where("post_count < 0").find_each do |tag|
-          tag_alias = TagAlias.where("status in ('active', 'processing') and antecedent_name = ?", tag.name).first
           tag.fix_post_count
-          if tag_alias
-            tag_alias.consequent_tag.fix_post_count
-          end
         end
       end
     end
@@ -239,7 +233,6 @@ class Tag < ApplicationRecord
     def normalize_query(query, sort: true)
       tags = Tag.scan_query(query.to_s)
       tags = tags.map { |t| Tag.normalize_name(t) }
-      tags = TagAlias.to_aliased(tags)
       tags = tags.sort if sort
       tags = tags.uniq
       tags.join(" ")
@@ -684,9 +677,9 @@ class Tag < ApplicationRecord
     end
 
     def normalize_tags_in_query(query_hash)
-      query_hash[:tags][:exclude] = TagAlias.to_aliased(query_hash[:tags][:exclude])
-      query_hash[:tags][:include] = TagAlias.to_aliased(query_hash[:tags][:include])
-      query_hash[:tags][:related] = TagAlias.to_aliased(query_hash[:tags][:related])
+      query_hash[:tags][:exclude] = query_hash[:tags][:exclude]
+      query_hash[:tags][:include] = query_hash[:tags][:include]
+      query_hash[:tags][:related] = query_hash[:tags][:related]
     end
   end
 
@@ -750,7 +743,7 @@ class Tag < ApplicationRecord
     end
 
     def named(name)
-      where("tags.name = ?", TagAlias.to_aliased([name]).join(""))
+      where("tags.name = ?", name)
     end
 
     def search(params)
@@ -798,24 +791,6 @@ class Tag < ApplicationRecord
       end
 
       q
-    end
-
-    def names_matches_with_aliases(name)
-      query1 = Tag.select("tags.name, tags.post_count, tags.category, null AS antecedent_name")
-        .search(:name_matches => name, :order => "count").limit(10)
-
-      name = name.mb_chars.downcase.to_escaped_for_sql_like
-      query2 = TagAlias.select("tags.name, tags.post_count, tags.category, tag_aliases.antecedent_name")
-        .joins("INNER JOIN tags ON tags.name = tag_aliases.consequent_name")
-        .where("tag_aliases.antecedent_name LIKE ? ESCAPE E'\\\\'", name)
-        .active
-        .where("tags.name NOT LIKE ? ESCAPE E'\\\\'", name)
-        .where("tag_aliases.post_count > 0")
-        .order("tag_aliases.post_count desc")
-        .limit(20) # Get 20 records even though only 10 will be displayed in case some duplicates get filtered out.
-
-      sql_query = "((#{query1.to_sql}) UNION ALL (#{query2.to_sql})) AS unioned_query"
-      Tag.select("DISTINCT ON (name, post_count) *").from(sql_query).order("post_count desc").limit(10)
     end
   end
 

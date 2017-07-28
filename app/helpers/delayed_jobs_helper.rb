@@ -22,9 +22,6 @@ module DelayedJobsHelper
     when "Tag#update_related"
       "<strong>update related tags</strong>"
 
-    when "TagAlias#process!"
-      "<strong>alias</strong>"
-
     when "TagImplication#process!"
       "<strong>implication</strong>"
 
@@ -82,9 +79,6 @@ module DelayedJobsHelper
 
     when "Tag#update_related"
       h(job.payload_object.name)
-
-    when "TagAlias#process!"
-      h(job.payload_object.antecedent_name) + " -> " + h(job.payload_object.consequent_name)
 
     when "TagImplication#process!"
       h(job.payload_object.antecedent_name) + " -> " + h(job.payload_object.consequent_name)

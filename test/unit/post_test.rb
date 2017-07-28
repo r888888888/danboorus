@@ -469,19 +469,6 @@ class PostTest < ActiveSupport::TestCase
         end
       end
 
-      context "using a tag prefix on an aliased tag" do
-        setup do
-          FactoryGirl.create(:tag_alias, :antecedent_name => "abc", :consequent_name => "xyz")
-          @post = Post.find(@post.id)
-          @post.update(:tag_string => "art:abc")
-          @post.reload
-        end
-
-        should "convert the tag to its normalized version" do
-          assert_equal("xyz", @post.tag_string)
-        end
-      end
-
       context "tagged with a valid tag" do
         subject { @post }
 
@@ -883,13 +870,6 @@ class PostTest < ActiveSupport::TestCase
           @post.update_attributes(:tag_string => "aaa bbb ccc -bbb")
           @post.reload
           assert_equal("aaa ccc", @post.tag_string)
-        end
-
-        should "resolve aliases" do
-          FactoryGirl.create(:tag_alias, :antecedent_name => "/tr", :consequent_name => "translation_request")
-          @post.update(:tag_string => "aaa translation_request -/tr")
-
-          assert_equal("aaa", @post.tag_string)
         end
       end
 
@@ -2112,10 +2092,8 @@ class PostTest < ActiveSupport::TestCase
       context "with a primed cache" do
         setup do
           Cache.put("pfc:aaa", 0)
-          Cache.put("pfc:alias", 0)
           Cache.put("pfc:width:50", 0)
           Danbooru.config.stubs(:blank_tag_search_fast_count).returns(1_000_000)
-          FactoryGirl.create(:tag_alias, :antecedent_name => "alias", :consequent_name => "aaa")
           FactoryGirl.create(:post, :tag_string => "aaa")
         end
 
@@ -2123,8 +2101,6 @@ class PostTest < ActiveSupport::TestCase
           assert_equal(1, Post.count)
           assert_equal(1, Post.fast_count(""))
           assert_equal(1, Post.fast_count("aaa"))
-          assert_equal(1, Post.fast_count("alias"))
-          assert_equal(0, Post.fast_count("bbb"))
         end
       end
 

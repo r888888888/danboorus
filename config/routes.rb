@@ -211,12 +211,6 @@ Rails.application.routes.draw do
       get :autocomplete
     end
   end
-  resources :tag_aliases do
-    member do
-      post :approve
-    end
-  end
-  resource :tag_alias_request, :only => [:new, :create]
   resources :tag_implications do
     member do
       post :approve

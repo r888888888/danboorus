@@ -31,21 +31,6 @@ class ArtistTest < ActiveSupport::TestCase
       assert_equal(["Name cannot begin with - or ~"], @artist.errors.full_messages)
     end
 
-    context "with a matching tag alias" do
-      setup do
-        @tag_alias = FactoryGirl.create(:tag_alias, :antecedent_name => "aaa", :consequent_name => "bbb")
-        @artist = FactoryGirl.create(:artist, :name => "aaa")
-      end
-
-      should "know it has an alias" do
-        assert_equal(true, @artist.has_tag_alias?)
-      end
-
-      should "know its alias" do
-        assert_equal("bbb", @artist.tag_alias_name)
-      end
-    end
-
     context "that has been banned" do
       setup do
         @post = FactoryGirl.create(:post, :tag_string => "aaa")

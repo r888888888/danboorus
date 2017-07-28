@@ -7,7 +7,6 @@ module MetaSearches
         CurrentUser.user = FactoryGirl.create(:user)
         CurrentUser.ip_addr = "127.0.0.1"
         FactoryGirl.create(:post, :tag_string => "xxx")
-        FactoryGirl.create(:tag_alias, :antecedent_name => "aaa", :consequent_name => "bbb")
         FactoryGirl.create(:tag_implication, :antecedent_name => "ccc", :consequent_name => "ddd")
       end
 
@@ -16,13 +15,6 @@ module MetaSearches
         meta_search.load_all
         assert_equal(1, meta_search.tags.size)
         assert_equal("xxx", meta_search.tags.first.name)
-      end
-
-      should "find the alias" do
-        meta_search = MetaSearches::Tag.new(:name => "aaa")
-        meta_search.load_all
-        assert_equal(1, meta_search.tag_aliases.size)
-        assert_equal("aaa", meta_search.tag_aliases.first.antecedent_name)
       end
 
       should "find the implication" do

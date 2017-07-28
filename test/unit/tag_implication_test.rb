@@ -83,14 +83,6 @@ class TagImplicationTest < ActiveSupport::TestCase
       assert_includes(ti2.errors.full_messages, "Antecedent name has already been taken")
     end
 
-    should "not validate if its consequent is aliased to another tag" do
-      ta = FactoryGirl.create(:tag_alias, :antecedent_name => "bbb", :consequent_name => "ccc")
-      ti = FactoryGirl.build(:tag_implication, :antecedent_name => "aaa", :consequent_name => "bbb")
-      ti.save
-      assert(ti.errors.any?, "Tag implication should not have validated.")
-      assert_equal("Consequent tag must not be aliased to another tag", ti.errors.full_messages.join(""))
-    end
-
     should "calculate all its descendants" do
       ti1 = FactoryGirl.create(:tag_implication, :antecedent_name => "bbb", :consequent_name => "ccc")
       assert_equal("ccc", ti1.descendant_names)

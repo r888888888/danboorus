@@ -18,7 +18,7 @@ class TagsController < ApplicationController
   end
 
   def autocomplete
-    @tags = Tag.names_matches_with_aliases(params[:search][:name_matches])
+    @tags = Tag.names_matches(params[:search][:name_matches])
 
     respond_with(@tags) do |format|
       format.xml do

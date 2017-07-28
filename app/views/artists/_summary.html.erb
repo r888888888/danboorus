@@ -5,9 +5,6 @@
   <li><strong>Status</strong> <%= artist.status %></li>
 
   <% if !artist.is_banned? || CurrentUser.is_member? %>
-    <% if artist.has_tag_alias? %>
-      <li><strong>Tag Alias</strong> <%= artist.tag_alias_name %></li>
-    <% end %>
     <% if artist.other_names.present? %>
       <li><strong>Other Names</strong> <%= link_to_artists(artist.other_names.split(/ /)) %></li>
     <% end %>

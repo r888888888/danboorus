@@ -90,7 +90,7 @@ module Sources
         translated_tags = Tag.where(name: WikiPage.active.other_names_equal([untranslated_tag]).uniq.select(:title))
 
         if translated_tags.empty?
-          normalized_name = TagAlias.to_aliased([Tag.normalize_name(untranslated_tag)])
+          normalized_name = [Tag.normalize_name(untranslated_tag)]
           translated_tags = Tag.nonempty.where(name: normalized_name)
         end
 

@@ -6,9 +6,7 @@
       <pre>
 Use the following format:
 
-remove alias aaa -> bbb
 remove implication aaa -> bbb
-create alias aaa -> bbb
 create implication aaa -> bbb
 mass update aaa -> bbb
       </pre>
@@ -25,13 +23,6 @@ mass update aaa -> bbb
           Forum ID
         </label>
         <%= text_field "batch", "forum_id" %>
-      </div>
-
-      <div class="input">
-        <label for="batch_rename_aliased_pages">
-          <%= check_box "batch", "rename_aliased_pages", :checked => true %>
-          Rename aliased wiki pages and artists
-        </label>
       </div>
 
       <%= submit_tag %>

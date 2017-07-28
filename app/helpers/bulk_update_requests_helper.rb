@@ -3,14 +3,8 @@ module BulkUpdateRequestsHelper
     return false unless CurrentUser.is_moderator?
 
     case command
-    when :create_alias
-      TagAlias.where(antecedent_name: antecedent, consequent_name: consequent, status: %w(active processing queued)).exists?
-
     when :create_implication
       TagImplication.where(antecedent_name: antecedent, consequent_name: consequent, status: %w(active processing queued)).exists?
-
-    when :remove_alias
-      TagAlias.where(antecedent_name: antecedent, consequent_name: consequent, status: "deleted").exists? || !TagAlias.where(antecedent_name: antecedent, consequent_name: consequent).exists?
 
     when :remove_implication
       TagImplication.where(antecedent_name: antecedent, consequent_name: consequent, status: "deleted").exists? || !TagImplication.where(antecedent_name: antecedent, consequent_name: consequent).exists?
@@ -27,9 +21,6 @@ module BulkUpdateRequestsHelper
     return false unless CurrentUser.is_moderator?
 
     case command
-    when :create_alias
-      TagAlias.where(antecedent_name: antecedent, consequent_name: consequent).where("status like ?", "error: %").exists?
-
     when :create_implication
       TagImplication.where(antecedent_name: antecedent, consequent_name: consequent).where("status like ?", "error: %").exists?
 
@@ -41,7 +32,7 @@ module BulkUpdateRequestsHelper
   def script_with_line_breaks(script)
     escaped_script = AliasAndImplicationImporter.tokenize(script).map do |cmd, arg1, arg2|
       case cmd
-      when :create_alias, :create_implication, :remove_alias, :remove_implication, :mass_update
+      when :create_implication, :remove_implication, :mass_update
         if approved?(cmd, arg1, arg2)
           btag = '<s class="approved">'
           etag = '</s>'
@@ -55,23 +46,11 @@ module BulkUpdateRequestsHelper
       end
 
       case cmd
-      when :create_alias
-        arg1_count = Tag.find_by_name(arg1).try(:post_count).to_i
-        arg2_count = Tag.find_by_name(arg2).try(:post_count).to_i
-
-        "#{btag}create alias " + link_to(arg1, posts_path(:tags => arg1)) + " (#{arg1_count}) -&gt; " + link_to(arg2, posts_path(:tags => arg2)) + " (#{arg2_count})#{etag}"
-
       when :create_implication
         arg1_count = Tag.find_by_name(arg1).try(:post_count).to_i
         arg2_count = Tag.find_by_name(arg2).try(:post_count).to_i
 
         "#{btag}create implication " + link_to(arg1, posts_path(:tags => arg1)) + " (#{arg1_count}) -&gt; " + link_to(arg2, posts_path(:tags => arg2)) + " (#{arg2_count})#{etag}"
-
-      when :remove_alias
-        arg1_count = Tag.find_by_name(arg1).try(:post_count).to_i
-        arg2_count = Tag.find_by_name(arg2).try(:post_count).to_i
-
-        "#{btag}remove alias " + link_to(arg1, posts_path(:tags => arg1)) + " (#{arg1_count}) -&gt; " + link_to(arg2, posts_path(:tags => arg2)) + " (#{arg2_count})#{etag}"
 
       when :remove_implication
         arg1_count = Tag.find_by_name(arg1).try(:post_count).to_i

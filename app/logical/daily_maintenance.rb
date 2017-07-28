@@ -7,7 +7,6 @@ class DailyMaintenance
     PostVote.prune!
     CommentVote.prune!
     ForumSubscription.process_all!
-    TagAlias.update_cached_post_counts_for_all
     Tag.clean_up_negative_post_counts!
     SuperVoter.init!
     TokenBucket.prune!

@@ -39,9 +39,6 @@ Disallow: /reports
 Disallow: /session
 Disallow: /sources
 Disallow: /static
-Disallow: /tag_alias_corrections
-Disallow: /tag_alias_requests
-Disallow: /tag_aliases
 Disallow: /tag_corrections
 Disallow: /tag_implication_requests
 Disallow: /tag_implications

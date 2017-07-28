@@ -102,7 +102,8 @@ private
   def save_recent_tags
     if @post
       tags = Tag.scan_tags(@post.tag_string)
-      tags = (TagAlias.to_aliased(tags) + Tag.scan_tags(cookies[:recent_tags])).uniq.slice(0, 30)
+      tags += Tag.scan_tags(cookies[:recent_tags])
+      tags = tags.uniq.slice(0, 30)
       cookies[:recent_tags] = tags.join(" ")
       cookies[:recent_tags_with_categories] = Tag.categories_for(tags).to_a.flatten.join(" ")
     end

@@ -19,8 +19,6 @@ class TagImplication < ApplicationRecord
   validates_uniqueness_of :antecedent_name, :scope => :consequent_name
   validate :absence_of_circular_relation
   validate :absence_of_transitive_relation
-  validate :antecedent_is_not_aliased
-  validate :consequent_is_not_aliased
   validate :antecedent_and_consequent_are_different
   validate :wiki_pages_present, :on => :create
   attr_accessible :antecedent_name, :consequent_name, :forum_topic_id, :skip_secondary_validations
@@ -145,22 +143,6 @@ class TagImplication < ApplicationRecord
       implied_tags = implications.flat_map(&:descendant_names_array)
       if implied_tags.include?(consequent_name)
         self.errors[:base] << "#{antecedent_name} already implies #{consequent_name} through another implication"
-      end
-    end
-
-    def antecedent_is_not_aliased
-      # We don't want to implicate a -> b if a is already aliased to c
-      if TagAlias.active.exists?(["antecedent_name = ?", antecedent_name])
-        self.errors[:base] << "Antecedent tag must not be aliased to another tag"
-        false
-      end
-    end
-
-    def consequent_is_not_aliased
-      # We don't want to implicate a -> b if b is already aliased to c
-      if TagAlias.active.exists?(["antecedent_name = ?", consequent_name])
-        self.errors[:base] << "Consequent tag must not be aliased to another tag"
-        false
       end
     end
 
