@@ -35,10 +35,6 @@ class BanTest < ActiveSupport::TestCase
         ban = FactoryGirl.create(:ban, :user => user, :banner => @banner)
         assert(ban.errors.empty?)
 
-        user = FactoryGirl.create(:contributor_user)
-        ban = FactoryGirl.create(:ban, :user => user, :banner => @banner)
-        assert(ban.errors.empty?)
-
         user = FactoryGirl.create(:gold_user)
         ban = FactoryGirl.create(:ban, :user => user, :banner => @banner)
         assert(ban.errors.empty?)
@@ -75,10 +71,6 @@ class BanTest < ActiveSupport::TestCase
       end
 
       should "be valid against anyone who is not an admin or a moderator" do
-        user = FactoryGirl.create(:contributor_user)
-        ban = FactoryGirl.create(:ban, :user => user, :banner => @banner)
-        assert(ban.errors.empty?)
-
         user = FactoryGirl.create(:gold_user)
         ban = FactoryGirl.create(:ban, :user => user, :banner => @banner)
         assert(ban.errors.empty?)

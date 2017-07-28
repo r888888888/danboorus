@@ -6,7 +6,7 @@ class UploadTest < ActiveSupport::TestCase
 
   context "In all cases" do
     setup do
-      user = FactoryGirl.create(:contributor_user)
+      user = FactoryGirl.create(:member_user)
       CurrentUser.user = user
       CurrentUser.ip_addr = "127.0.0.1"
     end

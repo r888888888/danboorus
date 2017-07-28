@@ -1229,7 +1229,7 @@ class PostTest < ActiveSupport::TestCase
   context "Favorites:" do
     context "Removing a post from a user's favorites" do
       setup do
-        @user = FactoryGirl.create(:contributor_user)
+        @user = FactoryGirl.create(:member_user)
         @post = FactoryGirl.create(:post)
         @post.add_favorite!(@user)
         @user.reload
@@ -1264,7 +1264,7 @@ class PostTest < ActiveSupport::TestCase
 
     context "Adding a post to a user's favorites" do
       setup do
-        @user = FactoryGirl.create(:contributor_user)
+        @user = FactoryGirl.create(:member_user)
         @post = FactoryGirl.create(:post)
       end
 
