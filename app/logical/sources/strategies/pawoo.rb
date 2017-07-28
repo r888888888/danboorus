@@ -38,8 +38,6 @@ module Sources::Strategies
       @image_url = response.image_urls.first
       @image_urls = response.image_urls
       @tags = response.tags
-      @artist_commentary_title = nil
-      @artist_commentary_desc = response.commentary
     end
 
     def normalized_url
@@ -48,20 +46,6 @@ module Sources::Strategies
       elsif self.class.url_match?(@referer_url)
         @referer_url
       end
-    end
-
-    def normalizable_for_artist_finder?
-      true
-    end
-
-    def dtext_artist_commentary_desc
-      DText.from_html(artist_commentary_desc) do |element|
-        if element.name == "a"
-          # don't include links to the toot itself.
-          media_urls = api_response.json["media_attachments"].map { |attr| attr["text_url"] }
-          element["href"] = nil if element["href"].in?(media_urls)
-        end
-      end.strip
     end
   end
 end

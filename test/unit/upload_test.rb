@@ -209,25 +209,6 @@ class UploadTest < ActiveSupport::TestCase
         end
       end
 
-      context "with an artist commentary" do
-        setup do
-          @upload = FactoryGirl.create(:source_upload,
-            :rating => "s",
-            :uploader_ip_addr => "127.0.0.1",
-            :tag_string => "hoge foo"
-            )
-          @upload.include_artist_commentary = "1"
-          @upload.artist_commentary_title = ""
-          @upload.artist_commentary_desc = "blah"
-        end
-
-        should "create an artist commentary when processed" do
-          assert_difference("ArtistCommentary.count") do
-            @upload.process!
-          end
-        end
-      end
-
       should "process completely for a downloaded image" do
         @upload = FactoryGirl.create(:source_upload,
           :rating => "s",

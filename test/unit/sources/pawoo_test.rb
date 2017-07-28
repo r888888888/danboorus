@@ -19,16 +19,6 @@ module Sources
       should "get the image url" do
         assert_equal("https://img.pawoo.net/media_attachments/files/000/128/953/original/4c0a06087b03343f.png", @site.image_url)
       end
-
-      should "get the commentary" do
-        desc = '<p>a mind forever voyaging through strange seas of thought alone <a href="https://pawoo.net/media/9hJzXvwxVl1CezW0ecM" rel="nofollow noopener" target="_blank"><span class="invisible">https://</span><span class="ellipsis">pawoo.net/media/9hJzXvwxVl1Cez</span><span class="invisible">W0ecM</span></a></p>'
-        assert_equal(desc, @site.artist_commentary_desc)
-      end
-
-      should "get the dtext-ified commentary" do
-        desc = 'a mind forever voyaging through strange seas of thought alone'
-        assert_equal(desc, @site.dtext_artist_commentary_desc)
-      end
     end
 
     context "The source site for a https://pawoo.net/$user/$id url"  do
@@ -58,27 +48,6 @@ module Sources
 
       should "get the tags" do
         assert_equal(%w[baz bar foo], @site.tags.map(&:first))
-      end
-
-      should "get the commentary" do
-        desc = "<p>test post please ignore</p><p>blah blah blah</p><p>this is a test 🍕</p><p><a href=\"https://pawoo.net/tags/foo\" class=\"mention hashtag\" rel=\"tag\">#<span>foo</span></a> <a href=\"https://pawoo.net/tags/bar\" class=\"mention hashtag\" rel=\"tag\">#<span>bar</span></a> <a href=\"https://pawoo.net/tags/baz\" class=\"mention hashtag\" rel=\"tag\">#<span>baz</span></a></p>"
-
-        assert_nil(@site.artist_commentary_title)
-        assert_equal(desc, @site.artist_commentary_desc)
-      end
-
-      should "get the dtext-ified commentary" do
-        desc = <<-EOS.strip_heredoc.chomp
-          test post please ignore
-
-          blah blah blah
-
-          this is a test 🍕
-
-          "#foo":[https://pawoo.net/tags/foo] "#bar":[https://pawoo.net/tags/bar] "#baz":[https://pawoo.net/tags/baz]
-        EOS
-
-        assert_equal(desc, @site.dtext_artist_commentary_desc)
       end
     end
 

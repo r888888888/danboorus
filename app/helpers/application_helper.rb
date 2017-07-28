@@ -192,9 +192,6 @@ protected
     when "posts", "uploads", "post_versions", "explore/posts", "moderator/post/dashboards", "favorites"
       /^\/post/
 
-    when "artists", "artist_versions"
-      /^\/artist/
-
     when "tags", "meta_searches"
       /^\/tags/
 

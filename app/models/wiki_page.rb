@@ -16,7 +16,6 @@ class WikiPage < ApplicationRecord
   attr_accessor :skip_secondary_validations
   attr_accessible :title, :body, :is_locked, :is_deleted, :other_names, :skip_secondary_validations
   has_one :tag, :foreign_key => "name", :primary_key => "title"
-  has_one :artist, lambda {where(:is_active => true)}, :foreign_key => "name", :primary_key => "title"
   has_many :versions, lambda {order("wiki_page_versions.id ASC")}, :class_name => "WikiPageVersion", :dependent => :destroy
 
   module SearchMethods
@@ -258,7 +257,7 @@ class WikiPage < ApplicationRecord
   end
 
   def visible?
-    artist.blank? || !artist.is_banned? || CurrentUser.is_builder?
+    CurrentUser.is_builder?
   end
 
   def other_names_array

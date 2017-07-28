@@ -48,24 +48,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :artists do
-    member do
-      put :revert
-      put :ban
-      put :unban
-      post :undelete
-    end
-    collection do
-      get :show_or_new
-      get :banned
-      get :finder
-    end
-  end
-  resources :artist_versions, :only => [:index] do
-    collection do
-      get :search
-    end
-  end
   resources :bans
   resources :comments do
     resource :votes, :controller => "comment_votes", :only => [:create, :destroy]
@@ -153,10 +135,6 @@ Rails.application.routes.draw do
   resources :post_replacements, :only => [:index, :new, :create]
   resources :posts do
     resources :replacements, :only => [:index, :new, :create], :controller => "post_replacements"
-    resource :artist_commentary, :only => [:index, :show] do
-      collection { put :create_or_update }
-      member { put :revert }
-    end
     resource :votes, :controller => "post_votes", :only => [:create, :destroy]
     collection do
       get :random
@@ -178,16 +156,6 @@ Rails.application.routes.draw do
       get :search
     end
   end
-  resources :artist_commentaries, :only => [:index, :show] do
-    collection do
-      put :create_or_update
-      get :search
-    end
-    member do
-      put :revert
-    end
-  end
-  resources :artist_commentary_versions, :only => [:index]
   resource :related_tag, :only => [:show, :update]
   resources :saved_searches, :except => [:show] do
     collection do

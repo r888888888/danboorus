@@ -51,13 +51,6 @@ class PawooApiClient
     def tags
       json["tags"].map { |tag| [tag["name"], tag["url"]] }
     end
-
-    def commentary
-      commentary = ""
-      commentary << "<p>#{json["spoiler_text"]}</p>" if json["spoiler_text"].present?
-      commentary << json["content"]
-      commentary
-    end
   end
 
   def get_status(url)

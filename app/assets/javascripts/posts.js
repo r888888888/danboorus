@@ -392,7 +392,6 @@
         $("#share").hide();
         $("#post_tag_string").focus().selectEnd().height($("#post_tag_string")[0].scrollHeight);
         $("#related-tags-button").trigger("click");
-        $("#find-artist-button").trigger("click");
       } else {
         $("#edit").hide();
         $("#comments").hide();
@@ -536,11 +535,6 @@
 
     $("#search-dropdown #wiki-search").click(function(e) {
       window.location.href = "/wiki_pages?search%5Btitle%5D=" + encodeURIComponent($("#tags").val());
-      e.preventDefault();
-    });
-
-    $("#search-dropdown #artist-search").click(function(e) {
-      window.location.href = "/artists?search%5Bname%5D=" + encodeURIComponent($("#tags").val());
       e.preventDefault();
     });
   }

@@ -88,13 +88,6 @@ module Sources
           assert_contains(pixiv_links, /search\.php/)
         end
 
-        should "get the artist commentary" do
-          assert_not_nil(@site.artist_commentary_title)
-          assert_not_nil(@site.artist_commentary_desc)
-          assert_not_nil(@site.dtext_artist_commentary_title)
-          assert_not_nil(@site.dtext_artist_commentary_desc)
-        end
-
         should "convert a page into a json representation" do
           assert_nothing_raised do
             @site.to_json
@@ -113,22 +106,6 @@ module Sources
 
         should "get the full size image url" do
           assert_equal("https://i.pximg.net/img-original/img/2014/10/29/09/27/19/46785915_p0.jpg", @site.image_url)
-        end
-      end
-
-      context "fetching the commentary" do
-        should "work when the description is blank" do
-          get_source("https://www.pixiv.net/member_illust.php?mode=medium&illust_id=46337015")
-
-          assert_equal("Illustration (PNG) - foo & bar", @site.dtext_artist_commentary_title)
-          assert_equal("", @site.dtext_artist_commentary_desc)
-        end
-
-        should "convert illust links and member links to dtext" do
-          get_source("https://www.pixiv.net/member_illust.php?mode=medium&illust_id=63421642")
-
-          dtext_desc = %(foo 【pixiv #46337015 "»":[/posts?tags=pixiv:46337015]】bar 【pixiv #14901720 "»":[/posts?tags=pixiv:14901720]】\r\n\r\nbaz【"user/83739":[https://www.pixiv.net/member.php?id=83739] "»":[/artists?search%5Burl_matches%5D=https%3A%2F%2Fwww.pixiv.net%2Fmember.php%3Fid%3D83739]】)
-          assert_equal(dtext_desc, @site.dtext_artist_commentary_desc)
         end
       end
 

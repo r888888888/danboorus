@@ -43,52 +43,6 @@ ActiveRecord::Schema.define(:version => 20111101212358) do
     t.datetime "updated_at"
   end
 
-  create_table "artist_urls", :force => true do |t|
-    t.integer  "artist_id",      :null => false
-    t.text     "url",            :null => false
-    t.text     "normalized_url", :null => false
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
-  end
-
-  add_index "artist_urls", ["artist_id"], :name => "index_artist_urls_on_artist_id"
-  add_index "artist_urls", ["normalized_url"], :name => "index_artist_urls_on_normalized_url"
-  add_index "artist_urls", ["normalized_url"], :name => "index_artist_urls_on_normalized_url_pattern"
-  add_index "artist_urls", ["url"], :name => "index_artist_urls_on_url"
-  add_index "artist_urls", ["url"], :name => "index_artist_urls_on_url_pattern"
-
-  create_table "artist_versions", :force => true do |t|
-    t.integer  "artist_id"
-    t.text     "name"
-    t.integer  "updater_id"
-    t.text     "url_string"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "is_active",                      :default => true,        :null => false
-    t.string   "group_name"
-    t.boolean  "is_banned",                      :default => false,       :null => false
-    t.string   "updater_ip_addr", :limit => nil, :default => "127.0.0.1"
-    t.text     "other_names",                    :default => ""
-  end
-
-  add_index "artist_versions", ["artist_id"], :name => "index_artist_versions_on_artist_id"
-  add_index "artist_versions", ["updater_id"], :name => "index_artist_versions_on_updater_id"
-
-  create_table "artists", :force => true do |t|
-    t.datetime "created_at",                           :null => false
-    t.text     "name",                                 :null => false
-    t.datetime "updated_at",                           :null => false
-    t.integer  "creator_id"
-    t.boolean  "is_active",         :default => true,  :null => false
-    t.string   "group_name"
-    t.boolean  "is_banned",         :default => false, :null => false
-    t.text     "other_names",       :default => ""
-    t.tsvector "other_names_index"
-  end
-
-  add_index "artists", ["name"], :name => "index_artists_on_name", :unique => true
-  add_index "artists", ["other_names_index"], :name => "index_artists_on_other_names_index"
-
   create_table "bans", :force => true do |t|
     t.integer  "user_id",    :null => false
     t.text     "reason",     :null => false

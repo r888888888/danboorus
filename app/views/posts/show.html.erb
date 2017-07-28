@@ -26,7 +26,6 @@
             <li><%= fast_link_to "Tags", post_versions_path(:search => {:post_id => @post.id}) %></li>
             <li><%= fast_link_to "Notes", note_versions_path(:search => {:post_id => @post.id}) %></li>
             <li><%= fast_link_to "Flags & Appeals", post_events_path(@post.id) %></li>
-            <li><%= fast_link_to "Commentary", artist_commentary_versions_path(:search => {:post_id => @post.id}) %></li>
             <li><%= fast_link_to "Replacements", post_replacements_path(:search => {:post_id => @post.id}) %></li>
           </ul>
         </section>
@@ -70,12 +69,6 @@
           </div>
         <% end %>
       </section>
-
-      <% if @post.artist_commentary && @post.artist_commentary.any_field_present? %>
-        <div id="artist-commentary">
-          <%= render "artist_commentaries/show", :artist_commentary => @post.artist_commentary %>
-        </div>
-      <% end %>
 
       <% if @post.presenter.has_nav_links?(self) %>
         <%= render "posts/partials/show/nav_links", :post => @post, :position => "bottom" %>
@@ -128,10 +121,6 @@
 
   <div id="add-to-pool-dialog" title="Add to pool" style="display: none;">
     <%= render "pool_elements/new" %>
-  </div>
-
-  <div id="add-commentary-dialog" title="Add artist commentary" style="display: none;">
-    <%= render "artist_commentaries/form", :post => @post %>
   </div>
 
   <div id="add-to-favgroup-dialog" title="Add to favorite group" style="display: none;">

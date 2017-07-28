@@ -41,21 +41,6 @@ module Sources
         "http://www.pixiv.net"
       end
 
-      def normalized_for_artist_finder?
-        url =~ %r!\Ahttp://www\.pixiv\.net/member\.php\?id=[0-9]+\z/!
-      end
-
-      def normalizable_for_artist_finder?
-        has_moniker? || sample_image? || full_image? || work_page?
-      end
-
-      def normalize_for_artist_finder!
-        @illust_id = illust_id_from_url!
-        @metadata = get_metadata_from_papi(@illust_id)
-
-        "http://www.pixiv.net/member.php?id=#{@metadata.user_id}/"
-      end
-
       def translate_tag(tag)
         normalized_tag = tag.gsub(/\A(\S+?)_?\d+users入り\Z/i, '\1')
 
@@ -89,8 +74,6 @@ module Sources
           [tag, "https://www.pixiv.net/search.php?s_mode=s_tag_full&#{{word: tag}.to_param}"]
         end
         @page_count = @metadata.page_count
-        @artist_commentary_title = @metadata.artist_commentary_title
-        @artist_commentary_desc = @metadata.artist_commentary_desc
 
         is_manga = @page_count > 1
 
@@ -129,7 +112,7 @@ module Sources
           profile_url = "https://www.pixiv.net/member.php?id=#{member_id}"
           search_params = {"search[url_matches]" => profile_url}.to_param
 
-          %("user/#{member_id}":[#{profile_url}] "»":[/artists?#{search_params}])
+          %("user/#{member_id}":[#{profile_url}])
         end
 
         text

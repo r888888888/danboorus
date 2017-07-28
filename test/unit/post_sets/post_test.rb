@@ -149,17 +149,6 @@ module PostSets
             assert_equal(@wiki_page.id, @set.wiki_page.id)
           end
         end
-
-        context "that has a matching artist" do
-          setup do
-            @artist = FactoryGirl.create(:artist, :name => "a")
-          end
-
-          should "find the artist" do
-            assert_not_nil(@set.artist)
-            assert_equal(@artist.id, @set.artist.id)
-          end
-        end
       end
     end
   end

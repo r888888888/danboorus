@@ -109,11 +109,7 @@ private
     current_query = template.params[:tags] || ""
 
     unless options[:name_only]
-      if categories[tag] == Tag.categories.artist
-        html << %{<a class="wiki-link" href="/artists/show_or_new?name=#{u(tag)}">?</a> }
-      else
-        html << %{<a class="wiki-link" href="/wiki_pages/show_or_new?title=#{u(tag)}">?</a> }
-      end
+      html << %{<a class="wiki-link" href="/wiki_pages/show_or_new?title=#{u(tag)}">?</a> }
 
       if CurrentUser.user.is_gold? && current_query.present?
         html << %{<a rel="nofollow" href="/posts?tags=#{u(current_query)}+#{u(tag)}" class="search-inc-tag">+</a> }

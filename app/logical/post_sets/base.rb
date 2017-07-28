@@ -12,14 +12,6 @@ module PostSets
       nil
     end
 
-    def has_artist?
-      false
-    end
-
-    def artist
-      nil
-    end
-
     def is_single_tag?
       false
     end

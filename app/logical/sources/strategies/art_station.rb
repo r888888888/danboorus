@@ -58,8 +58,6 @@ module Sources::Strategies
           y
         end
         @tags = json["tags"].map {|x| [x.downcase.tr(" ", "_"), "https://www.artstation.com/search?q=" + CGI.escape(x)]} if json["tags"]
-        @artist_commentary_title = json["title"]
-        @artist_commentary_desc = ActionView::Base.full_sanitizer.sanitize(json["description"])
       else
         raise "HTTP error code: #{resp.code} #{resp.message}"
       end

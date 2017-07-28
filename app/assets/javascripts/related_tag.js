@@ -5,7 +5,6 @@
     if ($("#c-posts").length || $("#c-uploads").length) {
       this.initialize_buttons();
       $("#related-tags-container").hide();
-      $("#artist-tags-container").hide();
       $("#upload_tag_string,#post_tag_string").keyup(Danbooru.RelatedTag.update_selected);
     }
   }
@@ -16,7 +15,6 @@
     this.common_bind("#related-artists-button", "artist");
     this.common_bind("#related-characters-button", "character");
     this.common_bind("#related-copyrights-button", "copyright");
-    $("#find-artist-button").click(Danbooru.RelatedTag.find_artist);
   }
 
   Danbooru.RelatedTag.tags_include = function(name) {
@@ -39,7 +37,6 @@
         "query": Danbooru.RelatedTag.current_tag(),
         "category": category
       }).success(Danbooru.RelatedTag.process_response);
-      $("#artist-tags-container").hide();
       e.preventDefault();
     });
   }
@@ -128,27 +125,6 @@
     this.build_translated($dest);
     if (wiki_page_tags.length) {
       $dest.append(Danbooru.RelatedTag.build_html("wiki:" + query, wiki_page_tags, "wiki"));
-    }
-    if (Danbooru.RelatedTag.recent_artists) {
-      var tags = [];
-      if (Danbooru.RelatedTag.recent_artists.length === 0) {
-        tags.push([" none", 0]);
-      } else if (Danbooru.RelatedTag.recent_artists.length === 1) {
-        tags.push([Danbooru.RelatedTag.recent_artists[0].name, 1]);
-        if (Danbooru.RelatedTag.recent_artists[0].is_banned === true) {
-          tags.push(["BANNED_ARTIST", "banned"]);
-        }
-        $.each(Danbooru.RelatedTag.recent_artists[0].urls, function(i, url) {
-          tags.push([" " + url.url, 0]);
-        });
-      } else if (Danbooru.RelatedTag.recent_artists.length >= 10) {
-        tags.push([" none", 0]);
-      } else {
-        $.each(Danbooru.RelatedTag.recent_artists, function(i, artist) {
-          tags.push([artist.name, 1]);
-        });
-      }
-     $dest.append(Danbooru.RelatedTag.build_html("artist", tags, "artist", true));
     }
     if (Danbooru.meta("ccs-server")) {
       if (Danbooru.RelatedTag.recent_ccs) {
@@ -285,24 +261,7 @@
 
     $field[0].selectionStart = $field.val().length;
     Danbooru.RelatedTag.update_selected();
-    if (Danbooru.RelatedTag.recent_artist && $("#artist-tags-container").css("display") === "block") {
-      Danbooru.RelatedTag.process_artist(Danbooru.RelatedTag.recent_artist);
-    }
-
     e.preventDefault();
-  }
-
-  Danbooru.RelatedTag.find_artist = function(e) {
-    $("#artist-tags").html("<em>Loading...</em>");
-    var url = $("#upload_source,#post_source");
-    var referer_url = $("#upload_referer_url");
-    $.get("/artists/finder.json", {"url": url.val(), "referer_url": referer_url.val()}).success(Danbooru.RelatedTag.process_artist);
-    e.preventDefault();
-  }
-
-  Danbooru.RelatedTag.process_artist = function(data) {
-    Danbooru.RelatedTag.recent_artists = data;
-    Danbooru.RelatedTag.build_all();
   }
 
   Danbooru.RelatedTag.toggle = function() {
@@ -311,7 +270,6 @@
     } else {
       Danbooru.RelatedTag.show();
       $("#related-tags-button").trigger("click");
-      $("#find-artist-button").trigger("click");
     }
   }
 

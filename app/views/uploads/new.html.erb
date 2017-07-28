@@ -31,7 +31,6 @@
           <% else %>
             <%= f.text_field :source, :size => 50 %>
           <% end %>
-          <%= button_tag "Artist", :id => "find-artist-button", :type => "button" %>
           <span class="hint">You can enter a URL to have <%= Danbooru.config.app_name %> automatically download and process it</span>
         </div>
 
@@ -55,28 +54,6 @@
           <%= f.text_field :parent_id %>
         </div>
 
-        <strong>Commentary</strong>
-        <a href="#" id="toggle-artist-commentary">show »</a>
-
-        <div class="artist-commentary" style="display: none;">
-          <div class="input">
-            <%= f.label :artist_commentary_title, "Title" %>
-            <%= f.text_field :artist_commentary_title %>
-          </div>
-
-          <div class="input">
-            <%= f.label :artist_commentary_desc, "Description" %>
-            <%= f.text_area :artist_commentary_desc, :size => "60x5" %>
-          </div>
-
-          <div class="input">
-            <label for="upload_include_artist_commentary">
-              <%= f.check_box :include_artist_commentary %>
-              Include Commentary
-            </label>
-          </div>
-        </div>
-
         <div class="input">
           <div>
             <%= f.label :tag_string, "Tags" %>
@@ -93,12 +70,6 @@
 
         <div class="input">
           <%= submit_tag "Submit", :class => "large", :data => { :disable_with => "Submitting..." } %>
-        </div>
-
-        <div id="artist-tags-container">
-          <h1>Artist</h1>
-          <div id="artist-tags" class="related-tags">
-          </div>
         </div>
 
         <div id="related-tags-container">

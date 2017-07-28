@@ -24,10 +24,6 @@
 
           <%= format_text(@wiki_page.body) %>
 
-          <% if @wiki_page.artist %>
-            <p><%= link_to "View artist", @wiki_page.artist %></p>
-          <% end %>
-
         <% else %>
           <p>This artist has requested removal of their information.</p>
         <% end %>

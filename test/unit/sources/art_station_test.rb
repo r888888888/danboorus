@@ -23,11 +23,6 @@ module Sources
       should "get the tags" do
         assert_equal([], @site.tags)
       end
-
-      should "get the artist commentary" do
-        assert_equal("pink", @site.artist_commentary_title)
-        assert_equal("", @site.artist_commentary_desc)
-      end
     end
 
     context "The source site for an art station projects page" do
@@ -51,11 +46,6 @@ module Sources
 
       should "get the tags" do
         assert_equal(%w[gantz reika], @site.tags.map(&:first))
-      end
-
-      should "get the artist commentary" do
-        assert_equal("Reika ", @site.artist_commentary_title)
-        assert_equal("From Gantz.", @site.artist_commentary_desc)
       end
     end
 

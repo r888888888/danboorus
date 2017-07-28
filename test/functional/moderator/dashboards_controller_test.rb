@@ -92,18 +92,6 @@ module Moderator
           end
         end
 
-        context "for artists" do
-          setup do
-            @artist = FactoryGirl.create(:artist)
-          end
-
-          should "render" do
-            get :show, {}, {:user_id => @admin.id}
-            assert_equal(1, ArtistVersion.count)
-            assert_response :success
-          end
-        end
-
         context "for flags" do
           setup do
             @post = FactoryGirl.create(:post)

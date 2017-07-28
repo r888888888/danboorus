@@ -5,8 +5,7 @@ class Upload < ApplicationRecord
   class Error < Exception ; end
 
   attr_accessor :file, :image_width, :image_height, :file_ext, :md5, 
-    :file_size, :as_pending, :artist_commentary_title, 
-    :artist_commentary_desc, :include_artist_commentary,
+    :file_size, :as_pending, 
     :referer_url, :downloaded_source
   belongs_to :uploader, :class_name => "User"
   belongs_to :post
@@ -20,8 +19,7 @@ class Upload < ApplicationRecord
   attr_accessible :file, :image_width, :image_height, :file_ext, :md5, 
     :file_size, :as_pending, :source, :file_path, :content_type, :rating, 
     :tag_string, :status, :backtrace, :post_id, :md5_confirmation, 
-    :parent_id, :server, :artist_commentary_title,
-    :artist_commentary_desc, :include_artist_commentary,
+    :parent_id, :server,
     :referer_url
 
   module ValidationMethods
@@ -137,7 +135,6 @@ class Upload < ApplicationRecord
       post.distribute_files
       if post.save
         User.where(id: CurrentUser.id).update_all("post_upload_count = post_upload_count + 1")
-        create_artist_commentary(post) if include_artist_commentary?
         ugoira_service.save_frame_data(post) if is_ugoira?
         update_attributes(:status => "completed", :post_id => post.id)
       else
@@ -502,15 +499,6 @@ class Upload < ApplicationRecord
     end
   end
 
-  module ArtistCommentaryMethods
-    def create_artist_commentary(post)
-      post.create_artist_commentary(
-        :original_title => artist_commentary_title,
-        :original_description => artist_commentary_desc
-      )
-    end
-  end
-
   include ConversionMethods
   include ValidationMethods
   include FileMethods
@@ -525,7 +513,6 @@ class Upload < ApplicationRecord
   include VideoMethods
   extend SearchMethods
   include ApiMethods
-  include ArtistCommentaryMethods
 
   def presenter
     @presenter ||= UploadPresenter.new(self)
@@ -533,9 +520,5 @@ class Upload < ApplicationRecord
 
   def upload_as_pending?
     as_pending == "1"
-  end
-
-  def include_artist_commentary?
-    include_artist_commentary == "1"
   end
 end

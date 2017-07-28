@@ -430,20 +430,6 @@ class PostTest < ActiveSupport::TestCase
         end
       end
 
-      context "with a banned artist" do
-        setup do
-          CurrentUser.scoped(FactoryGirl.create(:admin_user)) do
-            @artist = FactoryGirl.create(:artist)
-            @artist.ban!
-          end
-          @post = FactoryGirl.create(:post, :tag_string => @artist.name)
-        end
-
-        should "ban the post" do
-          assert_equal(true, @post.is_banned?)
-        end
-      end
-
       context "with an artist tag that is then changed to copyright" do
         setup do
           CurrentUser.user = FactoryGirl.create(:builder_user)
@@ -1724,17 +1710,6 @@ class PostTest < ActiveSupport::TestCase
       assert_tag_match([posts[1]], "noter:none")
     end
 
-    should "return posts for the artcomm:<name> metatag" do
-      users = FactoryGirl.create_list(:user, 2)
-      posts = FactoryGirl.create_list(:post, 2)
-      users.zip(posts).map do |u, p|
-        CurrentUser.scoped(u) { FactoryGirl.create(:artist_commentary, post: p) }
-      end
-
-      assert_tag_match([posts[0]], "artcomm:#{users[0].name}")
-      assert_tag_match([posts[1]], "artcomm:#{users[1].name}")
-    end
-
     should "return posts for the date:<d> metatag" do
       post = FactoryGirl.create(:post, created_at: Time.parse("2017-01-01"))
 
@@ -1930,7 +1905,6 @@ class PostTest < ActiveSupport::TestCase
           image_width: 100*(3-n)*n,
         )
 
-        FactoryGirl.create(:artist_commentary, post: p)
         FactoryGirl.create(:comment, post: p, do_not_bump_post: false)
         FactoryGirl.create(:note, post: p)
         p
@@ -1943,7 +1917,6 @@ class PostTest < ActiveSupport::TestCase
       assert_tag_match(posts.reverse, "order:comment")
       assert_tag_match(posts.reverse, "order:comment_bumped")
       assert_tag_match(posts.reverse, "order:note")
-      assert_tag_match(posts.reverse, "order:artcomm")
       assert_tag_match(posts.reverse, "order:mpixels")
       assert_tag_match(posts.reverse, "order:portrait")
       assert_tag_match(posts.reverse, "order:filesize")
@@ -1955,7 +1928,6 @@ class PostTest < ActiveSupport::TestCase
       assert_tag_match(posts, "order:change_asc")
       assert_tag_match(posts, "order:comment_asc")
       assert_tag_match(posts, "order:comment_bumped_asc")
-      assert_tag_match(posts, "order:artcomm_asc")
       assert_tag_match(posts, "order:note_asc")
       assert_tag_match(posts, "order:mpixels_asc")
       assert_tag_match(posts, "order:landscape")

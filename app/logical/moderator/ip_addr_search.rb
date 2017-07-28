@@ -22,8 +22,6 @@ module Moderator
     def search_by_ip_addr(ip_addrs)
       sums = Hash.new {|h, k| h[k] = 0}
 
-      add_row(sums, ArtistCommentaryVersion.where(updater_ip_addr: ip_addrs).group(:updater).count)
-      add_row(sums, ArtistVersion.where(updater_ip_addr: ip_addrs).group(:updater).count)
       add_row(sums, NoteVersion.where(updater_ip_addr: ip_addrs).group(:updater).count)
       add_row(sums, WikiPageVersion.where(updater_ip_addr: ip_addrs).group(:updater).count)
       add_row(sums, Comment.where(ip_addr: ip_addrs).group(:creator).count)
@@ -48,8 +46,6 @@ module Moderator
       sums = Hash.new {|h, k| h[k] = 0}
       users = User.find(user_ids)
 
-      add_row(sums, ArtistCommentaryVersion.where(updater: users).group(:updater_ip_addr).count)
-      add_row(sums, ArtistVersion.where(updater: users).group(:updater_ip_addr).count)
       add_row(sums, NoteVersion.where(updater: users).group(:updater_ip_addr).count)
       add_row(sums, PoolArchive.where(updater_id: users.map(&:id)).group(:updater_ip_addr).count) if PoolArchive.enabled?
       add_row(sums, PostArchive.where(updater_id: users.map(&:id)).group(:updater_ip_addr).count) if PostArchive.enabled?

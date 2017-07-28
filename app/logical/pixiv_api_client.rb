@@ -22,7 +22,6 @@ class PixivApiClient
 
   class WorksResponse
     attr_reader :json, :pages, :name, :moniker, :user_id, :page_count, :tags
-    attr_reader :artist_commentary_title, :artist_commentary_desc
 
     def initialize(json)
       # Sample response: 
@@ -109,8 +108,6 @@ class PixivApiClient
       @user_id = json["user"]["id"]
       @moniker = json["user"]["account"]
       @page_count = json["page_count"].to_i
-      @artist_commentary_title = json["title"].to_s
-      @artist_commentary_desc = json["caption"].to_s
       @tags = json["tags"].reject {|x| x =~ /^http:/}
       @tags += json["tools"] - TOOLS_BLACKLIST
 

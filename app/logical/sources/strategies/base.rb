@@ -11,7 +11,6 @@ module Sources
     class Base
       attr_reader :url, :referer_url
       attr_reader :artist_name, :profile_url, :image_url, :tags
-      attr_reader :artist_commentary_title, :artist_commentary_desc
 
       def self.url_match?(url)
         false
@@ -31,45 +30,12 @@ module Sources
         @get_size ||= Downloads::File.new(@image_url).size
       end
 
-      # Subclasses should return true only if the URL is in its final normalized form.
-      #
-      # Sources::Site.new("http://img.pixiv.net/img/evazion").normalized_for_artist_finder?
-      # => true
-      # Sources::Site.new("http://i2.pixiv.net/img18/img/evazion/14901720_m.png").normalized_for_artist_finder?
-      # => false
-      def normalized_for_artist_finder?
-        false
-      end
-
-      # Subclasses should return true only if the URL is a valid URL that could
-      # be converted into normalized form.
-      #
-      # Sources::Site.new("http://www.pixiv.net/member_illust.php?mode=medium&illust_id=18557054").normalizable_for_artist_finder?
-      # => true
-      # Sources::Site.new("http://dic.pixiv.net/a/THUNDERproject").normalizable_for_artist_finder?
-      # => false
-      def normalizable_for_artist_finder?
-        false
-      end
-
-      def normalize_for_artist_finder!
-        url
-      end
-
       def site_name
         raise NotImplementedError
       end
 
       def unique_id
         artist_name
-      end
-
-      def artist_record
-        if artist_name.present?
-          Artist.other_names_match(artist_name)
-        else
-          nil
-        end
       end
 
       def image_urls
@@ -102,26 +68,9 @@ module Sources
         nil
       end
 
-      def dtext_artist_commentary_title
-        self.class.to_dtext(artist_commentary_title)
-      end
-
-      def dtext_artist_commentary_desc
-        self.class.to_dtext(artist_commentary_desc)
-      end
-
     protected
       def agent
         raise NotImplementedError
-      end
-
-      # Convert commentary to dtext by stripping html tags. Sites can override
-      # this to customize how their markup is translated to dtext.
-      def self.to_dtext(text)
-        text = text.to_s
-        text = Rails::Html::FullSanitizer.new.sanitize(text, encode_special_chars: false)
-        text = CGI::unescapeHTML(text)
-        text
       end
     end
   end

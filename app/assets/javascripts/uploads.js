@@ -12,12 +12,6 @@
       this.initialize_info_bookmarklet();
       this.initialize_shortcuts();
       $("#related-tags-button").trigger("click");
-      $("#find-artist-button").trigger("click");
-
-      $("#toggle-artist-commentary").click(function(e) {
-        Danbooru.Upload.toggle_commentary();
-        e.preventDefault();
-      });
     }
   }
 
@@ -85,22 +79,11 @@
     Danbooru.RelatedTag.translated_tags = data.translated_tags;
     Danbooru.RelatedTag.build_all();
 
-    var new_artist_href = "/artists/new?other_names="
-                        + encodeURIComponent(data.artist_name)
-                        + "&urls="
-                        + encodeURIComponent($.unique([data.profile_url, data.normalized_for_artist_finder_url]).join("\n"));
-
-    $("#source-record").html($("<a>").attr("href", new_artist_href).text("Create New"));
-
     if (data.image_urls.length > 1) {
       $("#gallery-warning").show();
     } else {
       $("#gallery-warning").hide();
     }
-
-    $("#upload_artist_commentary_title").val(data.artist_commentary.dtext_title);
-    $("#upload_artist_commentary_desc").val(data.artist_commentary.dtext_description);
-    Danbooru.Upload.toggle_commentary();
 
     $("#source-info span#loading-data").hide();
     $("#source-info ul").show();
@@ -129,16 +112,6 @@
       $("#image-resize-to-window-link").click(Danbooru.Upload.update_scale);
     }
   }
-
-  Danbooru.Upload.toggle_commentary = function() {
-    if ($(".artist-commentary").is(":visible")) {
-      $("#toggle-artist-commentary").text("show »");
-    } else {
-      $("#toggle-artist-commentary").text("« hide");
-    }
-
-    $(".artist-commentary").slideToggle();
-  };
 })();
 
 $(function() {

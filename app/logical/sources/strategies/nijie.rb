@@ -45,7 +45,6 @@ module Sources
         @artist_name, @profile_url = get_profile_from_page(page)
         @image_urls = get_image_urls_from_page(page)
         @tags = get_tags_from_page(page)
-        @artist_commentary_title, @artist_commentary_desc = get_commentary_from_page(page)
       end
 
     protected
@@ -53,13 +52,6 @@ module Sources
       def self.to_dtext(text)
         text = text.gsub(/\r\n|\r/, "<br>")
         DText.from_html(text).strip
-      end
-
-      def get_commentary_from_page(page)
-        title = page.search("h2.illust_title").text
-        desc = page.search('meta[property="og:description"]').attr("content").value
-
-        [title, desc]
       end
 
       def get_profile_from_page(page)

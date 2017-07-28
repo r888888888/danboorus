@@ -42,14 +42,6 @@ module PostSets
       @tag ||= Tag.find_by(name: Tag.normalize_name(tag_string))
     end
 
-    def has_artist?
-      is_single_tag? && artist.present? && artist.visible?
-    end
-
-    def artist
-      @artist ||= ::Artist.named(tag_string).active.first
-    end
-
     def pool_name
       tag_string.match(/^(?:ord)?pool:(\S+)$/i).try(:[], 1)
     end

@@ -93,16 +93,6 @@
         <td><%= presenter.wiki_page_version_count(self) %></td>
       </tr>
 
-      <tr>
-        <th>Artist Changes</th>
-        <td><%= presenter.artist_version_count(self) %></td>
-      </tr>
-
-      <tr>
-        <th>Commentary Changes</th>
-        <td><%= presenter.artist_commentary_version_count(self) %></td>
-      </tr>
-
       <% if PoolArchive.enabled? %>
         <tr>
           <th>Pool Changes</th>

@@ -246,12 +246,6 @@ class PostQueryBuilder
       end
     end
 
-    if q[:artcomm_ids]
-      q[:artcomm_ids].each do |artcomm_id|
-        relation = relation.where("posts.id IN (?)", ArtistCommentaryVersion.unscoped.where("updater_id = ?", artcomm_id).select("post_id").uniq)
-      end
-    end
-
     if q[:post_id_negated]
       relation = relation.where("posts.id <> ?", q[:post_id_negated])
     end
@@ -426,14 +420,6 @@ class PostQueryBuilder
 
     when "note_asc"
       relation = relation.order("posts.last_noted_at ASC NULLS FIRST")
-
-    when "artcomm"
-      relation = relation.joins("INNER JOIN artist_commentaries ON artist_commentaries.post_id = posts.id")
-      relation = relation.order("artist_commentaries.updated_at DESC")
-
-    when "artcomm_asc"
-      relation = relation.joins("INNER JOIN artist_commentaries ON artist_commentaries.post_id = posts.id")
-      relation = relation.order("artist_commentaries.updated_at ASC")
 
     when "mpixels", "mpixels_desc"
       relation = relation.where("posts.image_width is not null and posts.image_height is not null")

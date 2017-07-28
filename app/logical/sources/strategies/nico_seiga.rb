@@ -29,7 +29,6 @@ module Sources
 
         @artist_name, @profile_url = get_profile_from_api
         @image_url = get_image_url_from_page(page)
-        @artist_commentary_title, @artist_commentary_desc = get_artist_commentary_from_api
 
         # Log out before getting the tags.
         # The reason for this is that if you're logged in and viewing a non-adult-rated work, the tags will be added with javascript after the page has loaded meaning we can't extract them easily.
@@ -38,21 +37,6 @@ module Sources
         agent.get(normalized_url) do |page|
           @tags = get_tags_from_page(page)
         end
-      end
-
-      def normalized_for_artist_finder?
-        url =~ %r!https?://seiga\.nicovideo\.jp/user/illust/\d+/!i
-      end
-
-      def normalizable_for_artist_finder?
-        url =~ %r!https?://seiga\.nicovideo\.jp/seiga/im\d+!i
-      end
-
-      def normalize_for_artist_finder!
-        page = load_page
-        @illust_id = get_illust_id_from_url
-        @artist_name, @profile_url = get_profile_from_api
-        @profile_url + "/"
       end
 
     protected
@@ -112,10 +96,6 @@ module Sources
         links.map do |node|
           [node.text, "http://seiga.nicovideo.jp" + node.attr("href")]
         end
-      end
-
-      def get_artist_commentary_from_api
-        [api_client.title, api_client.desc]
       end
 
       def normalized_url
