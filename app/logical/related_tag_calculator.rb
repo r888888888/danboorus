@@ -38,15 +38,13 @@ class RelatedTagCalculator
     candidates = convert_hash_to_array(counts, 100)
     similar_counts = Hash.new {|h, k| h[k] = 0}
     CurrentUser.without_safe_mode do
-      PostReadOnly.with_timeout(5_000, nil, {:tags => tag}) do
-        candidates.each do |ctag, _|
-          acount = PostReadOnly.tag_match("#{tag} #{ctag}").count
-          ctag_record = Tag.find_by_name(ctag)
-          div = Math.sqrt(tag_record.post_count * ctag_record.post_count)
-          if div != 0
-            c = acount / div
-            similar_counts[ctag] = c
-          end
+      candidates.each do |ctag, _|
+        acount = Post.tag_match("#{tag} #{ctag}").count
+        ctag_record = Tag.find_by_name(ctag)
+        div = Math.sqrt(tag_record.post_count * ctag_record.post_count)
+        if div != 0
+          c = acount / div
+          similar_counts[ctag] = c
         end
       end
     end

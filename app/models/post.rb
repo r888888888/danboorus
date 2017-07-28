@@ -978,8 +978,8 @@ class Post < ApplicationRecord
     end
 
     def fast_count_search(tags, options = {})
-      count = PostReadOnly.with_timeout(3_000, nil, {:tags => tags}) do
-        PostReadOnly.tag_match(tags).count
+      count = Post.with_timeout(3_000, nil, {:tags => tags}) do
+        Post.tag_match(tags).count
       end
 
       if count == nil && tags !~ / /
@@ -1000,8 +1000,8 @@ class Post < ApplicationRecord
       i = Post.maximum(:id)
       sum = 0
       while i > 0
-        count = PostReadOnly.with_timeout(1_000, nil, {:tags => tags}) do
-          sum += PostReadOnly.tag_match(tags).where("id <= ? and id > ?", i, i - 25_000).count
+        count = Post.with_timeout(1_000, nil, {:tags => tags}) do
+          sum += Post.tag_match(tags).where("id <= ? and id > ?", i, i - 25_000).count
           i -= 25_000
         end
 
@@ -1359,12 +1359,8 @@ class Post < ApplicationRecord
       where("posts.tag_index @@ to_tsquery('danbooru', E?)", tag.to_escaped_for_tsquery)
     end
 
-    def tag_match(query, read_only = false)
-      if read_only
-        PostQueryBuilder.new(query).build(PostReadOnly.where("true"))
-      else
-        PostQueryBuilder.new(query).build
-      end
+    def tag_match(query)
+      PostQueryBuilder.new(query).build
     end
   end
   
