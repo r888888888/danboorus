@@ -108,9 +108,9 @@ class UsersControllerTest < ActionController::TestCase
       end
 
       should "update a user" do
-        post :update, {:id => @user.id, :user => {:favorite_tags => "xyz"}}, {:user_id => @user.id}
+        post :update, {:id => @user.id, :user => {:comment_threshold => 5}}, {:user_id => @user.id}
         @user.reload
-        assert_equal("xyz", @user.favorite_tags)
+        assert_equal(5, @user.comment_threshold)
       end
 
       context "changing the level" do
@@ -128,9 +128,9 @@ class UsersControllerTest < ActionController::TestCase
       context "for a banned user" do
         should "allow the user to edit their settings" do
           @user = FactoryGirl.create(:banned_user)
-          post :update, {:id => @user.id, :user => {:favorite_tags => "xyz"}}, {:user_id => @user.id}
+          post :update, {:id => @user.id, :user => {:comment_threshold => 5}}, {:user_id => @user.id}
 
-          assert_equal("xyz", @user.reload.favorite_tags)
+          assert_equal(5, @user.reload.comment_threshold)
         end
       end
     end

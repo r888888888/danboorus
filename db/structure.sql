@@ -2556,7 +2556,6 @@ CREATE TABLE users (
     favorite_count integer DEFAULT 0 NOT NULL,
     comment_threshold integer DEFAULT '-1'::integer NOT NULL,
     default_image_size character varying DEFAULT 'large'::character varying NOT NULL,
-    favorite_tags text,
     blacklisted_tags text DEFAULT 'spoilers'::text,
     time_zone character varying DEFAULT 'Eastern Time (US & Canada)'::character varying NOT NULL,
     bcrypt_password_hash text,

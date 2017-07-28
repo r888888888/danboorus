@@ -55,7 +55,6 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     check_privilege(@user)
     @user.update_attributes(params[:user].except(:name), :as => CurrentUser.role)
-    cookies.delete(:favorite_tags)
     if @user.errors.any?
       flash[:notice] = @user.errors.full_messages.join("; ")
     else

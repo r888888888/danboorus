@@ -150,12 +150,8 @@
 
   Danbooru.RelatedTag.build_recent_and_frequent = function($dest) {
     var recent_tags = Danbooru.Cookie.get("recent_tags");
-    var favorite_tags = Danbooru.Cookie.get("favorite_tags");
     if (recent_tags.length) {
       $dest.append(this.build_html("recent", this.other_tags(recent_tags), "recent"));
-    }
-    if (favorite_tags.length) {
-      $dest.append(this.build_html("frequent", this.other_tags(favorite_tags), "frequent"));
     }
   }
 

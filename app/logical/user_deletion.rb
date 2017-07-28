@@ -47,7 +47,6 @@ private
     user.last_logged_in_at = nil
     user.last_forum_read_at = nil
     user.recent_tags = ''
-    user.favorite_tags = ''
     user.blacklisted_tags = ''
     user.hide_deleted_posts = false
     user.show_deleted_children = false
