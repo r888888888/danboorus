@@ -1308,19 +1308,6 @@ ActiveRecord::Schema.define(:version => 20111101212358) do
   add_index "posts", ["uploader_id"], :name => "index_posts_on_uploader_id"
   add_index "posts", ["uploader_ip_addr"], :name => "index_posts_on_uploader_ip_addr"
 
-  create_table "tag_implications", :force => true do |t|
-    t.text     "reason",                          :default => "",          :null => false
-    t.integer  "creator_id"
-    t.string   "antecedent_name",                 :default => "",          :null => false
-    t.string   "consequent_name",                 :default => "",          :null => false
-    t.text     "descendant_names",                :default => "",          :null => false
-    t.string   "creator_ip_addr",  :limit => nil, :default => "127.0.0.1", :null => false
-    t.string   "status",                          :default => "active",    :null => false
-    t.integer  "forum_topic_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "tag_subscriptions", :force => true do |t|
     t.integer  "creator_id",                              :null => false
     t.text     "tag_query",                               :null => false

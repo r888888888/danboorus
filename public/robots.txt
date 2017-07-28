@@ -40,8 +40,6 @@ Disallow: /session
 Disallow: /sources
 Disallow: /static
 Disallow: /tag_corrections
-Disallow: /tag_implication_requests
-Disallow: /tag_implications
 Disallow: /tag_subscriptions
 Disallow: /tags
 Disallow: /uploads

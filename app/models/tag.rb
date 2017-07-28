@@ -5,8 +5,6 @@ class Tag < ApplicationRecord
   attr_accessible :category, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :builder, :admin]
   attr_accessible :is_locked, :as => [:moderator, :admin]
   has_one :wiki_page, :foreign_key => "title", :primary_key => "name"
-  has_many :antecedent_implications, lambda {active}, :class_name => "TagImplication", :foreign_key => "antecedent_name", :primary_key => "name"
-  has_many :consequent_implications, lambda {active}, :class_name => "TagImplication", :foreign_key => "consequent_name", :primary_key => "name"
 
   validates :name, uniqueness: true, tag_name: true, on: :create
 

@@ -40,33 +40,12 @@ class ArtistTest < ActiveSupport::TestCase
         @post.reload
       end
 
-      should "allow unbanning" do
-        assert_difference("TagImplication.count", -1) do
-          @artist.unban!
-        end
-        @post.reload
-        @artist.reload
-        assert(!@artist.is_banned?, "artist should not be banned")
-        assert(!@post.is_deleted?, "post should not be deleted")
-        assert_equal("aaa", @post.tag_string)
-      end
-
       should "delete the post" do
         assert(@post.is_deleted?)
       end
 
       should "not delete the post" do
         refute(@post.is_deleted?)
-      end
-
-      should "create a new tag implication" do
-        assert_equal(1, TagImplication.where(:antecedent_name => "aaa", :consequent_name => "banned_artist").count)
-        assert_equal("aaa banned_artist", @post.tag_string)
-      end
-
-      should "set the approver of the banned_artist implication" do
-        ta = TagImplication.where(:antecedent_name => "aaa", :consequent_name => "banned_artist").first
-        assert_equal(@admin.id, ta.approver.id)
       end
     end
 

@@ -22,9 +22,6 @@ module DelayedJobsHelper
     when "Tag#update_related"
       "<strong>update related tags</strong>"
 
-    when "TagImplication#process!"
-      "<strong>implication</strong>"
-
     when "Class#clear_cache_for"
       "<strong>expire tag alias cache</strong>"
 
@@ -79,9 +76,6 @@ module DelayedJobsHelper
 
     when "Tag#update_related"
       h(job.payload_object.name)
-
-    when "TagImplication#process!"
-      h(job.payload_object.antecedent_name) + " -> " + h(job.payload_object.consequent_name)
 
     when "Class#clear_cache_for"
       h(job.payload_object.args.flatten.join(" "))

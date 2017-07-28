@@ -205,12 +205,6 @@ Rails.application.routes.draw do
       get :autocomplete
     end
   end
-  resources :tag_implications do
-    member do
-      post :approve
-    end
-  end
-  resource :tag_implication_request, :only => [:new, :create]
   resources :uploads do
     collection do
       get :batch

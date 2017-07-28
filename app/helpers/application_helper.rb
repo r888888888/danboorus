@@ -204,9 +204,6 @@ protected
     when "moderator/dashboards"
       /^\/moderator/
 
-    when "tag_implications", "tag_implication_requests"
-      /^\/tag_implications/
-
     when "wiki_pages", "wiki_page_versions"
       /^\/wiki_pages/
 

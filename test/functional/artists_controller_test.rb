@@ -73,7 +73,6 @@ class ArtistsControllerTest < ActionController::TestCase
 
       assert_redirected_to(@artist)
       assert_equal(true, @artist.reload.is_banned)
-      assert_equal(true, TagImplication.exists?(antecedent_name: @artist.name, consequent_name: "banned_artist"))
     end
 
     should "unban an artist" do
@@ -84,7 +83,6 @@ class ArtistsControllerTest < ActionController::TestCase
 
       assert_redirected_to(@artist)
       assert_equal(false, @artist.reload.is_banned)
-      assert_equal(false, TagImplication.exists?(antecedent_name: @artist.name, consequent_name: "banned_artist"))
     end
 
     should "get the index page" do
