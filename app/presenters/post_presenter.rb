@@ -122,10 +122,6 @@ class PostPresenter < Presenter
     tag_set_presenter.tag_list_html(template, options.merge(:show_extra_links => CurrentUser.user.is_gold?))
   end
 
-  def split_tag_list_html(template, options = {})
-    tag_set_presenter.split_tag_list_html(template, options.merge(:show_extra_links => CurrentUser.user.is_gold?))
-  end
-
   def inline_tag_list_html(template)
     tag_set_presenter.inline_tag_list(template)
   end
