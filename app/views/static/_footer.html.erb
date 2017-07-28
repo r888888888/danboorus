@@ -5,9 +5,7 @@
   <% end %>
   &ndash; <%= link_to "Rules", terms_of_service_path %>
   &ndash; <%= link_to "Contact", contact_path %>
-  <% if CurrentUser.user.enable_post_navigation %>
-    &ndash; <%= link_to "Keyboard shortcuts available", keyboard_shortcuts_path %>
-  <% end %>
+  &ndash; <%= link_to "Keyboard shortcuts available", keyboard_shortcuts_path %>
   <span id="desktop-version-link">
     &ndash;
     <%= link_to "Desktop version", site_map_path(:dm => "1"), :rel => "nofollow" %>

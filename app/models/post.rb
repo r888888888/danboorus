@@ -122,34 +122,22 @@ class Post < ApplicationRecord
 
     def file_url
        if Danbooru.config.use_s3_proxy?(self)
-         "/cached/data/#{seo_tag_string}#{file_path_prefix}#{md5}.#{file_ext}"
+         "/cached/data/#{file_path_prefix}#{md5}.#{file_ext}"
        else
-         "/data/#{seo_tag_string}#{file_path_prefix}#{md5}.#{file_ext}"
+         "/data/#{file_path_prefix}#{md5}.#{file_ext}"
        end
     end
 
     def large_file_url
       if has_large?
         if Danbooru.config.use_s3_proxy?(self)
-          "/cached/data/sample/#{seo_tag_string}#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
+          "/cached/data/sample/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
         else
-          "/data/sample/#{seo_tag_string}#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
+          "/data/sample/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
         end
       else
         file_url
       end
-    end
-
-    def seo_tag_string
-      if Danbooru.config.enable_seo_post_urls && !CurrentUser.user.disable_tagged_filenames?
-        "__#{seo_tags}__"
-      else
-        nil
-      end
-    end
-
-    def seo_tags
-      @seo_tags ||= humanized_essential_tag_string.gsub(/[^a-z0-9]+/, "_").gsub(/(?:^_+)|(?:_+$)/, "").gsub(/_{2,}/, "_")
     end
 
     def preview_file_url
@@ -165,9 +153,7 @@ class Post < ApplicationRecord
     end
 
     def file_url_for(user)
-      if CurrentUser.mobile_mode?
-        large_file_url
-      elsif user.default_image_size == "large" && image_width > Danbooru.config.large_image_width
+      if user.default_image_size == "large" && image_width > Danbooru.config.large_image_width
         large_file_url
       else
         file_url
@@ -175,9 +161,7 @@ class Post < ApplicationRecord
     end
 
     def file_path_for(user)
-      if CurrentUser.mobile_mode?
-        large_file_path
-      elsif user.default_image_size == "large" && image_width > Danbooru.config.large_image_width
+      if user.default_image_size == "large" && image_width > Danbooru.config.large_image_width
         large_file_path
       else
         file_path
@@ -297,7 +281,7 @@ class Post < ApplicationRecord
     end
 
     def image_width_for(user)
-      if CurrentUser.mobile_mode? || user.default_image_size == "large"
+      if user.default_image_size == "large"
         large_image_width
       else
         image_width
@@ -305,7 +289,7 @@ class Post < ApplicationRecord
     end
 
     def image_height_for(user)
-      if CurrentUser.mobile_mode? || user.default_image_size == "large"
+      if user.default_image_size == "large"
         large_image_height
       else
         image_height

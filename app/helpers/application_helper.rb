@@ -108,7 +108,7 @@ module ApplicationHelper
   def link_to_user(user, options = {})
     user_class = user.level_class
     user_class = user_class + " user-banned" if user.is_banned?
-    user_class = user_class + " with-style" if CurrentUser.user.style_usernames?
+    user_class = user_class + " with-style"
     if options[:raw_name]
       name = user.name
     else

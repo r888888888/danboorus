@@ -26,24 +26,17 @@ class User < ApplicationRecord
     has_mail
     receive_email_notifications
     always_resize_images
-    enable_post_navigation
-    new_post_navigation_layout
-    enable_privacy_mode
-    enable_sequential_post_navigation
     hide_deleted_posts
-    style_usernames
     enable_auto_complete
     show_deleted_children
     has_saved_searches
-    disable_categorized_saved_searches
-    disable_tagged_filenames
   )
 
   include Danbooru::HasBitFlags
   has_bit_flags BOOLEAN_ATTRIBUTES, :field => "bit_prefs"
 
   attr_accessor :password, :old_password
-  attr_accessible :dmail_filter_attributes, :enable_privacy_mode, :enable_post_navigation, :new_post_navigation_layout, :password, :old_password, :password_confirmation, :password_hash, :email, :last_logged_in_at, :last_forum_read_at, :has_mail, :receive_email_notifications, :comment_threshold, :always_resize_images, :blacklisted_tags, :name, :ip_addr, :time_zone, :default_image_size, :enable_sequential_post_navigation, :per_page, :hide_deleted_posts, :style_usernames, :enable_auto_complete, :custom_style, :show_deleted_children, :disable_categorized_saved_searches, :disable_tagged_filenames, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :admin]
+  attr_accessible :dmail_filter_attributes, :password, :old_password, :password_confirmation, :password_hash, :email, :last_logged_in_at, :last_forum_read_at, :has_mail, :receive_email_notifications, :comment_threshold, :always_resize_images, :blacklisted_tags, :name, :ip_addr, :time_zone, :default_image_size, :per_page, :hide_deleted_posts, :enable_auto_complete, :custom_style, :show_deleted_children, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :admin]
   attr_accessible :level, :as => :admin
 
   validates :name, user_name: true, on: :create
@@ -785,13 +778,10 @@ class User < ApplicationRecord
   end
 
   def hide_favorites?
-    !CurrentUser.is_admin? && enable_privacy_mode? && CurrentUser.user.id != id
+    !CurrentUser.is_admin? && CurrentUser.user.id != id
   end
 
   def initialize_default_boolean_attributes
-    self.enable_post_navigation = true
-    self.new_post_navigation_layout = true
-    self.enable_sequential_post_navigation = true
     self.enable_auto_complete = true
   end
 end

@@ -161,18 +161,6 @@ class AnonymousUser
     true
   end
 
-  def new_post_navigation_layout
-    true
-  end
-
-  def enable_privacy_mode
-    false
-  end
-
-  def enable_sequential_post_navigation
-    true
-  end
-
   def api_regen_multiplier
     1
   end
@@ -190,10 +178,6 @@ class AnonymousUser
   end
   
   def hide_deleted_posts?
-    false
-  end
-
-  def style_usernames?
     false
   end
 
@@ -222,14 +206,6 @@ class AnonymousUser
   end
 
   def show_saved_searches?
-    false
-  end
-
-  def disable_categorized_saved_searches?
-    false
-  end
-
-  def disable_tagged_filenames?
     false
   end
 
