@@ -633,10 +633,6 @@ class User < ApplicationRecord
     def comment_count
       Comment.for_creator(id).count
     end
-
-    def flag_count
-      PostFlag.for_creator(id).count
-    end
   end
 
   module SearchMethods

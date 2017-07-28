@@ -148,9 +148,6 @@
     tags = tags.concat(String($post.attr("data-pools")).match(/\S+/g) || []);
     tags.push("rating:" + $post.data("rating"));
     tags.push("user:" + $post.attr("data-uploader").toLowerCase());
-    $.each(String($post.data("flags")).match(/\S+/g) || [], function(i, v) {
-      tags.push("status:" + v);
-    });
     return (entry.require.length > 0 || entry.exclude.length > 0) && Danbooru.is_subset(tags, entry.require) && !Danbooru.intersect(tags, entry.exclude).length;
   }
 

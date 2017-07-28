@@ -185,29 +185,6 @@ class PostQueryBuilder
       relation = relation.where("posts.uploader_id = ?", q[:uploader_id])
     end
 
-    if q[:flagger_ids_neg]
-      q[:flagger_ids_neg].each do |flagger_id|
-        if CurrentUser.can_view_flagger?(flagger_id)
-          post_ids = PostFlag.unscoped.search({:creator_id => flagger_id, :category => "normal"}).reorder("").pluck("distinct(post_id)")
-          if post_ids.any?
-            relation = relation.where("posts.id NOT IN (?)", post_ids)
-          end
-        end
-      end
-    end
-
-    if q[:flagger_ids]
-      q[:flagger_ids].each do |flagger_id|
-        if flagger_id == "any"
-          relation = relation.where('EXISTS (' + PostFlag.unscoped.search({:category => "normal"}).where('post_id = posts.id').reorder('').select('1').to_sql + ')')
-        elsif flagger_id == "none"
-          relation = relation.where('NOT EXISTS (' + PostFlag.unscoped.search({:category => "normal"}).where('post_id = posts.id').reorder('').select('1').to_sql + ')')
-        elsif CurrentUser.can_view_flagger?(flagger_id)
-            relation = relation.where("posts.id IN (?)", PostFlag.unscoped.search({:creator_id => flagger_id, :category => "normal"}).reorder("").select(:post_id).distinct)
-        end
-      end
-    end
-
     if q[:commenter_ids]
       q[:commenter_ids].each do |commenter_id|
         if commenter_id == "any"

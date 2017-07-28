@@ -322,12 +322,6 @@ class Post < ApplicationRecord
       @presenter ||= PostPresenter.new(self)
     end
 
-    def status_flags
-      flags = []
-      flags << "deleted" if is_deleted?
-      flags.join(" ")
-    end
-
     def pretty_rating
       case rating
       when "e"

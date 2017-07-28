@@ -71,7 +71,6 @@ class PostPresenter < Presenter
       data-rating="#{post.rating}"
       data-width="#{post.image_width}"
       data-height="#{post.image_height}"
-      data-flags="#{post.status_flags}"
       data-parent-id="#{post.parent_id}"
       data-has-children="#{post.has_children?}"
       data-score="#{post.score}"

@@ -143,10 +143,6 @@ class UserPresenter
     end
   end
 
-  def flag_count(template)
-    template.link_to(user.flag_count, template.post_flags_path(:search => {:creator_name => user.name}))
-  end
-
   def feedbacks(template)
     count = user.feedback.count
 
