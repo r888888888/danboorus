@@ -4,7 +4,6 @@ Rails.application.routes.draw do
     resources :users, :only => [:edit, :update]
   end
   namespace :moderator do
-    resource :bulk_revert, :only => [:new, :create]
     resource :dashboard, :only => [:show]
     resources :ip_addrs, :only => [:index] do
       collection do
