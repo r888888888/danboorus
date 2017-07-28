@@ -5,9 +5,6 @@
     Date: <%= link_to time_ago_in_words_tagged(post.created_at), posts_path(:tags => "date:#{post.created_at.to_date}"), :rel => "nofollow" %>
     <meta itemprop="uploadDate" content="<%= post.created_at.iso8601 %>">
   </li>
-  <% if post.approver %>
-    <li>Approver: <%= link_to_user(post.approver) %></li>
-  <% end %>
   <li>
     Size: <%= link_to_if post.visible?, number_to_human_size(post.file_size), post.file_url %>
     <% if post.has_dimensions? %>

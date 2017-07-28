@@ -159,10 +159,6 @@ class UserPresenter
     template.link_to(user.flag_count, template.post_flags_path(:search => {:creator_name => user.name}))
   end
 
-  def approval_count(template)
-    template.link_to(Post.where("approver_id = ?", user.id).count, template.posts_path(:tags => "approver:#{user.name}"))
-  end
-
   def feedbacks(template)
     positive = user.positive_feedback_count
     neutral = user.neutral_feedback_count

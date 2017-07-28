@@ -158,12 +158,6 @@
         e.preventDefault();
       });
 
-      if (Danbooru.meta("current-user-can-approve-posts") === "true") {
-        Danbooru.keydown("shift+o", "approve", function(e) {
-          $("#quick-mod-approve").click();
-        });
-      }
-
       Danbooru.keydown("a", "prev_page", Danbooru.Post.nav_prev);
       Danbooru.keydown("d", "next_page", Danbooru.Post.nav_next);
       Danbooru.keydown("f", "favorite", Danbooru.Post.favorite);
@@ -475,23 +469,6 @@
       error: function(data) {
         Danbooru.Post.notice_update("dec");
         Danbooru.error('There was an error updating <a href="/posts/' + post_id + '">post #' + post_id + '</a>');
-      }
-    });
-  }
-
-  Danbooru.Post.approve = function(post_id) {
-    $.post(
-      "/moderator/post/approval.json",
-      {"post_id": post_id}
-    ).fail(function(data) {
-      var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join("; ");
-      Danbooru.error("Error: " + message);
-    }).done(function(data) {
-      var $post = $("#post_" + post_id);
-      if ($post.length) {
-        $post.data("flags", $post.data("flags").replace(/pending/, ""));
-        $post.removeClass("post-status-pending");
-        Danbooru.notice("Approved post #" + post_id);
       }
     });
   }

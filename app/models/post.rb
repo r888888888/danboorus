@@ -2,7 +2,6 @@ require 'danbooru/has_bit_flags'
 require 'google/apis/pubsub_v1'
 
 class Post < ApplicationRecord
-  class ApprovalError < Exception ; end
   class RevertError < Exception ; end
   class SearchError < Exception ; end
   class DeletionError < Exception ; end
@@ -30,7 +29,6 @@ class Post < ApplicationRecord
   after_commit :delete_files, :on => :destroy
 
   belongs_to :updater, :class_name => "User"
-  belongs_to :approver, :class_name => "User"
   belongs_to :uploader, :class_name => "User"
   belongs_to :parent, :class_name => "Post"
   has_one :upload, :dependent => :destroy
@@ -42,7 +40,6 @@ class Post < ApplicationRecord
   has_many :notes, :dependent => :destroy
   has_many :comments, lambda {includes(:creator, :updater).order("comments.id")}, :dependent => :destroy
   has_many :children, lambda {order("posts.id")}, :class_name => "Post", :foreign_key => "parent_id"
-  has_many :approvals, :class_name => "PostApproval", :dependent => :destroy
   has_many :favorites
   has_many :replacements, class_name: "PostReplacement", :dependent => :destroy
 
@@ -320,40 +317,6 @@ class Post < ApplicationRecord
 
     def resize_percentage
       100 * large_image_width.to_f / image_width.to_f
-    end
-  end
-
-  module ApprovalMethods
-    def is_approvable?(user = CurrentUser.user)
-      !is_status_locked? && (is_flagged? || is_deleted?) && !approved_by?(user)
-    end
-
-    def flag!(reason, options = {})
-      flag = flags.create(:reason => reason, :is_resolved => false, :is_deletion => options[:is_deletion])
-
-      if flag.errors.any?
-        raise PostFlag::Error.new(flag.errors.full_messages.join("; "))
-      end
-    end
-
-    def appeal!(reason)
-      if is_status_locked?
-        raise PostAppeal::Error.new("Post is locked and cannot be appealed")
-      end
-
-      appeal = appeals.create(:reason => reason)
-
-      if appeal.errors.any?
-        raise PostAppeal::Error.new(appeal.errors.full_messages.join("; "))
-      end
-    end
-
-    def approve!(approver = CurrentUser.user)
-      approvals.create(user: approver)
-    end
-
-    def approved_by?(user)
-      approver == user || approvals.where(user: user).exists?
     end
   end
 
@@ -1402,16 +1365,7 @@ class Post < ApplicationRecord
         return false
       end
 
-      if !CurrentUser.is_admin? 
-        if approved_by?(CurrentUser.user)
-          raise ApprovalError.new("You have previously approved this post and cannot undelete it")
-        elsif uploader_id == CurrentUser.id
-          raise ApprovalError.new("You cannot undelete a post you uploaded")
-        end
-      end
-
       self.is_deleted = false
-      self.approver_id = CurrentUser.id
       flags.each {|x| x.resolve!}
       save
       Post.expire_cache_for_all(tag_array)
@@ -1672,7 +1626,6 @@ class Post < ApplicationRecord
   include FileMethods
   include BackupMethods
   include ImageMethods
-  include ApprovalMethods
   include PresenterMethods
   include TagMethods
   include FavoriteMethods

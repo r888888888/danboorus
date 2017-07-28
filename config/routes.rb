@@ -14,7 +14,6 @@ Rails.application.routes.draw do
     end
     namespace :post do
       resource :queue, :only => [:show]
-      resource :approval, :only => [:create]
       resources :posts, :only => [:delete, :undelete, :expunge, :confirm_delete] do
         member do
           get :confirm_delete

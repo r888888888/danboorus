@@ -115,25 +115,6 @@ a.blacklisted-active {
   }
 }
 
-/* Flagged posts have red borders for approvers. */
-body[data-user-can-approve-posts="true"] .post-preview {
-  &.post-status-flagged img {
-    border-color: $preview_flagged_color;
-  }
-
-  &.post-status-has-children.post-status-flagged img {
-    border-color: $preview_has_children_color $preview_flagged_color $preview_flagged_color $preview_has_children_color;
-  }
-
-  &.post-status-has-parent.post-status-flagged img {
-    border-color: $preview_has_parent_color $preview_flagged_color $preview_flagged_color $preview_has_parent_color;
-  }
-
-  &.post-status-has-children.post-status-has-parent.post-status-flagged img {
-    border-color: $preview_has_children_color $preview_flagged_color $preview_flagged_color $preview_has_parent_color;
-  }
-}
-
 .post-preview.current-post {
   background-color: rgba(0,0,0,0.1);
 }

@@ -1276,7 +1276,6 @@ ActiveRecord::Schema.define(:version => 20111101212358) do
     t.boolean  "is_rating_locked",                   :default => false, :null => false
     t.integer  "parent_id"
     t.boolean  "has_children",                       :default => false, :null => false
-    t.integer  "approver_id"
     t.tsvector "tag_index"
     t.integer  "tag_count_general",                  :default => 0,     :null => false
     t.integer  "tag_count_artist",                   :default => 0,     :null => false
@@ -1295,7 +1294,6 @@ ActiveRecord::Schema.define(:version => 20111101212358) do
     t.datetime "updated_at"
   end
 
-  add_index "posts", ["approver_id"], :name => "index_posts_on_approver_id"
   add_index "posts", ["created_at"], :name => "index_posts_on_created_at"
   add_index "posts", ["file_size"], :name => "index_posts_on_file_size"
   add_index "posts", ["image_height"], :name => "index_posts_on_image_height"

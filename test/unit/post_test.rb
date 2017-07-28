@@ -335,18 +335,6 @@ class PostTest < ActiveSupport::TestCase
     end
 
     context "Undeleting a post with a parent" do
-      should "update with a new approver" do
-        new_user = FactoryGirl.create(:moderator_user)
-        p1 = FactoryGirl.create(:post)
-        c1 = FactoryGirl.create(:post, :parent_id => p1.id)
-        c1.delete!("test")
-        CurrentUser.scoped(new_user, "127.0.0.1") do
-          c1.undelete!
-        end
-        p1.reload
-        assert_equal(new_user.id, c1.approver_id)
-      end
-
       should "preserve the parent's has_children flag" do
         p1 = FactoryGirl.create(:post)
         c1 = FactoryGirl.create(:post, :parent_id => p1.id)
@@ -377,37 +365,6 @@ class PostTest < ActiveSupport::TestCase
         end
       end
 
-      context "that is undeleted" do
-        setup do
-          @mod = FactoryGirl.create(:moderator_user)
-          CurrentUser.user = @mod
-        end
-
-        context "by the approver" do
-          setup do
-            @post.update_attribute(:approver_id, @mod.id)
-          end
-
-          should "not be permitted" do
-            assert_raises(::Post::ApprovalError) do
-              @post.undelete!
-            end
-          end
-        end
-
-        context "by the uploader" do
-          setup do
-            @post.update_attribute(:uploader_id, @mod.id)
-          end
-
-          should "not be permitted" do
-            assert_raises(::Post::ApprovalError) do
-              @post.undelete!
-            end
-          end
-        end
-      end
-
       context "when undeleted" do
         should "be undeleted" do
           @post.undelete!
@@ -420,96 +377,12 @@ class PostTest < ActiveSupport::TestCase
         end
       end
 
-      context "when approved" do
-        should "be undeleted" do
-          @post.approve!
-          assert_equal(false, @post.reload.is_deleted?)
-        end
-
-        should "create a mod action" do
-          @post.approve!
-          assert_equal("undeleted post ##{@post.id}", ModAction.last.description)
-        end
-      end
-
       should "be appealed" do
         assert_difference("PostAppeal.count", 1) do
           @post.appeal!("xxx")
         end
         assert(@post.is_deleted?, "Post should still be deleted")
         assert_equal(1, @post.appeals.count)
-      end
-    end
-
-    context "An approved post" do
-      should "be flagged" do
-        post = FactoryGirl.create(:post)
-        assert_difference("PostFlag.count", 1) do
-          post.flag!("bad")
-        end
-        assert(post.is_flagged?, "Post should be flagged.")
-        assert_equal(1, post.flags.count)
-      end
-
-      should "not be flagged if no reason is given" do
-        post = FactoryGirl.create(:post)
-        assert_difference("PostFlag.count", 0) do
-          assert_raises(PostFlag::Error) do
-            post.flag!("")
-          end
-        end
-      end
-    end
-
-    context "An unapproved post" do
-      should "preserve the approver's identity when approved" do
-        post = FactoryGirl.create(:post, :is_flagged => true)
-        post.approve!
-        assert_equal(post.approver_id, CurrentUser.id)
-      end
-
-      context "that was uploaded by person X" do
-        setup do
-          @post = FactoryGirl.create(:post)
-          @post.flag!("reason")
-        end
-
-        should "not allow person X to approve that post" do
-          approval = @post.approve!(@post.uploader)
-
-          assert(@post.invalid?)
-          assert_includes(approval.errors.full_messages, "You cannot approve a post you uploaded")
-        end
-      end
-
-      context "that was previously approved by person X" do
-        setup do
-          @user = FactoryGirl.create(:moderator_user, :name => "xxx")
-          @user2 = FactoryGirl.create(:moderator_user, :name => "yyy")
-          @post = FactoryGirl.create(:post, :approver_id => @user.id)
-          @post.flag!("bad")
-        end
-
-        should "not allow person X to reapprove that post" do
-          approval = @post.approve!(@user)
-          assert_includes(approval.errors.full_messages, "You have previously approved this post and cannot approve it again")
-        end
-
-        should "allow person Y to approve the post" do
-          @post.approve!(@user2)
-          assert(@post.valid?)
-        end
-      end
-
-      context "that has been reapproved" do
-        should "no longer be flagged or pending" do
-          post = FactoryGirl.create(:post)
-          post.flag!("bad")
-          post.approve!
-          assert(post.errors.empty?, post.errors.full_messages.join(", "))
-          post.reload
-          assert_equal(false, post.is_flagged?)
-        end
       end
     end
 
@@ -529,11 +402,6 @@ class PostTest < ActiveSupport::TestCase
         assert_raises(PostAppeal::Error) do
           @post.appeal!("wrong")
         end
-      end
-
-      should "not allow approval" do
-        approval = @post.approve!
-        assert_includes(approval.errors.full_messages, "Post is locked and cannot be approved")
       end
     end
   end
@@ -1838,17 +1706,6 @@ class PostTest < ActiveSupport::TestCase
 
       assert_tag_match([posts[0]], "user:#{users[0].name}")
       assert_tag_match([posts[1]], "-user:#{users[0].name}")
-    end
-
-    should "return posts for the approver:<name> metatag" do
-      users = FactoryGirl.create_list(:user, 2)
-      posts = users.map { |u| FactoryGirl.create(:post, approver: u) }
-      posts << FactoryGirl.create(:post, approver: nil)
-
-      assert_tag_match([posts[0]], "approver:#{users[0].name}")
-      assert_tag_match([posts[1]], "-approver:#{users[0].name}")
-      assert_tag_match([posts[1], posts[0]], "approver:any")
-      assert_tag_match([posts[2]], "approver:none")
     end
 
     should "return posts for the commenter:<name> metatag" do

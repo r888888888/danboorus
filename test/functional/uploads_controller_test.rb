@@ -93,17 +93,5 @@ class UploadsControllerTest < ActionController::TestCase
         end
       end
     end
-
-    context "update action" do
-      setup do
-        @upload = FactoryGirl.create(:jpg_upload)
-      end
-
-      should "process an unapproval" do
-        post :update, {:id => @upload.id}, {:user_id => @user.id}
-        @upload.reload
-        assert_equal("completed", @upload.status)
-      end
-    end
   end
 end

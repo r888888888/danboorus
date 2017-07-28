@@ -16,7 +16,6 @@
         <% if CurrentUser.is_moderator? %>
           <option value="lock-rating">Lock rating</option>
           <option value="lock-note">Lock notes</option>
-          <option value="approve">Approve</option>
         <% end %>
         <% if CurrentUser.is_admin? %>
           <option value="ban">Ban</option>
