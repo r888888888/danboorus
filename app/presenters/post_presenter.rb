@@ -104,58 +104,6 @@ class PostPresenter < Presenter
     PostPresenter.preview(@post)
   end
 
-  def humanized_tag_string
-    @post.tag_string.split(/ /).slice(0, 25).join(", ").tr("_", " ")
-  end
-
-  def humanized_essential_tag_string
-    @post.humanized_essential_tag_string
-  end
-
-  def categorized_tag_string
-    string = []
-
-    if @post.copyright_tags.any?
-      string << @post.copyright_tags.join(" ")
-    end
-
-    if @post.character_tags.any?
-      string << @post.character_tags.join(" ")
-    end
-
-    if @post.artist_tags.any?
-      string << @post.artist_tags.join(" ")
-    end
-
-    if @post.general_tags.any?
-      string << @post.general_tags.join(" ")
-    end
-
-    string.join(" \n")
-  end
-
-  def humanized_categorized_tag_string
-    string = []
-
-    if @post.copyright_tags.any?
-      string << @post.copyright_tags
-    end
-
-    if @post.character_tags.any?
-      string << @post.character_tags
-    end
-
-    if @post.artist_tags.any?
-      string << @post.artist_tags
-    end
-
-    if @post.general_tags.any?
-      string << @post.general_tags
-    end
-
-    string.flatten.slice(0, 25).join(", ").tr("_", " ")
-  end
-
   def image_html(template)
     return template.content_tag("p", "The artist requested removal of this image") if @post.is_banned? && !CurrentUser.user.is_gold?
     return template.content_tag("p", template.link_to("You need a gold account to see this image.", template.new_user_upgrade_path)) if !Danbooru.config.can_user_see_post?(CurrentUser.user, @post)

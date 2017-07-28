@@ -11,10 +11,6 @@
 
   Danbooru.RelatedTag.initialize_buttons = function() {
     this.common_bind("#related-tags-button", "");
-    this.common_bind("#related-general-button", "general");
-    this.common_bind("#related-artists-button", "artist");
-    this.common_bind("#related-characters-button", "character");
-    this.common_bind("#related-copyrights-button", "copyright");
   }
 
   Danbooru.RelatedTag.tags_include = function(name) {
@@ -26,7 +22,7 @@
     }
   }
 
-  Danbooru.RelatedTag.common_bind = function(button_name, category) {
+  Danbooru.RelatedTag.common_bind = function(button_name) {
     $(button_name).click(function(e) {
       var $dest = $("#related-tags");
       $dest.empty();
@@ -34,8 +30,7 @@
       $dest.append("<em>Loading...</em>");
       $("#related-tags-container").show();
       $.get("/related_tag.json", {
-        "query": Danbooru.RelatedTag.current_tag(),
-        "category": category
+        "query": Danbooru.RelatedTag.current_tag()
       }).success(Danbooru.RelatedTag.process_response);
       e.preventDefault();
     });
@@ -154,8 +149,8 @@
   }
 
   Danbooru.RelatedTag.build_recent_and_frequent = function($dest) {
-    var recent_tags = Danbooru.Cookie.get("recent_tags_with_categories");
-    var favorite_tags = Danbooru.Cookie.get("favorite_tags_with_categories");
+    var recent_tags = Danbooru.Cookie.get("recent_tags");
+    var favorite_tags = Danbooru.Cookie.get("favorite_tags");
     if (recent_tags.length) {
       $dest.append(this.build_html("recent", this.other_tags(recent_tags), "recent"));
     }

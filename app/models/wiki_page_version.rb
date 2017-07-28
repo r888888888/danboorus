@@ -35,10 +35,6 @@ class WikiPageVersion < ApplicationRecord
     title.tr("_", " ")
   end
 
-  def category_name
-    Tag.category_for(title)
-  end
-
   def other_names_array
     other_names.to_s.scan(/\S+/)
   end

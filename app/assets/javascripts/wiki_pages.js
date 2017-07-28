@@ -30,8 +30,7 @@
             resp($.map(data, function(wiki_page) {
               return {
                 label: wiki_page.title.replace(/_/g, " "),
-                value: wiki_page.title,
-                category: wiki_page.category_name
+                value: wiki_page.title
               };
             }));
           }
@@ -40,7 +39,7 @@
     });
 
     var render_wiki_page = function(list, wiki_page) {
-      var $link = $("<a/>").addClass("tag-type-" + wiki_page.category).text(wiki_page.label);
+      var $link = $("<a/>").text(wiki_page.label);
       return $("<li/>").data("item.autocomplete", wiki_page).append($link).appendTo(list);
     };
 

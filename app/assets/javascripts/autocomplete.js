@@ -90,7 +90,7 @@
     var $fields_multiple = $('[data-autocomplete="tag-query"], [data-autocomplete="tag-edit"]');
     var $fields_single = $('[data-autocomplete="tag"]');
 
-    var prefixes = "-|~|general:|gen:|artist:|art:|copyright:|copy:|co:|character:|char:|ch:";
+    var prefixes = "-|~";
     var metatags = "order|-status|status|-rating|rating|-locked|locked|child|filetype|-filetype|" +
       "-user|user|commenter|comm|noter|noteupdater|artcomm|-fav|fav|ordfav|" +
       "-pool|pool|ordpool|favgroup|-search|search";
@@ -242,7 +242,6 @@
             label: tag.name.replace(/_/g, " "),
             antecedent: tag.antecedent_name,
             value: tag.name,
-            category: tag.category,
             post_count: tag.post_count
           };
         });
@@ -285,9 +284,7 @@
       $link.append($post_count);
     }
 
-    if (item.type === "tag") {
-      $link.addClass("tag-type-" + item.category);
-    } else if (item.type === "user") {
+    if (item.type === "user") {
       var level_class = "user-" + item.level.toLowerCase();
       $link.addClass(level_class);
       if (Danbooru.meta("style-usernames") === "true") {

@@ -132,38 +132,6 @@ a.blacklisted-active {
   }
 }
 
-.category-0 a, a.tag-type-0, .ui-state-focus a.tag-type-0 {
-  color: $link_color;
-
-  &:hover {
-    color: $link_hover_color;
-  }
-}
-
-.category-1 a, a.tag-type-1, .ui-state-focus a.tag-type-1 {
-  color: #A00;
-
-  &:hover {
-    color: #B66;
-  }
-}
-
-.category-3 a, a.tag-type-3, .ui-state-focus a.tag-type-3 {
-  color: #A0A;
-
-  &:hover {
-    color: #B6B;
-  }
-}
-
-.category-4 a, a.tag-type-4, .ui-state-focus a.tag-type-4 {
-  color: #0A0;
-
-  &:hover {
-    color: #6B6;
-  }
-}
-
 .category-banned a, a.tag-type-banned,, .ui-state-focus a.tag-type-banned {
   color: black;
   background-color: red;

@@ -1,8 +1,8 @@
 class RelatedTagCalculator
   MAX_RESULTS = 25
 
-  def self.calculate_from_sample_to_array(tags, category_constraint = nil)
-    convert_hash_to_array(calculate_from_sample(tags, Danbooru.config.post_sample_size, category_constraint))
+  def self.calculate_from_sample_to_array(tags)
+    convert_hash_to_array(calculate_from_sample(tags, Danbooru.config.post_sample_size))
   end
 
   def self.calculate_from_posts_to_array(posts)
@@ -54,15 +54,10 @@ class RelatedTagCalculator
     convert_hash_to_array(similar_counts)
   end
 
-  def self.calculate_from_sample(tags, sample_size, category_constraint = nil, max_results = MAX_RESULTS)
+  def self.calculate_from_sample(tags, sample_size,  max_results = MAX_RESULTS)
     Post.with_timeout(5_000, [], {:tags => tags}) do
       sample = Post.sample(tags, sample_size)
       posts_with_tags = Post.from(sample).with_unflattened_tags
-
-      if category_constraint
-        posts_with_tags = posts_with_tags.joins("JOIN tags ON tags.name = tag").where("tags.category" => category_constraint)
-      end
-
       counts = posts_with_tags.order("count(*) DESC").limit(max_results).group("tag").count
       counts
     end

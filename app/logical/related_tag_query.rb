@@ -1,16 +1,13 @@
 class RelatedTagQuery
-  attr_reader :query, :category
+  attr_reader :query
 
-  def initialize(query, category = nil)
+  def initialize(query)
     @query = query.strip
-    @category = category
   end
 
   def tags
     if query =~ /\*/
       pattern_matching_tags
-    elsif category.present?
-      related_tags_by_category
     elsif query.present?
       related_tags
     else
@@ -27,18 +24,14 @@ class RelatedTagQuery
   end
 
   def tags_for_html
-    map_with_category_data(tags)
+    tags
   end
 
   def to_json
-    {:query => query, :category => category, :tags => map_with_category_data(tags), :wiki_page_tags => map_with_category_data(wiki_page_tags)}.to_json
+    {:query => query, :tags => tags, :wiki_page_tags => wiki_page_tags}.to_json
   end
 
 protected
-
-  def map_with_category_data(list_of_tag_names)
-    Tag.categories_for(list_of_tag_names).to_a
-  end
 
   def pattern_matching_tags
     Tag.name_matches(query).where("post_count > 0").order("post_count desc").limit(50).sort_by {|x| x.name}.map(&:name)
@@ -52,10 +45,6 @@ protected
     else
       []
     end
-  end
-
-  def related_tags_by_category
-    RelatedTagCalculator.calculate_from_sample_to_array(query, Tag.categories.value_for(category)).map(&:first)
   end
 
   def wiki_page

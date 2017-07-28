@@ -73,15 +73,11 @@
   <div class="input">
     <div>
       <%= f.label :tag_string, "Tags" %>
-      <%= f.text_area :tag_string, :size => "50x5", :value => post.presenter.categorized_tag_string + " ", :data => { :autocomplete => "tag-edit" } %>
+      <%= f.text_area :tag_string, :size => "50x5", :value => post.tag_string + " ", :data => { :autocomplete => "tag-edit" } %>
       <span id="open-edit-dialog" class="ui-icon ui-icon-arrow-1-ne" title="detach" style="display: none;"/>
     </div>
 
     <%= button_tag "Related tags", :id => "related-tags-button", :type => "button" %>
-    <%= button_tag "General", :id => "related-general-button", :type => "button" %>
-    <%= button_tag "Artists", :id => "related-artists-button", :type => "button" %>
-    <%= button_tag "Characters", :id => "related-characters-button", :type => "button" %>
-    <%= button_tag "Copyrights", :id => "related-copyrights-button", :type => "button" %>
   </div>
 
   <div class="input">

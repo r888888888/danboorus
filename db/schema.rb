@@ -1282,7 +1282,6 @@ ActiveRecord::Schema.define(:version => 20111101212358) do
     t.integer  "post_count",                           :default => 0, :null => false
     t.text     "related_tags"
     t.datetime "related_tags_updated_at"
-    t.integer  "category",                :limit => 2, :default => 0, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

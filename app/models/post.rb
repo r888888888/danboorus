@@ -546,30 +546,7 @@ class Post < ApplicationRecord
     end
 
     def set_tag_counts
-      self.tag_count = 0
-      self.tag_count_general = 0
-      self.tag_count_artist = 0
-      self.tag_count_copyright = 0
-      self.tag_count_character = 0
-
-      categories = Tag.categories_for(tag_array, :disable_caching => true)
-      categories.each_value do |category|
-        self.tag_count += 1
-
-        case category
-        when Tag.categories.general
-          self.tag_count_general += 1
-
-        when Tag.categories.artist
-          self.tag_count_artist += 1
-
-        when Tag.categories.copyright
-          self.tag_count_copyright += 1
-
-        when Tag.categories.character
-          self.tag_count_character += 1
-        end
-      end
+      self.tag_count = tag_array.size
     end
 
     def merge_old_changes
@@ -812,90 +789,8 @@ class Post < ApplicationRecord
       set_tag_string((tag_array - Array(tag)).join(" "))
     end
 
-    def tag_categories
-      @tag_categories ||= Tag.categories_for(tag_array)
-    end
-
-    def copyright_tags
-      typed_tags("copyright")
-    end
-
-    def character_tags
-      typed_tags("character")
-    end
-
-    def artist_tags
-      typed_tags("artist")
-    end
-
-    def artist_tags_excluding_hidden
-      artist_tags - %w(banned_artist)
-    end
-
-    def general_tags
-      typed_tags("general")
-    end
-
-    def typed_tags(name)
-      @typed_tags ||= {}
-      @typed_tags[name] ||= begin
-        tag_array.select do |tag|
-          tag_categories[tag] == Danbooru.config.tag_category_mapping[name]
-        end
-      end
-    end
-
     def expire_essential_tag_string_cache
       Cache.delete("hets-#{id}")
-    end
-
-    def humanized_essential_tag_string
-      @humanized_essential_tag_string ||= Cache.get("hets-#{id}", 1.hour.to_i) do
-        string = []
-
-        if character_tags.any?
-          chartags = character_tags.slice(0, 5)
-          if character_tags.length > 5
-            chartags << "others"
-          end
-          chartags = chartags.map do |tag|
-            tag.match(/^(.+?)(?:_\(.+\))?$/)[1]
-          end
-          string << chartags.to_sentence
-        end
-
-        if copyright_tags.any?
-          copytags = copyright_tags.slice(0, 5)
-          if copyright_tags.length > 5
-            copytags << "others"
-          end
-          copytags = copytags.to_sentence
-          string << (character_tags.any? ? "(#{copytags})" : copytags)
-        end
-
-        if artist_tags_excluding_hidden.any?
-          string << "drawn by"
-          string << artist_tags_excluding_hidden.to_sentence
-        end
-
-        string.empty? ? "##{id}" : string.join(" ").tr("_", " ")
-      end
-    end
-
-    def tag_string_copyright
-      copyright_tags.join(" ")
-    end
-
-    def tag_string_character
-      character_tags.join(" ")
-    end
-
-    def tag_string_artist
-      artist_tags.join(" ")
-    end
-
-    def tag_string_general
-      general_tags.join(" ")
     end
   end
 
@@ -1082,11 +977,7 @@ class Post < ApplicationRecord
     def fix_post_counts
       post.set_tag_counts
       post.update_columns(
-        :tag_count => post.tag_count,
-        :tag_count_general => post.tag_count_general,
-        :tag_count_artist => post.tag_count_artist,
-        :tag_count_copyright => post.tag_count_copyright,
-        :tag_count_character => post.tag_count_character
+        :tag_count => post.tag_count
       )
     end
 
@@ -1452,7 +1343,7 @@ class Post < ApplicationRecord
     end
 
     def method_attributes
-      list = super + [:uploader_name, :has_large, :tag_string_artist, :tag_string_character, :tag_string_copyright, :tag_string_general, :has_visible_children, :children_ids]
+      list = super + [:uploader_name, :has_large, :has_visible_children, :children_ids]
       if visible?
         list += [:file_url, :large_file_url, :preview_file_url]
       end
@@ -1657,7 +1548,6 @@ class Post < ApplicationRecord
     reset_tag_array_cache
     @pools = nil
     @favorite_groups = nil
-    @tag_categories = nil
     @typed_tags = nil
     self
   end

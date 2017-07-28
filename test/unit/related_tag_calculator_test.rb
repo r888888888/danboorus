@@ -44,16 +44,6 @@ class RelatedTagCalculatorTest < ActiveSupport::TestCase
       assert_equal({"aaa"=>2, "bbb"=>2, "ddd"=>1, "ccc"=>2}, RelatedTagCalculator.calculate_from_sample("aaa bbb", 10))
     end
 
-    should "calculate typed related tags for a tag" do
-      posts = []
-      posts << FactoryGirl.create(:post, :tag_string => "aaa bbb art:ccc copy:ddd")
-      posts << FactoryGirl.create(:post, :tag_string => "aaa bbb art:ccc")
-      posts << FactoryGirl.create(:post, :tag_string => "aaa bbb")
-
-      assert_equal({"ccc" => 2}, RelatedTagCalculator.calculate_from_sample("aaa", 10, Tag.categories.artist))
-      assert_equal({"ddd" => 1}, RelatedTagCalculator.calculate_from_sample("aaa", 10, Tag.categories.copyright))
-    end
-
     should "convert a hash into string format" do
       posts = []
       posts << FactoryGirl.create(:post, :tag_string => "aaa bbb ccc ddd")

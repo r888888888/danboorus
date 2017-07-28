@@ -113,7 +113,7 @@ class WikiPage < ApplicationRecord
     end
 
     def method_attributes
-      super + [:creator_name, :category_name]
+      super + [:creator_name]
     end
   end
 
@@ -178,10 +178,6 @@ class WikiPage < ApplicationRecord
 
   def creator_name
     User.id_to_name(creator_id)
-  end
-
-  def category_name
-    Tag.category_for(title)
   end
 
   def pretty_title

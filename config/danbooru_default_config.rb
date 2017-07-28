@@ -161,46 +161,6 @@ module Danbooru
       "albert"
     end
 
-    # Returns a hash mapping various tag categories to a numerical value.
-    # Be sure to update the reverse_tag_category_mapping also.
-    def tag_category_mapping
-      @tag_category_mapping ||= {
-        "general" => 0,
-        "gen" => 0,
-
-        "artist" => 1,
-        "art" => 1,
-
-        "copyright" => 3,
-        "copy" => 3,
-        "co" => 3,
-
-        "character" => 4,
-        "char" => 4,
-        "ch" => 4
-      }
-    end
-
-    def canonical_tag_category_mapping
-      @canonical_tag_category_mapping ||= {
-        "General" => 0,
-        "Artist" => 1,
-        "Copyright" => 3,
-        "Character" => 4
-      }
-    end
-
-    # Returns a hash maping numerical category values to their
-    # string equivalent. Be sure to update the tag_category_mapping also.
-    def reverse_tag_category_mapping
-      @reverse_tag_category_mapping ||= {
-        0 => "General",
-        1 => "Artist",
-        3 => "Copyright",
-        4 => "Character"
-      }
-    end
-
     # If enabled, users must verify their email addresses.
     def enable_email_verification?
       false

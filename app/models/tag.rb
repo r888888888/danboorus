@@ -2,7 +2,6 @@ class Tag < ApplicationRecord
   COSINE_SIMILARITY_RELATED_TAG_THRESHOLD = 1000
   METATAGS = "-user|user|commenter|comm|noter|noteupdater|artcomm|-pool|pool|ordpool|-favgroup|favgroup|-fav|fav|ordfav|md5|-rating|rating|-locked|locked|width|height|mpixels|ratio|score|favcount|filesize|source|-source|id|-id|date|age|order|limit|-status|status|tagcount|gentags|arttags|chartags|copytags|parent|-parent|child|pixiv_id|pixiv|search|upvote|downvote|filetype|-filetype|flagger|-flagger"
   SUBQUERY_METATAGS = "commenter|comm|noter|noteupdater|artcomm|flagger|-flagger"
-  attr_accessible :category, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :builder, :admin]
   attr_accessible :is_locked, :as => [:moderator, :admin]
   has_one :wiki_page, :foreign_key => "title", :primary_key => "name"
 
@@ -15,25 +14,8 @@ class Tag < ApplicationRecord
         "id" => id,
         "created_at" => created_at.try(:strftime, "%Y-%m-%d %H:%M"),
         "count" => post_count,
-        "type" => category,
         "ambiguous" => false
       }.to_json
-    end
-  end
-
-  class CategoryMapping
-    Danbooru.config.reverse_tag_category_mapping.each do |value, category|
-      define_method(category.downcase) do
-        value
-      end
-    end
-
-    def regexp
-      @regexp ||= Regexp.compile(Danbooru.config.tag_category_mapping.keys.sort_by {|x| -x.size}.join("|"))
-    end
-
-    def value_for(string)
-      Danbooru.config.tag_category_mapping[string.to_s.downcase] || 0
     end
   end
 
@@ -77,71 +59,6 @@ class Tag < ApplicationRecord
     end
   end
 
-  module CategoryMethods
-    module ClassMethods
-      def categories
-        @category_mapping ||= CategoryMapping.new
-      end
-
-      def select_category_for(tag_name)
-        select_value_sql("SELECT category FROM tags WHERE name = ?", tag_name).to_i
-      end
-
-      def category_for(tag_name, options = {})
-        if options[:disable_caching]
-          select_category_for(tag_name)
-        else
-          Cache.get("tc:#{Cache.sanitize(tag_name)}") do
-            select_category_for(tag_name)
-          end
-        end
-      end
-
-      def categories_for(tag_names, options = {})
-        if options[:disable_caching]
-          Array(tag_names).inject({}) do |hash, tag_name|
-            hash[tag_name] = select_category_for(tag_name)
-            hash
-          end
-        else
-          Cache.get_multi(Array(tag_names), "tc") do |tag|
-            Tag.select_category_for(tag)
-          end
-        end
-      end
-    end
-
-    def self.included(m)
-      m.extend(ClassMethods)
-    end
-
-    def category_name
-      Danbooru.config.reverse_tag_category_mapping[category]
-    end
-
-    def update_category_cache_for_all
-      update_category_cache
-      Danbooru.config.other_server_hosts.each do |host|
-        delay(:queue => host).update_category_cache
-      end
-      delay(:queue => "default").update_category_post_counts
-    end
-
-    def update_category_post_counts
-      Post.with_timeout(30_000, nil, {:tags => name}) do
-        Post.raw_tag_match(name).where("true /* Tag#update_category_post_counts */").find_each do |post|
-          post.reload
-          post.set_tag_counts
-          Post.where(:id => post.id).update_all(:tag_count => post.tag_count, :tag_count_general => post.tag_count_general, :tag_count_artist => post.tag_count_artist, :tag_count_copyright => post.tag_count_copyright, :tag_count_character => post.tag_count_character)
-        end
-      end
-    end
-
-    def update_category_cache
-      Cache.put("tc:#{Cache.sanitize(name)}", category, 1.hour)
-    end
-  end
-
   module StatisticsMethods
     def trending_count_limit
       10
@@ -167,12 +84,7 @@ class Tag < ApplicationRecord
           counts = counts.to_a.select {|x| x[1] > trending_count_limit}
           counts = counts.map do |tag_name, recent_count|
             tag = Tag.find_or_create_by_name(tag_name)
-            if tag.category == Danbooru.config.tag_category_mapping["artist"]
-              # we're not interested in artists in the trending list
-              [tag_name, 0]
-            else
-              [tag_name, recent_count.to_f / tag.post_count.to_f]
-            end
+            [tag_name, recent_count.to_f / tag.post_count.to_f]
           end
 
           counts.sort_by {|x| -x[1]}.slice(0, 25).map(&:first)
@@ -188,35 +100,13 @@ class Tag < ApplicationRecord
 
     def find_or_create_by_name(name, options = {})
       name = normalize_name(name)
-      category = nil
-
-      if name =~ /\A(#{categories.regexp}):(.+)\Z/
-        category = $1
-        name = $2
-      end
-
       tag = find_by_name(name)
 
       if tag
-        if category
-          category_id = categories.value_for(category)
-
-          # in case a category change hasn't propagated to this server yet,
-          # force an update the local cache. This may get overwritten in the
-          # next few lines if the category is changed.
-          tag.update_category_cache
-
-          if category_id != tag.category && !tag.is_locked? && (CurrentUser.is_builder? || tag.post_count <= 50)
-            tag.update_column(:category, category_id)
-            tag.update_category_cache_for_all
-          end
-        end
-
         tag
       else
         Tag.new.tap do |t|
           t.name = name
-          t.category = categories.value_for(category)
           t.save
         end
       end
@@ -603,18 +493,6 @@ class Tag < ApplicationRecord
           when "tagcount"
             q[:post_tag_count] = parse_helper($2)
 
-          when "gentags"
-            q[:general_tag_count] = parse_helper($2)
-
-          when "arttags"
-            q[:artist_tag_count] = parse_helper($2)
-
-          when "chartags"
-            q[:character_tag_count] = parse_helper($2)
-
-          when "copytags"
-            q[:copyright_tag_count] = parse_helper($2)
-
           when "parent"
             q[:parent] = $2.downcase
 
@@ -756,10 +634,6 @@ class Tag < ApplicationRecord
         q = q.where("tags.name in (?)", params[:name].split(","))
       end
 
-      if params[:category].present?
-        q = q.where("category = ?", params[:category])
-      end
-
       if params[:hide_empty].blank? || params[:hide_empty] != "no"
         q = q.where("post_count > 0")
       end
@@ -792,7 +666,6 @@ class Tag < ApplicationRecord
 
   include ApiMethods
   include CountMethods
-  include CategoryMethods
   extend StatisticsMethods
   extend NameMethods
   extend ParseMethods

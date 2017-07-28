@@ -4,7 +4,7 @@ class RelatedTagsController < ApplicationController
   before_filter :require_reportbooru_key, only: [:update]
 
   def show
-    @query = RelatedTagQuery.new(params[:query].to_s.downcase, params[:category])
+    @query = RelatedTagQuery.new(params[:query].to_s.downcase)
     respond_with(@query) do |format|
       format.json do
         render :json => @query.to_json

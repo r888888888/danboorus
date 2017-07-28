@@ -25,12 +25,6 @@ module DelayedJobsHelper
     when "Class#clear_cache_for"
       "<strong>expire tag alias cache</strong>"
 
-    when "Tag#update_category_cache"
-      "<strong>update tag category cache</strong>"
-
-    when "Tag#update_category_post_counts"
-      "<strong>update category post counts</strong>"
-
     when "Class#convert"
       "<strong>convert ugoira</strong>"
 
@@ -73,12 +67,6 @@ module DelayedJobsHelper
 
     when "Class#clear_cache_for"
       h(job.payload_object.args.flatten.join(" "))
-
-    when "Tag#update_category_cache"
-      h(job.payload_object.name)
-
-    when "Tag#update_category_post_counts"
-      h(job.payload_object.name)
 
     when "Class#process"
       h(job.payload_object.args.flatten.join(" "))

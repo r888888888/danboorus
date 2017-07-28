@@ -430,31 +430,6 @@ class PostTest < ActiveSupport::TestCase
         end
       end
 
-      context "with an artist tag that is then changed to copyright" do
-        setup do
-          CurrentUser.user = FactoryGirl.create(:builder_user)
-          @post = Post.find(@post.id)
-          @post.update(:tag_string => "art:abc")
-          @post = Post.find(@post.id)
-          @post.update(:tag_string => "copy:abc")
-          @post.reload
-        end
-
-        should "update the category of the tag" do
-          assert_equal(Tag.categories.copyright, Tag.find_by_name("abc").category)
-        end
-
-        should "update the category cache of the tag" do
-          assert_equal(Tag.categories.copyright, Cache.get("tc:abc"))
-        end
-
-        should "update the tag counts of the posts" do
-          assert_equal(0, @post.tag_count_artist)
-          assert_equal(1, @post.tag_count_copyright)
-          assert_equal(0, @post.tag_count_general)
-        end
-      end
-
       context "tagged with a valid tag" do
         subject { @post }
 
@@ -1013,22 +988,11 @@ class PostTest < ActiveSupport::TestCase
         end
 
         should "update its tag counts" do
-          artist_tag = FactoryGirl.create(:artist_tag)
-          copyright_tag = FactoryGirl.create(:copyright_tag)
-          general_tag = FactoryGirl.create(:tag)
-          new_post = FactoryGirl.create(:post, :tag_string => "#{artist_tag.name} #{copyright_tag.name} #{general_tag.name}")
-          assert_equal(1, new_post.tag_count_artist)
-          assert_equal(1, new_post.tag_count_copyright)
-          assert_equal(1, new_post.tag_count_general)
-          assert_equal(0, new_post.tag_count_character)
+          new_post = FactoryGirl.create(:post, :tag_string => "blah1 blah2 blah3")
           assert_equal(3, new_post.tag_count)
 
           new_post.tag_string = "babs"
           new_post.save
-          assert_equal(0, new_post.tag_count_artist)
-          assert_equal(0, new_post.tag_count_copyright)
-          assert_equal(1, new_post.tag_count_general)
-          assert_equal(0, new_post.tag_count_character)
           assert_equal(1, new_post.tag_count)
         end
 
@@ -1758,16 +1722,6 @@ class PostTest < ActiveSupport::TestCase
 
       assert_tag_match([png], "filetype:png")
       assert_tag_match([jpg], "-filetype:png")
-    end
-
-    should "return posts for the tagcount:<n> metatags" do
-      post = FactoryGirl.create(:post, tag_string: "artist:wokada copyright:vocaloid char:hatsune_miku twintails")
-
-      assert_tag_match([post], "tagcount:4")
-      assert_tag_match([post], "arttags:1")
-      assert_tag_match([post], "copytags:1")
-      assert_tag_match([post], "chartags:1")
-      assert_tag_match([post], "gentags:1")
     end
 
     should "return posts for the md5:<md5> metatag" do

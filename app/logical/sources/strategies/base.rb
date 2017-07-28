@@ -48,7 +48,6 @@ module Sources
 
       def translated_tags
         translated_tags = tags.map(&:first).flat_map(&method(:translate_tag)).uniq.sort
-        translated_tags.map { |tag| [tag.name, tag.category] }
       end
 
       # Given a tag from the source site, should return an array of corresponding Danbooru tags.
