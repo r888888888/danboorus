@@ -490,19 +490,6 @@
   };
 
   Danbooru.Post.initialize_saved_searches = function() {
-    $("#saved_search_labels").autocomplete({
-      source: function(req, resp) {
-        Danbooru.SavedSearch.labels(req.term).success(function(labels) {
-          resp(labels.map(function(label) {
-            return {
-              label: label.replace(/_/g, " "),
-              value: label
-            };
-          }));
-        });
-      }
-    });
-
     $("#save-search-dialog").dialog({
       width: 500,
       modal: true,
@@ -519,17 +506,12 @@
     });
 
     $("#save-search").click(function(e) {
-      if (Danbooru.meta("disable-labeled-saved-searches") === "false") {
-        $("#save-search-dialog").dialog("open");
-      } else {
-        $.post(
-          "/saved_searches.js",
-          {
-            "saved_search_tags": $("#tags").attr("value")
-          }
-        );
-      }
-
+      $.post(
+        "/saved_searches.js",
+        {
+          "saved_search_tags": $("#tags").attr("value")
+        }
+      );
       e.preventDefault();
     });
 

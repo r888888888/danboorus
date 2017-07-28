@@ -149,11 +149,7 @@ Rails.application.routes.draw do
     end
   end
   resource :related_tag, :only => [:show, :update]
-  resources :saved_searches, :except => [:show] do
-    collection do
-      get :labels
-    end
-  end
+  resources :saved_searches, :except => [:show]
   resource :session do
     collection do
       get :sign_out

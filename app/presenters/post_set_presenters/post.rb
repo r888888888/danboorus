@@ -15,7 +15,7 @@ module PostSetPresenters
       if post_set.is_pattern_search?
         pattern_tags
       elsif post_set.is_saved_search?
-        SavedSearch.labels_for(CurrentUser.user.id).map {|x| "search:#{x}"}
+        SavedSearch.queries_for(CurrentUser.user.id).slice(0, 25)
       elsif post_set.is_single_tag?
         related_tags_for_single(post_set.tag_string)
       elsif post_set.unordered_tag_array.size == 1
@@ -59,10 +59,6 @@ module PostSetPresenters
 
     def calculate_related_tags_from_post_set
       RelatedTagCalculator.calculate_from_posts_to_array(post_set.posts).map(&:first)
-    end
-
-    def saved_search_labels
-      SavedSearch.labels_for(CurrentUser.user.id).map {|x| "search:#{x}"}
     end
 
     def tag_list_html(template, options = {})

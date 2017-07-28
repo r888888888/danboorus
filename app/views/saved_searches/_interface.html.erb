@@ -2,13 +2,6 @@
   <div id="save-search-dialog" title="Save Search" style="display: none;">
     <%= form_tag(saved_searches_path, :class => "simple_form", :remote => true) do %>
       <%= hidden_field_tag "saved_search_tags", params[:tags] %>
-
-      <div class="input">
-        <label for="saved_search_labels">Label</label>
-        <%= text_field_tag "saved_search_labels", "" %>
-      </div>
-
-      <p><label><%= check_box_tag "saved_search_disable_labels" %> Disable labels</label></p>
     <% end %>
   </div>
 <% end %>

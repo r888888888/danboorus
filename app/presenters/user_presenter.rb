@@ -29,12 +29,12 @@ class UserPresenter
     ""
   end
 
-  def posts_for_saved_search_category(category)
+  def posts_for_saved_search
     if !SavedSearch.enabled?
       return Post.where("false")
     end
 
-    ids = SavedSearch.post_ids(CurrentUser.user.id, category)
+    ids = SavedSearch.post_ids(CurrentUser.user.id)
 
     if ids.any?
       arel = Post.where("id in (?)", ids.map(&:to_i)).order("id desc").limit(10)
@@ -151,14 +151,6 @@ class UserPresenter
     count = user.feedback.count
 
     template.link_to("#{count}", template.user_feedbacks_path(:search => {:user_id => user.id}))
-  end
-
-  def saved_search_labels
-    if CurrentUser.user.id == user.id
-      SavedSearch.labels_for(CurrentUser.user.id)
-    else
-      []
-    end
   end
   
   def previous_names(template)

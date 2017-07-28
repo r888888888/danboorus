@@ -1743,15 +1743,11 @@ class PostTest < ActiveSupport::TestCase
     should "return posts for a search:<category> metatag" do
       post1 = FactoryGirl.create(:post, tag_string: "aaa")
       post2 = FactoryGirl.create(:post, tag_string: "bbb")
-      FactoryGirl.create(:saved_search, query: "aaa", labels: ["zzz"], user: CurrentUser.user)
+      FactoryGirl.create(:saved_search, query: "aaa", user: CurrentUser.user)
       FactoryGirl.create(:saved_search, query: "bbb", user: CurrentUser.user)
 
-      SavedSearch.expects(:post_ids).with(CurrentUser.id, "zzz").returns([post1.id])
-      SavedSearch.expects(:post_ids).with(CurrentUser.id, "uncategorized").returns([post2.id])
       SavedSearch.expects(:post_ids).with(CurrentUser.id).returns([post1.id, post2.id])
 
-      assert_tag_match([post1], "search:zzz")
-      assert_tag_match([post2], "search:uncategorized")
       assert_tag_match([post2, post1], "search:all")
     end
 

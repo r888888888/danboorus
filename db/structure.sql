@@ -2190,8 +2190,7 @@ CREATE TABLE saved_searches (
     user_id integer,
     query text,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    labels text[] DEFAULT '{}'::text[] NOT NULL
+    updated_at timestamp without time zone
 );
 
 
@@ -5622,13 +5621,6 @@ CREATE INDEX index_posts_on_tags_index ON posts USING gin (tag_index);
 --
 
 CREATE INDEX index_posts_on_uploader_id ON posts USING btree (uploader_id);
-
-
---
--- Name: index_saved_searches_on_labels; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_saved_searches_on_labels ON saved_searches USING gin (labels);
 
 
 --

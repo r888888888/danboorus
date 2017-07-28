@@ -6,11 +6,4 @@ Danbooru.SavedSearch.initialize_all = function() {
   }
 }
 
-Danbooru.SavedSearch.labels = function(term) {
-  return $.getJSON("/saved_searches/labels", {
-    "search[label]": term + "*",
-    "limit": 10
-  });
-}
-
 $(Danbooru.SavedSearch.initialize_all);

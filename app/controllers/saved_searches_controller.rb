@@ -5,10 +5,6 @@ class SavedSearchesController < ApplicationController
   def index
     @saved_searches = saved_searches.order("id")
 
-    if params[:label]
-      @saved_searches = saved_searches.labeled(params[:label])
-    end
-
     respond_with(@saved_searches) do |format|
       format.xml do
         render :xml => @saved_searches.to_xml(:root => "saved-searches")
@@ -16,17 +12,8 @@ class SavedSearchesController < ApplicationController
     end
   end
 
-  def labels
-    @labels = SavedSearch.search_labels(CurrentUser.id, params[:search])
-    respond_with(@labels)
-  end
-
   def create
-    @saved_search = saved_searches.create(:query => params[:saved_search_tags], :label_string => params[:saved_search_labels])
-    if params[:saved_search_disable_labels]
-      CurrentUser.disable_categorized_saved_searches = true
-      CurrentUser.save
-    end
+    @saved_search = saved_searches.create(:query => params[:saved_search_tags])
     respond_with(@saved_search)
   end
 

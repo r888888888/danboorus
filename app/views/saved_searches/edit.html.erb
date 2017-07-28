@@ -6,7 +6,6 @@
 
     <%= simple_form_for(@saved_search) do |f| %>
       <%= f.input :query %>
-      <%= f.input :label_string, :label => "Labels", :hint => "A list of tags to help categorize this search. Space delimited." %>
       <%= f.button :submit, :value => "Submit", :data => { :disable_with => "Submitting..." } %>
     <% end %>
   </div>

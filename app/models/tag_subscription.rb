@@ -5,7 +5,7 @@ class TagSubscription < ApplicationRecord
 
   def migrate_to_saved_searches
     tag_query.split(/\r\n|\r|\n/).each do |query|
-      creator.saved_searches.create({query: query, labels: [name]}, without_protection: true)
+      creator.saved_searches.create({query: query}, without_protection: true)
     end
   end
 

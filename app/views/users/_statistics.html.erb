@@ -122,9 +122,7 @@
           <tr>
             <th>Saved Searches</th>
             <td>
-              <% SavedSearch.labels_for(CurrentUser.user.id).each do |label| %>
-                <%= link_to label, posts_path(tags: "search:#{label}") %>
-              <% end %>
+              <%= link_to "View", posts_path(tags: "search:all") %>
             </td>
           </tr>
         <% end %>
