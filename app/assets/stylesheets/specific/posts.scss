@@ -91,28 +91,6 @@ a.blacklisted-active {
   &.post-status-has-children.post-status-has-parent.post-status-deleted img {
     border-color: $preview_has_children_color $preview_deleted_color $preview_deleted_color $preview_has_parent_color;
   }
-
-
-  /* Pending and flagged posts have blue borders (except in the modqueue). */
-  &.post-status-pending:not(.mod-queue-preview) img,
-  &.post-status-flagged:not(.mod-queue-preview) img {
-    border-color: $preview_pending_color;
-  }
-
-  &.post-status-has-children.post-status-pending:not(.mod-queue-preview) img,
-  &.post-status-has-children.post-status-flagged:not(.mod-queue-preview) img {
-    border-color: $preview_has_children_color $preview_pending_color $preview_pending_color $preview_has_children_color;
-  }
-
-  &.post-status-has-parent.post-status-pending:not(.mod-queue-preview) img,
-  &.post-status-has-parent.post-status-flagged:not(.mod-queue-preview) img {
-    border-color: $preview_has_parent_color $preview_pending_color $preview_pending_color $preview_has_parent_color;
-  }
-
-  &.post-status-has-children.post-status-has-parent.post-status-pending:not(.mod-queue-preview) img,
-  &.post-status-has-children.post-status-has-parent.post-status-flagged:not(.mod-queue-preview) img {
-    border-color: $preview_has_children_color $preview_pending_color $preview_pending_color $preview_has_parent_color;
-  }
 }
 
 .post-preview.current-post {
@@ -130,11 +108,6 @@ a.blacklisted-active {
     margin: 0;
     padding: 5px 5px 10px;
   }
-}
-
-.category-banned a, a.tag-type-banned,, .ui-state-focus a.tag-type-banned {
-  color: black;
-  background-color: red;
 }
 
 .post-count {
@@ -203,24 +176,9 @@ div#c-posts {
       background: #FBFCD8;
     }
 
-    &.notice-pending {
-      border-color: #C0C0FC;
-      background: #D8D8FC;
-    }
-
-    &.notice-flagged {
-      border-color: #FCC0C0;
-      background: #FCD9D8;
-    }
-
     &.notice-deleted {
       border-color: #FF8C8C;
       background: #FFA7A5;
-    }
-
-    &.notice-appealed {
-      border-color: #C0ECFC;
-      background: #D8F2FC;
     }
 
     &.notice-resized {

@@ -7,15 +7,9 @@ en:
     attributes:
       post:
         updater_id: "You"
-      post_flag:
-        creator: "You"
-        creator_id: "You"
       post_vote:
         user: "You"
         user_id: "You"
-      post_appeal:
-        creator: "You"
-        creator_id: "You"
       comment:
         post: "You"
         post_id: "You"

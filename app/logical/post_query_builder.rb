@@ -118,16 +118,12 @@ class PostQueryBuilder
       relation = relation.where(["posts.md5 IN (?)", q[:md5]])
     end
 
-    if q[:status] == "flagged"
-      relation = relation.where("posts.is_flagged = TRUE")
-    elsif q[:status] == "deleted"
+    if q[:status] == "deleted"
       relation = relation.where("posts.is_deleted = TRUE")
     elsif q[:status] == "active"
       relation = relation.where("posts.is_deleted = FALSE")
     elsif q[:status] == "all" || q[:status] == "any"
       # do nothing
-    elsif q[:status_neg] == "flagged"
-      relation = relation.where("posts.is_flagged = FALSE")
     elsif q[:status_neg] == "deleted"
       relation = relation.where("posts.is_deleted = FALSE")
     elsif q[:status_neg] == "active"

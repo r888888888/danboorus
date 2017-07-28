@@ -6,7 +6,7 @@ class PostPresenter < Presenter
       return "Expunged"
     end
 
-    if !options[:show_deleted] && post.is_deleted? && options[:tags] !~ /status:(?:all|any|deleted|banned)/ && !options[:raw]
+    if !options[:show_deleted] && post.is_deleted? && options[:tags] !~ /status:(?:all|any|deleted)/ && !options[:raw]
       return ""
     end
 
@@ -57,7 +57,6 @@ class PostPresenter < Presenter
   def self.preview_class(post, description = nil)
     klass = "post-preview"
     klass << " pooled" if description
-    klass << " post-status-flagged" if post.is_flagged?
     klass << " post-status-deleted" if post.is_deleted?
     klass << " post-status-has-parent" if post.parent_id
     klass << " post-status-has-children" if post.has_visible_children?
@@ -105,7 +104,6 @@ class PostPresenter < Presenter
   end
 
   def image_html(template)
-    return template.content_tag("p", "The artist requested removal of this image") if @post.is_banned? && !CurrentUser.user.is_gold?
     return template.content_tag("p", template.link_to("You need a gold account to see this image.", template.new_user_upgrade_path)) if !Danbooru.config.can_user_see_post?(CurrentUser.user, @post)
     return template.content_tag("p", "This image is unavailable") if !@post.visible?
 

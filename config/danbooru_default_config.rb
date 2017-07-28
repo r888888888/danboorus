@@ -176,14 +176,6 @@ module Danbooru
       "help:upload_notice"
     end
 
-    def flag_notice_wiki_page
-      "help:flag_notice"
-    end
-
-    def appeal_notice_wiki_page
-      "help:appeal_notice"
-    end
-
     def replacement_notice_wiki_page
       "help:replacement_notice"
     end
@@ -211,10 +203,6 @@ module Danbooru
 
     def select_posts_visible_to_user(user, posts)
       posts.select {|x| can_user_see_post?(user, x)}
-    end
-
-    def max_appeals_per_day
-      1
     end
 
     # Counting every post is typically expensive because it involves a sequential scan on

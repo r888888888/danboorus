@@ -25,13 +25,7 @@
 
     <% if post.is_deleted? %>
       Deleted
-    <% end %>
-
-    <% if post.is_flagged? %>
-      Flagged
-    <% end %>
-
-    <% if !post.is_deleted? %>
+    <% else %>
       Active
     <% end %>
   </li>

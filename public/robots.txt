@@ -21,8 +21,6 @@ Disallow: /notes
 Disallow: /pool_elements
 Disallow: /pool_orders
 Disallow: /pool_versions
-Disallow: /post_appeals
-Disallow: /post_flags
 Disallow: /post_sets
 Disallow: /post_versions
 Disallow: /post_votes

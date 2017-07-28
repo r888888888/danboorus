@@ -146,8 +146,6 @@ Rails.application.routes.draw do
       put :mark_as_translated
     end
   end
-  resources :post_appeals
-  resources :post_flags
   resources :post_versions, :only => [:index, :search] do
     member do
       put :undo

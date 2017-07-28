@@ -118,26 +118,6 @@ class PostTest < ActiveSupport::TestCase
         end
       end
 
-      context "with the banned_artist tag" do
-        should "also ban the post" do
-          post = FactoryGirl.create(:post, :tag_string => "banned_artist")
-          post.delete!("test")
-          post.reload
-          assert(post.is_banned?)
-        end
-      end
-
-      context "that is still in cooldown after being flagged" do
-        should "succeed" do
-          post = FactoryGirl.create(:post)
-          post.flag!("test flag")
-          post.delete!("test deletion")
-
-          assert_equal(true, post.is_deleted)
-          assert_equal(2, post.flags.size)
-        end
-      end
-
       should "update the fast count" do
         Danbooru.config.stubs(:estimate_post_counts).returns(false)
         post = FactoryGirl.create(:post, :tag_string => "aaa")
@@ -376,32 +356,12 @@ class PostTest < ActiveSupport::TestCase
           assert_equal("undeleted post ##{@post.id}", ModAction.last.description)
         end
       end
-
-      should "be appealed" do
-        assert_difference("PostAppeal.count", 1) do
-          @post.appeal!("xxx")
-        end
-        assert(@post.is_deleted?, "Post should still be deleted")
-        assert_equal(1, @post.appeals.count)
-      end
     end
 
     context "A status locked post" do
       setup do
         @post = FactoryGirl.create(:post)
         @post.update_attributes({:is_status_locked => true}, :as => :admin)
-      end
-
-      should "not allow new flags" do
-        assert_raises(PostFlag::Error) do
-          @post.flag!("wrong")
-        end
-      end
-
-      should "not allow new appeals" do
-        assert_raises(PostAppeal::Error) do
-          @post.appeal!("wrong")
-        end
       end
     end
   end
@@ -1701,19 +1661,16 @@ class PostTest < ActiveSupport::TestCase
     end
 
     should "return posts for the status:<type> metatag" do
-      flagged = FactoryGirl.create(:post, is_flagged: true)
+      active = FactoryGirl.create(:post)
       deleted = FactoryGirl.create(:post, is_deleted: true)
-      all = [banned, deleted, flagged, pending]
 
-      assert_tag_match([flagged], "status:flagged")
       assert_tag_match([deleted], "status:deleted")
-      assert_tag_match([flagged], "status:active")
-      assert_tag_match(all, "status:any")
-      assert_tag_match(all, "status:all")
+      assert_tag_match([active], "status:active")
+      assert_tag_match([deleted, active], "status:any")
+      assert_tag_match([deleted, active], "status:all")
 
-      assert_tag_match(all - [flagged], "-status:flagged")
-      assert_tag_match(all - [deleted], "-status:deleted")
-      assert_tag_match(all - [flagged], "-status:active")
+      assert_tag_match([active], "-status:deleted")
+      assert_tag_match([deleted], "-status:active")
     end
 
     should "return posts for the filetype:<ext> metatag" do

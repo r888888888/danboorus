@@ -33,8 +33,6 @@ class Post < ApplicationRecord
   belongs_to :parent, :class_name => "Post"
   has_one :upload, :dependent => :destroy
   has_one :pixiv_ugoira_frame_data, :class_name => "PixivUgoiraFrameData", :dependent => :destroy
-  has_many :flags, :class_name => "PostFlag", :dependent => :destroy
-  has_many :appeals, :class_name => "PostAppeal", :dependent => :destroy
   has_many :votes, :class_name => "PostVote", :dependent => :destroy
   has_many :notes, :dependent => :destroy
   has_many :comments, lambda {includes(:creator, :updater).order("comments.id")}, :dependent => :destroy
@@ -326,7 +324,6 @@ class Post < ApplicationRecord
 
     def status_flags
       flags = []
-      flags << "flagged" if is_flagged?
       flags << "deleted" if is_deleted?
       flags.join(" ")
     end
@@ -1210,16 +1207,6 @@ class Post < ApplicationRecord
       end
     end
 
-    def ban!
-      update_column(:is_banned, true)
-      ModAction.log("banned post ##{id}")
-    end
-
-    def unban!
-      update_column(:is_banned, false)
-      ModAction.log("unbanned post ##{id}")
-    end
-
     def delete!(reason, options = {})
       if is_status_locked?
         self.errors.add(:is_status_locked, "; cannot delete post")
@@ -1230,11 +1217,8 @@ class Post < ApplicationRecord
         flag!(reason, is_deletion: true)
 
         self.is_deleted = true
-        self.is_flagged = false
-        self.is_banned = true if options[:ban] || has_tag?("banned_artist")
         update_columns(
-          :is_deleted => is_deleted,
-          :is_flagged => is_flagged
+          :is_deleted => is_deleted
         )
         give_favorites_to_parent if options[:move_favorites]
         update_parent_on_save
@@ -1393,8 +1377,6 @@ class Post < ApplicationRecord
     def status
       if is_deleted?
         "deleted"
-      elsif is_flagged?
-        "flagged"
       else
         "active"
       end
@@ -1425,14 +1407,6 @@ class Post < ApplicationRecord
     # unflattens the tag_string into one tag per row.
     def with_unflattened_tags
       joins("CROSS JOIN unnest(string_to_array(tag_string, ' ')) AS tag")
-    end
-
-    def flagged
-      where("is_flagged = ?", true)
-    end
-
-    def pending_or_flagged
-      where("(is_flagged = ? and id in (select _.post_id from post_flags _ where _.created_at >= ?))", true, 1.week.ago)
     end
 
     def undeleted
@@ -1539,7 +1513,7 @@ class Post < ApplicationRecord
     return false if !Danbooru.config.can_user_see_post?(CurrentUser.user, self)
     return false if CurrentUser.safe_mode? && rating != "s"
     return false if CurrentUser.safe_mode? && has_tag?("toddlercon|toddler|diaper|tentacle|rape|bestiality|beastiality|lolita|loli|nude|shota|pussy|penis")
-    return false if is_banned? && !CurrentUser.is_gold?
+    return false if is_deleted? && !CurrentUser.is_moderator?
     return true
   end
 

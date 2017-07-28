@@ -617,7 +617,7 @@ class User < ApplicationRecord
       [
         :wiki_page_version_count, :pool_version_count,
         :forum_post_count, :comment_count, :favorite_group_count,
-        :appeal_count, :flag_count, :positive_feedback_count,
+        :positive_feedback_count,
         :neutral_feedback_count, :negative_feedback_count, :upload_limit,
         :max_upload_limit
       ]

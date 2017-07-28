@@ -91,30 +91,6 @@ module Moderator
             assert_response :success
           end
         end
-
-        context "for flags" do
-          setup do
-            @post = FactoryGirl.create(:post)
-            @post.flag!("blah")
-          end
-
-          should "render" do
-            get :show, {}, {:user_id => @admin.id}
-            assert_response :success
-          end
-        end
-
-        context "for appeals" do
-          setup do
-            @post = FactoryGirl.create(:post, :is_deleted => true)
-            @post.appeal!("blah")
-          end
-
-          should "render" do
-            get :show, {}, {:user_id => @admin.id}
-            assert_response :success
-          end
-        end
       end
     end
   end

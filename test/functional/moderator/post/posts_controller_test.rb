@@ -28,12 +28,6 @@ module Moderator
             post :delete, {:id => @post.id, :reason => "xxx", :format => "js", :commit => "Delete"}, {:user_id => @admin.id}
             assert(@post.reload.is_deleted?)
           end
-
-          should "work even if the deleter has flagged the post previously" do
-            PostFlag.create(:post => @post, :reason => "aaa", :is_resolved => false)
-            post :delete, {:id => @post.id, :reason => "xxx", :format => "js", :commit => "Delete"}, {:user_id => @admin.id}
-            assert(@post.reload.is_deleted?)
-          end
         end
 
         context "undelete action" do

@@ -25,7 +25,6 @@
           <ul>
             <li><%= fast_link_to "Tags", post_versions_path(:search => {:post_id => @post.id}) %></li>
             <li><%= fast_link_to "Notes", note_versions_path(:search => {:post_id => @post.id}) %></li>
-            <li><%= fast_link_to "Flags & Appeals", post_events_path(@post.id) %></li>
             <li><%= fast_link_to "Replacements", post_replacements_path(:search => {:post_id => @post.id}) %></li>
           </ul>
         </section>
@@ -107,14 +106,6 @@
     </section>
   </div>
 
-  <div id="flag-dialog" class="prose" title="Flag post" style="display: none;">
-    <%= render "post_flags/new", post_flag: @post.flags.new %>
-  </div>
-
-  <div id="appeal-dialog" class="prose" title="Appeal post" style="display: none;">
-    <%= render "post_appeals/new", post_appeal: @post.appeals.new %>
-  </div>
-
   <div id="replace-image-dialog" class="prose" title="Replace image" style="display: none;">
     <%= render "post_replacements/new", post_replacement: @post.replacements.new %>
   </div>
@@ -143,7 +134,6 @@
   <meta name="pools" content="<%= @post.pool_string %>">
   <meta name="post-id" content="<%= @post.id %>">
   <meta name="post-is-deleted" content="<%= @post.is_deleted? %>">
-  <meta name="post-is-flagged" content="<%= @post.is_flagged? %>">
   <meta name="config-large-width" content="<%= Danbooru.config.large_image_width %>">
   <meta name="post-has-embedded-notes" content="<%= @post.has_embedded_notes? %>">
   <meta name="always-resize-images" content="<%= CurrentUser.user.always_resize_images? %>">

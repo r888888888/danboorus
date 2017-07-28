@@ -22,12 +22,10 @@ $basefont: 100%;
 $preview_has_children_color: #0F0;
 $preview_has_parent_color: #CC0;
 $preview_deleted_color: #000;
-$preview_pending_color: #00F;
-$preview_flagged_color: #F00;
 $preview_sample_warning_color:  hsl(0,  100%, 90%); // light red
 $preview_quality_warning_color: hsl(50, 100%, 90%); // light yellow
 
-$note_highlight_color: $preview_pending_color;
+$note_highlight_color: #00F;
 
 $error_color: hsl(0, 100%, 95%); // light red
 $success_color: hsl(120, 100%, 95%); // light green

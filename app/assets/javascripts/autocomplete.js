@@ -314,7 +314,7 @@
       "random"
     ],
     status: [
-      "any", "deleted", "active", "pending", "flagged", "banned"
+      "any", "deleted", "active"
     ],
     rating: [
       "safe", "questionable", "explicit"
