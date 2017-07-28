@@ -125,9 +125,7 @@ Rails.application.routes.draw do
       get :diff
     end
   end
-  resources :post_replacements, :only => [:index, :new, :create]
   resources :posts do
-    resources :replacements, :only => [:index, :new, :create], :controller => "post_replacements"
     resource :votes, :controller => "post_votes", :only => [:create, :destroy]
     collection do
       get :random

@@ -38,7 +38,6 @@ class Post < ApplicationRecord
   has_many :comments, lambda {includes(:creator, :updater).order("comments.id")}, :dependent => :destroy
   has_many :children, lambda {order("posts.id")}, :class_name => "Post", :foreign_key => "parent_id"
   has_many :favorites
-  has_many :replacements, class_name: "PostReplacement", :dependent => :destroy
 
   if PostArchive.enabled?
     has_many :versions, lambda {order("post_versions.updated_at ASC")}, :class_name => "PostArchive", :dependent => :destroy
@@ -1148,14 +1147,6 @@ class Post < ApplicationRecord
       save
       Post.expire_cache_for_all(tag_array)
       ModAction.log("undeleted post ##{id}")
-    end
-
-    def replace!(params)
-      transaction do
-        replacement = replacements.create(params)
-        replacement.process!
-        replacement
-      end
     end
   end
 

@@ -2071,22 +2071,6 @@ ALTER SEQUENCE pools_id_seq OWNED BY pools.id;
 
 
 --
--- Name: post_replacements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE post_replacements_id_seq OWNED BY post_replacements.id;
-
-
---
--- Name: post_updates; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE UNLOGGED TABLE post_updates (
-    post_id integer
-);
-
-
---
 -- Name: post_votes; Type: TABLE; Schema: public; Owner: -
 --
 

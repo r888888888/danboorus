@@ -175,10 +175,6 @@ module Danbooru
       "help:upload_notice"
     end
 
-    def replacement_notice_wiki_page
-      "help:replacement_notice"
-    end
-
     # The number of posts displayed per page.
     def posts_per_page
       20
@@ -284,11 +280,6 @@ module Danbooru
 
     def enable_dimension_autotagging
       true
-    end
-
-    # Should return true if the given tag should be suggested for removal in the post replacement dialog box.
-    def remove_tag_after_replacement?(tag)
-      tag =~ /replaceme|.*_sample|resized|upscaled|downscaled|md5_mismatch|jpeg_artifacts/i
     end
 
     def shared_dir_path
