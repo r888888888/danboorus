@@ -453,13 +453,6 @@ module Danbooru
     def listbooru_auth_key
     end
 
-    # iqdbs options - see https://github.com/r888888888/iqdbs
-    def iqdbs_auth_key
-    end
-
-    def iqdbs_server
-    end
-
     # google api options
     def google_api_project
     end
@@ -506,9 +499,6 @@ module Danbooru
     end
 
     def aws_sqs_region
-    end
-
-    def aws_sqs_iqdb_url
     end
 
     def aws_sqs_archives_url

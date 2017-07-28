@@ -31,12 +31,6 @@ module DelayedJobsHelper
     when "Tag#update_category_post_counts"
       "<strong>update category post counts</strong>"
 
-    when "Class#remove_iqdb"
-      "<strong>remove from iqdb</strong>"
-
-    when "Post#update_iqdb"
-      "<strong>update iqdb</strong>"
-
     when "Class#convert"
       "<strong>convert ugoira</strong>"
 
@@ -86,11 +80,8 @@ module DelayedJobsHelper
     when "Tag#update_category_post_counts"
       h(job.payload_object.name)
 
-    when "Class#process", "Class#remove_iqdb"
+    when "Class#process"
       h(job.payload_object.args.flatten.join(" "))
-
-    when "Post#update_iqdb"
-      h(job.payload_object.id)
 
     when "Class#convert"
       h(job.payload_object.args[0])
