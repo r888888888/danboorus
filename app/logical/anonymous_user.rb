@@ -68,10 +68,6 @@ class AnonymousUser
     true
   end
 
-  def tag_subscriptions
-    []
-  end
-
   def upload_limit
     0
   end
