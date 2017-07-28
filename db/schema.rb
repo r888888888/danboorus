@@ -1216,16 +1216,6 @@ ActiveRecord::Schema.define(:version => 20111101212358) do
   add_index "post_appeals", ["creator_ip_addr"], :name => "index_post_appeals_on_creator_ip_addr"
   add_index "post_appeals", ["post_id"], :name => "index_post_appeals_on_post_id"
 
-  create_table "post_disapprovals", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.integer  "post_id",    :null => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "post_disapprovals", ["post_id"], :name => "index_post_disapprovals_on_post_id"
-  add_index "post_disapprovals", ["user_id"], :name => "index_post_disapprovals_on_user_id"
-
   create_table "post_flags", :force => true do |t|
     t.datetime "created_at",                                              :null => false
     t.integer  "post_id",                                                 :null => false
