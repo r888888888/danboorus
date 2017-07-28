@@ -1323,12 +1323,12 @@ class PostTest < ActiveSupport::TestCase
         @child = FactoryGirl.create(:post, parent: @parent)
 
         @gold1 = FactoryGirl.create(:gold_user)
-        @supervoter1 = FactoryGirl.create(:user, is_super_voter: true)
+        @voter = FactoryGirl.create(:user)
 
         @child.add_favorite!(@user1)
         @child.add_favorite!(@gold1)
-        @child.add_favorite!(@supervoter1)
-        @parent.add_favorite!(@supervoter1)
+        @child.add_favorite!(@voter)
+        @parent.add_favorite!(@voter)
 
         @child.give_favorites_to_parent
         @child.reload
@@ -1347,7 +1347,7 @@ class PostTest < ActiveSupport::TestCase
 
       should "create a vote for each user who can vote" do
         assert(@parent.votes.where(user: @gold1).exists?)
-        assert(@parent.votes.where(user: @supervoter1).exists?)
+        assert(@parent.votes.where(user: @voter).exists?)
         assert_equal(4, @parent.score)
       end
     end
@@ -1882,24 +1882,6 @@ class PostTest < ActiveSupport::TestCase
   end
 
   context "Voting:" do
-    context "with a super voter" do
-      setup do
-        @user = FactoryGirl.create(:user)
-        FactoryGirl.create(:super_voter, user: @user)
-        @post = FactoryGirl.create(:post)
-      end
-      
-      should "account for magnitude" do
-        CurrentUser.scoped(@user, "127.0.0.1") do
-          assert_nothing_raised {@post.vote!("up")}
-          assert_raises(PostVote::Error) {@post.vote!("up")}
-          @post.reload
-          assert_equal(1, PostVote.count)
-          assert_equal(SuperVoter::MAGNITUDE, @post.score)
-        end
-      end
-    end
-
     should "not allow members to vote" do
       @user = FactoryGirl.create(:user)
       @post = FactoryGirl.create(:post)

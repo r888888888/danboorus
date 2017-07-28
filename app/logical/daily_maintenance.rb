@@ -8,7 +8,6 @@ class DailyMaintenance
     CommentVote.prune!
     ForumSubscription.process_all!
     Tag.clean_up_negative_post_counts!
-    SuperVoter.init!
     TokenBucket.prune!
   end
 end
