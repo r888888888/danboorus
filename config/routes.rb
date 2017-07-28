@@ -2,7 +2,6 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :users, :only => [:edit, :update]
-    resource  :alias_and_implication_import, :only => [:new, :create]
   end
   namespace :moderator do
     resource :bulk_revert, :only => [:new, :create]
@@ -68,11 +67,6 @@ Rails.application.routes.draw do
     end
   end
   resources :bans
-  resources :bulk_update_requests do
-    member do
-      post :approve
-    end
-  end
   resources :comments do
     resource :votes, :controller => "comment_votes", :only => [:create, :destroy]
     collection do

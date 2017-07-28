@@ -14,7 +14,6 @@
 
         <div>
           <%= render "artists/summary", artist: artist %>
-          <%= artist_alias_and_implication_list(artist) %>
 
           <p class="links">
             <%= link_to "View wiki", artist.wiki_page %> |
@@ -31,7 +30,6 @@
         <% end %>
 
         <%= format_text(wiki_page.presenter.excerpt) %>
-        <%= wiki_page_alias_and_implication_list(wiki_page) %>
 
         <p class="links">
           <%= link_to "View wiki", wiki_page_path(wiki_page.id) %>
@@ -65,8 +63,6 @@
   <% else %>
     <% if post_set.tag_string.present? %>
       <p>There is currently no wiki page for the tag "<%= post_set.tag_string %>". You can <%= link_to "create one", new_wiki_page_path(:wiki_page => {:title => post_set.tag_string}) %>.</p>
-
-      <%= alias_and_implication_list(post_set.tag) %>
     <% end %>
   <% end %>
 </div>

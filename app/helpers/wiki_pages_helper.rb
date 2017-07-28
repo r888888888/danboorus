@@ -1,8 +1,4 @@
 module WikiPagesHelper
-  def wiki_page_alias_and_implication_list(wiki_page)
-    alias_and_implication_list(wiki_page.tag)
-  end
-
   def wiki_page_post_previews(wiki_page)
     html = '<div id="wiki-page-posts">'
 

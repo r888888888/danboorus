@@ -113,7 +113,6 @@
         <li><h1>Admin</h1></li>
         <li><%= link_to("Mod Actions", mod_actions_path) %></li>
         <li><%= link_to("Jobs", delayed_jobs_path) %></li>
-        <li><%= link_to("Bulk Update Requests", bulk_update_requests_path) %></li>
         <li><%= link_to("Janitor Trials", janitor_trials_path) %></li>
 
         <% if CurrentUser.is_moderator? %>
@@ -123,7 +122,6 @@
 
         <% if CurrentUser.is_admin? %>
           <li><%= link_to("News Updates", news_updates_path) %></li>
-          <li><%= link_to("Alias & Implication Import", new_admin_alias_and_implication_import_path) %></li>
           <li><%= link_to("Admin Dashboard", admin_dashboard_path) %></li>
         <% end %>
       </ul>
