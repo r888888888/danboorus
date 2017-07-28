@@ -89,7 +89,6 @@ class Ban < ApplicationRecord
   def update_feedback
     if user
       feedback = user.feedback.build
-      feedback.category = "negative"
       feedback.body = "Banned: #{reason}"
       feedback.creator_id = banner_id
       feedback.save

@@ -4,9 +4,8 @@ class UserFeedback < ApplicationRecord
   belongs_to :creator, :class_name => "User"
   before_validation :initialize_creator, :on => :create
   attr_accessor :disable_dmail_notification
-  attr_accessible :body, :user_id, :category, :user_name, :disable_dmail_notification
-  validates_presence_of :user, :creator, :body, :category
-  validates_inclusion_of :category, :in => %w(positive negative neutral)
+  attr_accessible :body, :user_id, :user_name, :disable_dmail_notification
+  validates_presence_of :user, :creator, :body
   validate :creator_is_gold
   validate :user_is_not_creator
   after_create :create_dmail
@@ -18,18 +17,6 @@ class UserFeedback < ApplicationRecord
   end
 
   module SearchMethods
-    def positive
-      where("category = ?", "positive")
-    end
-
-    def neutral
-      where("category = ?", "neutral")
-    end
-
-    def negative
-      where("category = ?", "negative")
-    end
-
     def for_user(user_id)
       where("user_id = ?", user_id)
     end
@@ -63,10 +50,6 @@ class UserFeedback < ApplicationRecord
         q = q.where("creator_id = (select _.id from users _ where lower(_.name) = ?)", params[:creator_name].mb_chars.downcase.strip.tr(" ", "_"))
       end
 
-      if params[:category].present?
-        q = q.where("category = ?", params[:category])
-      end
-
       q
     end
   end
@@ -91,7 +74,7 @@ class UserFeedback < ApplicationRecord
 
   def create_dmail
     unless disable_dmail_notification
-      body = %{#{creator_name} created a "#{category} record":/user_feedbacks?search[user_id]=#{user_id} for your account. #{body}}
+      body = %{#{creator_name} created a record":/user_feedbacks?search[user_id]=#{user_id} for your account. #{body}}
       Dmail.create_automated(:to_id => user_id, :title => "Your user record has been updated", :body => body)
     end
   end

@@ -12,7 +12,7 @@
     <% @dashboard.comments.each do |activity| %>
       <tr>
         <td><%= link_to activity.comment.body, post_path(activity.comment.post_id) %></td>
-        <td><%= mod_link_to_user(activity.comment.creator, :negative) %></td>
+        <td><%= mod_link_to_user(activity.comment.creator) %></td>
         <td><%= activity.count %></td>
         <td><%= activity.comment.score %></td>
       </tr>

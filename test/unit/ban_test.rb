@@ -106,7 +106,6 @@ class BanTest < ActiveSupport::TestCase
         FactoryGirl.create(:ban, :user => user, :banner => admin)
       end
       assert(!user.feedback.empty?)
-      assert_equal("negative", user.feedback.last.category)
     end
   end
 

@@ -18,7 +18,7 @@ class UserTest < ActiveSupport::TestCase
         CurrentUser.user = FactoryGirl.create(:moderator_user)
       end
 
-      should "create a neutral feedback" do
+      should "create a feedback" do
         assert_difference("UserFeedback.count") do
           @user.promote_to!(User::Levels::GOLD)
         end

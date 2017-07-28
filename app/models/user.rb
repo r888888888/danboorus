@@ -602,8 +602,7 @@ class User < ApplicationRecord
     def full_attributes
       [
         :wiki_page_version_count, :pool_version_count,
-        :forum_post_count, :comment_count, :positive_feedback_count,
-        :neutral_feedback_count, :negative_feedback_count, :upload_limit,
+        :forum_post_count, :comment_count, :upload_limit,
         :max_upload_limit
       ]
     end
@@ -638,18 +637,6 @@ class User < ApplicationRecord
 
     def flag_count
       PostFlag.for_creator(id).count
-    end
-
-    def positive_feedback_count
-      feedback.positive.count
-    end
-
-    def neutral_feedback_count
-      feedback.neutral.count
-    end
-
-    def negative_feedback_count
-      feedback.negative.count
     end
   end
 

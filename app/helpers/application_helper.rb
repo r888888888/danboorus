@@ -117,20 +117,10 @@ module ApplicationHelper
     link_to(name, user_path(user), :class => user_class)
   end
 
-  def mod_link_to_user(user, positive_or_negative)
+  def mod_link_to_user(user)
     html = ""
     html << link_to_user(user)
-
-    if positive_or_negative == :positive
-      html << " [" + link_to("+", new_user_feedback_path(:user_feedback => {:category => "positive", :user_id => user.id})) + "]"
-
-      unless user.is_gold?
-        html << " [" + link_to("invite", new_moderator_invitation_path(:invitation => {:name => user.name, :can_upload_free => "1"})) + "]"
-      end
-    else
-      html << " [" + link_to("&ndash;".html_safe, new_user_feedback_path(:user_feedback => {:category => "negative", :user_id => user.id})) + "]"
-    end
-
+    html << " [" + link_to("+", new_user_feedback_path(:user_feedback => {:user_id => user.id})) + "]"
     html.html_safe
   end
 

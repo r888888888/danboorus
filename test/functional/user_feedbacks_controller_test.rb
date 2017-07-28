@@ -54,7 +54,7 @@ class UserFeedbacksControllerTest < ActionController::TestCase
     context "create action" do
       should "create a new feedback" do
         assert_difference("UserFeedback.count", 1) do
-          post :create, {:user_feedback => {:category => "positive", :user_name => @user.name, :body => "xxx"}}, {:user_id => @critic.id}
+          post :create, {:user_feedback => {:user_name => @user.name, :body => "xxx"}}, {:user_id => @critic.id}
           assert_not_nil(assigns(:user_feedback))
           assert_equal([], assigns(:user_feedback).errors.full_messages)
         end

@@ -54,7 +54,6 @@ private
 
   def create_user_feedback
     user.feedback.create(
-      :category => "neutral",
       :body => build_messages,
       :disable_dmail_notification => true
     )

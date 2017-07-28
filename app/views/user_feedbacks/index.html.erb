@@ -14,7 +14,7 @@
       </thead>
       <tbody>
         <% @user_feedbacks.each do |feedback| %>
-          <tr class="feedback-category-<%= feedback.category %>">
+          <tr>
             <td><%= link_to_user feedback.user %></td>
             <td><%= link_to_user feedback.creator %></td>
             <td><%= compact_time(feedback.created_at) %></td>

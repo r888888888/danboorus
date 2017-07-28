@@ -46,7 +46,7 @@
       <h2>Feedback</h2>
       <ul>
         <% @change_request.feedback.each do |feedback| %>
-          <li class="feedback-category-<%= feedback.category %>">
+          <li>
             <p><%= feedback.body %></p>
             <p class="author">Submitted by <%= link_to_user feedback.creator.name %> <%= time_ago_in_words_tagged feedback.created_at %></p>
           </li>
