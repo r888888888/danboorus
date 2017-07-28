@@ -2313,8 +2313,7 @@ CREATE TABLE tags (
     related_tags text,
     related_tags_updated_at timestamp without time zone,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    is_locked boolean DEFAULT false NOT NULL
+    updated_at timestamp without time zone
 );
 
 

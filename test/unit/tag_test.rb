@@ -30,22 +30,6 @@ class TagTest < ActiveSupport::TestCase
     end
   end
 
-  context "A tag" do
-    should "be lockable by a moderator" do
-      @tag = FactoryGirl.create(:tag)
-      @tag.update_attributes({:is_locked => true}, :as => :moderator)
-      @tag.reload
-      assert_equal(true, @tag.is_locked?)
-    end
-
-    should "not be lockable by a user" do
-      @tag = FactoryGirl.create(:tag)
-      @tag.update_attributes({:is_locked => true}, :as => :member)
-      @tag.reload
-      assert_equal(false, @tag.is_locked?)
-    end
-  end
-
   context "A tag parser" do
     should "scan a query" do
       assert_equal(%w(aaa bbb), Tag.scan_query("aaa bbb"))
