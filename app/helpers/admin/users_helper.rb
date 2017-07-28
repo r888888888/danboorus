@@ -4,7 +4,6 @@ module Admin::UsersHelper
       ["Member", User::Levels::MEMBER],
       ["Gold", User::Levels::GOLD],
       ["Platinum", User::Levels::PLATINUM],
-      ["Builder", User::Levels::BUILDER],
       ["Moderator", User::Levels::MODERATOR],
       ["Admin", User::Levels::ADMIN]
     ]

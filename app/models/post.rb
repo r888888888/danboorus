@@ -44,8 +44,8 @@ class Post < ApplicationRecord
     has_many :versions, lambda {order("post_versions.updated_at ASC")}, :class_name => "PostArchive", :dependent => :destroy
   end
 
-  attr_accessible :source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes, :as => [:member, :builder, :gold, :platinum, :moderator, :admin, :default]
-  attr_accessible :is_rating_locked, :is_note_locked, :as => [:builder, :moderator, :admin]
+  attr_accessible :source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes, :as => [:member, :gold, :platinum, :moderator, :admin, :default]
+  attr_accessible :is_rating_locked, :is_note_locked, :as => [:moderator, :admin]
   attr_accessible :is_status_locked, :as => [:admin]
   attr_accessor :old_tag_string, :old_parent_id, :old_source, :old_rating, :has_constraints, :disable_versioning, :view_count
 
@@ -516,13 +516,7 @@ class Post < ApplicationRecord
 
     def update_tag_post_counts
       decrement_tags = tag_array_was - tag_array
-
       decrement_tags_except_requests = decrement_tags.reject {|tag| tag == "tagme" || tag.end_with?("_request")}
-      if decrement_tags_except_requests.size > 0 && !CurrentUser.is_builder? && CurrentUser.created_at > 1.week.ago
-        self.errors.add(:updater_id, "must have an account at least 1 week old to remove tags")
-        return false
-      end
-
       increment_tags = tag_array - tag_array_was
       if increment_tags.any?
         Tag.delay(:queue => "default").increment_post_counts(increment_tags)

@@ -108,12 +108,7 @@ class Dmail < ApplicationRecord
     end
 
     def search_message(query)
-      if query =~ /\*/ && CurrentUser.user.is_builder?
-        escaped_query = query.to_escaped_for_sql_like
-        where("(title ILIKE ? ESCAPE E'\\\\' OR body ILIKE ? ESCAPE E'\\\\')", escaped_query, escaped_query)
-      else
-        where("message_index @@ plainto_tsquery(?)", query.to_escaped_for_tsquery_split)
-      end
+      where("message_index @@ plainto_tsquery(?)", query.to_escaped_for_tsquery_split)
     end
 
     def unread

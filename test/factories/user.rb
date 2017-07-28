@@ -30,10 +30,6 @@ FactoryGirl.define do
       level 31
     end
 
-    factory(:builder_user) do
-      level 32
-    end
-
     factory(:contributor_user) do
       level 32
     end

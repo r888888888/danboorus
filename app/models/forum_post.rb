@@ -1,7 +1,7 @@
 class ForumPost < ApplicationRecord
   include Mentionable
 
-  attr_accessible :body, :topic_id, :as => [:member, :builder, :gold, :platinum, :admin, :moderator, :default]
+  attr_accessible :body, :topic_id, :as => [:member, :gold, :platinum, :admin, :moderator, :default]
   attr_accessible :is_locked, :is_sticky, :is_deleted, :as => [:admin, :moderator]
   attr_readonly :topic_id
   belongs_to :creator, :class_name => "User"
@@ -34,19 +34,11 @@ class ForumPost < ApplicationRecord
 
   module SearchMethods
     def body_matches(body)
-      if body =~ /\*/ && CurrentUser.user.is_builder?
-        where("forum_posts.body ILIKE ? ESCAPE E'\\\\'", body.to_escaped_for_sql_like)
-      else
-        where("forum_posts.text_index @@ plainto_tsquery(E?)", body.to_escaped_for_tsquery)
-      end
+      where("forum_posts.text_index @@ plainto_tsquery(E?)", body.to_escaped_for_tsquery)
     end
 
     def topic_title_matches(title)
-      if title =~ /\*/ && CurrentUser.user.is_builder?
-        joins(:topic).where("forum_topics.title ILIKE ? ESCAPE E'\\\\'", title.to_escaped_for_sql_like)
-      else
-        joins(:topic).where("forum_topics.text_index @@ plainto_tsquery(E?)", title.to_escaped_for_tsquery_split)
-      end
+      joins(:topic).where("forum_topics.text_index @@ plainto_tsquery(E?)", title.to_escaped_for_tsquery_split)
     end
 
     def for_user(user_id)

@@ -1,9 +1,3 @@
-<% unless CurrentUser.user.is_builder? %>
-  <div style="margin-bottom: 1em;">
-    <p>Before editing, read the <%= link_to "how to tag guide", wiki_page_path(:id => "howto:tag") %>.</p>
-  </div>
-<% end %>
-
 <%= render "sources/info_for_post" %>
 
 <%= form_for(post, :html => {:class => "simple_form", :id => "form"}) do |f| %>
@@ -30,14 +24,7 @@
     <% end %>
   </div>
 
-  <% unless post.is_note_locked? %>
-    <div class="input">
-      <%= f.label :has_embedded_notes, "Embed notes" %>
-      <%= f.check_box :has_embedded_notes %>
-    </div>
-  <% end %>
-
-  <% if CurrentUser.is_builder? %>
+  <% if CurrentUser.is_moderator? %>
     <div class="input">
       <%= f.label :blank, "Lock" %>
 

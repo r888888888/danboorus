@@ -1,7 +1,6 @@
 class WikiPagesController < ApplicationController
   respond_to :html, :xml, :json, :js
-  before_filter :member_only, :except => [:index, :search, :show, :show_or_new]
-  before_filter :builder_only, :only => [:destroy]
+  before_filter :member_only, :except => [:index, :search, :show, :show_or_new, :destroy]
   before_filter :normalize_search_params, :only => [:index]
   
   def new

@@ -11,7 +11,7 @@ class ForumTopic < ApplicationRecord
     Admin: User::Levels::ADMIN,
   }
 
-  attr_accessible :title, :original_post_attributes, :category_id, :as => [:member, :builder, :gold, :platinum, :moderator, :admin, :default]
+  attr_accessible :title, :original_post_attributes, :category_id, :as => [:member, :gold, :platinum, :moderator, :admin, :default]
   attr_accessible :is_sticky, :is_locked, :is_deleted, :min_level, :as => [:admin, :moderator]
   belongs_to :creator, :class_name => "User"
   belongs_to :updater, :class_name => "User"
@@ -53,11 +53,7 @@ class ForumTopic < ApplicationRecord
 
   module SearchMethods
     def title_matches(title)
-      if title =~ /\*/ && CurrentUser.user.is_builder?
-        where("title ILIKE ? ESCAPE E'\\\\'", title.to_escaped_for_sql_like)
-      else
-        where("text_index @@ plainto_tsquery(E?)", title.to_escaped_for_tsquery_split)
-      end
+      where("text_index @@ plainto_tsquery(E?)", title.to_escaped_for_tsquery_split)
     end
 
     def active

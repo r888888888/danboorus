@@ -57,17 +57,17 @@ class UserTest < ActiveSupport::TestCase
       end
 
       should "work" do
-        @user.invite!(User::Levels::BUILDER, "1")
+        @user.invite!(User::Levels::GOLD, "1")
         @user.reload
-        assert_equal(User::Levels::BUILDER, @user.level)
+        assert_equal(User::Levels::GOLD, @user.level)
         assert_equal(true, @user.can_upload_free)
       end
 
       should "create a mod action" do
         assert_difference("ModAction.count") do
-          @user.invite!(User::Levels::BUILDER, "1")
+          @user.invite!(User::Levels::GOLD, "1")
         end
-        assert_equal(%{"#{@user.name}":/users/#{@user.id} level changed Member -> Builder}, ModAction.last.description)
+        assert_equal(%{"#{@user.name}":/users/#{@user.id} level changed Member -> Gold}, ModAction.last.description)
       end
     end
 

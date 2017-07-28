@@ -601,7 +601,7 @@ class PostTest < ActiveSupport::TestCase
 
           context "that is locked" do
             should "change the rating if locked in the same update" do
-              @post.update({ :tag_string => "rating:e", :is_rating_locked => true }, :as => :builder)
+              @post.update({ :tag_string => "rating:e", :is_rating_locked => true }, :as => :moderator)
 
               assert(@post.valid?)
               assert_equal("e", @post.reload.rating)
@@ -673,7 +673,7 @@ class PostTest < ActiveSupport::TestCase
 
         context "of" do
           setup do
-            @builder = FactoryGirl.create(:builder_user)
+            @moderator = FactoryGirl.create(:moderator_user)
           end
 
           context "locked:notes" do
@@ -684,9 +684,9 @@ class PostTest < ActiveSupport::TestCase
               end
             end
 
-            context "by a builder" do
+            context "by a moderator" do
               should "lock/unlock the notes" do
-                CurrentUser.scoped(@builder) do
+                CurrentUser.scoped(@moderator) do
                   @post.update(:tag_string => "locked:notes")
                   assert_equal(true, @post.is_note_locked)
 
@@ -705,9 +705,9 @@ class PostTest < ActiveSupport::TestCase
               end
             end
 
-            context "by a builder" do
+            context "by a moderator" do
               should "lock/unlock the rating" do
-                CurrentUser.scoped(@builder) do
+                CurrentUser.scoped(@moderator) do
                   @post.update(:tag_string => "locked:rating")
                   assert_equal(true, @post.is_rating_locked)
 
@@ -2046,7 +2046,7 @@ class PostTest < ActiveSupport::TestCase
       setup do
         @post = FactoryGirl.create(:post, :rating => "s")
         Timecop.travel(2.hours.from_now) do
-          @post.update({ :rating => "e", :is_rating_locked => true }, :as => :builder)
+          @post.update({ :rating => "e", :is_rating_locked => true }, :as => :moderator)
         end
       end
 
@@ -2060,7 +2060,7 @@ class PostTest < ActiveSupport::TestCase
       end
 
       should "revert the rating after unlocking" do
-        @post.update({ :rating => "e", :is_rating_locked => false }, :as => :builder)
+        @post.update({ :rating => "e", :is_rating_locked => false }, :as => :moderator)
         assert_nothing_raised do
           @post.revert_to!(@post.versions.first)
         end

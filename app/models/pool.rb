@@ -375,7 +375,7 @@ class Pool < ApplicationRecord
   end
 
   def category_changeable_by?(user)
-    user.is_builder? || (user.is_member? && post_count <= 100)
+    true
   end
 
   def updater_can_change_category

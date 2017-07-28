@@ -18,9 +18,6 @@
               <%= link_to(tag.name, posts_path(:tags => tag.name)) %>
             </td>
             <td>
-               <% if CurrentUser.is_builder? %>
-                | <%= link_to "fix", new_tag_correction_path(:tag_id => tag.id) %>
-              <% end %>
             </td>
           </tr>
         <% end %>

@@ -10,7 +10,7 @@
   <% else %>
     <li id="add-notes-list"><%= link_to "Add notes", "#", :id => "translate", :title => "Shortcut is N" %></li>
   <% end %>
-  <% if CurrentUser.is_builder? && post.has_notes? %>
+  <% if post.has_notes? %>
     <li id="copy-all-notes-list"><%= link_to "Copy all notes", "#", :id => "copy-notes" %></li>
   <% end %>
 

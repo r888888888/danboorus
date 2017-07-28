@@ -10,7 +10,6 @@ class User < ApplicationRecord
     MEMBER = 20
     GOLD = 30
     PLATINUM = 31
-    BUILDER = 32
     MODERATOR = 40
     ADMIN = 50
   end
@@ -44,7 +43,7 @@ class User < ApplicationRecord
   has_bit_flags BOOLEAN_ATTRIBUTES, :field => "bit_prefs"
 
   attr_accessor :password, :old_password
-  attr_accessible :dmail_filter_attributes, :enable_privacy_mode, :enable_post_navigation, :new_post_navigation_layout, :password, :old_password, :password_confirmation, :password_hash, :email, :last_logged_in_at, :last_forum_read_at, :has_mail, :receive_email_notifications, :comment_threshold, :always_resize_images, :blacklisted_tags, :name, :ip_addr, :time_zone, :default_image_size, :enable_sequential_post_navigation, :per_page, :hide_deleted_posts, :style_usernames, :enable_auto_complete, :custom_style, :show_deleted_children, :disable_categorized_saved_searches, :disable_tagged_filenames, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :builder, :admin]
+  attr_accessible :dmail_filter_attributes, :enable_privacy_mode, :enable_post_navigation, :new_post_navigation_layout, :password, :old_password, :password_confirmation, :password_hash, :email, :last_logged_in_at, :last_forum_read_at, :has_mail, :receive_email_notifications, :comment_threshold, :always_resize_images, :blacklisted_tags, :name, :ip_addr, :time_zone, :default_image_size, :enable_sequential_post_navigation, :per_page, :hide_deleted_posts, :style_usernames, :enable_auto_complete, :custom_style, :show_deleted_children, :disable_categorized_saved_searches, :disable_tagged_filenames, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :admin]
   attr_accessible :level, :as => :admin
 
   validates :name, user_name: true, on: :create
@@ -109,7 +108,7 @@ class User < ApplicationRecord
 
   module InvitationMethods
     def invite!(level)
-      if level.to_i <= Levels::BUILDER
+      if level.to_i <= Levels::PLATINUM
         self.level = level
         self.inviter_id = CurrentUser.id
         save
@@ -295,7 +294,6 @@ class User < ApplicationRecord
           "Member" => Levels::MEMBER,
           "Gold" => Levels::GOLD,
           "Platinum" => Levels::PLATINUM,
-          "Builder" => Levels::BUILDER,
           "Moderator" => Levels::MODERATOR,
           "Admin" => Levels::ADMIN
         }
@@ -308,9 +306,6 @@ class User < ApplicationRecord
 
         when Levels::MEMBER
           "Member"
-
-        when Levels::BUILDER
-          "Builder"
 
         when Levels::GOLD
           "Gold"
@@ -370,10 +365,6 @@ class User < ApplicationRecord
 
     def is_blocked?
       is_banned?
-    end
-
-    def is_builder?
-      level >= Levels::BUILDER
     end
 
     def is_gold?

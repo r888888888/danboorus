@@ -22,11 +22,7 @@ class Note < ApplicationRecord
     end
 
     def body_matches(query)
-      if query =~ /\*/ && CurrentUser.user.is_builder?
-        where("body ILIKE ? ESCAPE E'\\\\'", query.to_escaped_for_sql_like)
-      else
-        where("body_index @@ plainto_tsquery(E?)", query.to_escaped_for_tsquery_split)
-      end
+      where("body_index @@ plainto_tsquery(E?)", query.to_escaped_for_tsquery_split)
     end
 
     def post_tags_match(query)

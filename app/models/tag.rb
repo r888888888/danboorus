@@ -649,10 +649,6 @@ class Tag < ApplicationRecord
     end
   end
 
-  def editable_by?(user)
-    user.is_builder? || (user.is_member? && post_count <= 50)
-  end
-
   include ApiMethods
   include CountMethods
   extend StatisticsMethods

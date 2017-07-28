@@ -2,7 +2,7 @@ require 'test_helper'
 
 class TagTest < ActiveSupport::TestCase
   setup do
-    user = FactoryGirl.create(:builder_user)
+    user = FactoryGirl.create(:moderator_user)
     CurrentUser.user = user
     CurrentUser.ip_addr = "127.0.0.1"
   end

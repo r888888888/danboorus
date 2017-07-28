@@ -1,6 +1,6 @@
 class DmailFilter < ApplicationRecord
   belongs_to :user
-  attr_accessible :words, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :builder, :admin]
+  attr_accessible :words, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :admin]
   validates_presence_of :user
   before_validation :initialize_user
 

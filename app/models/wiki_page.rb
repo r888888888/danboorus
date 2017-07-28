@@ -11,7 +11,7 @@ class WikiPage < ApplicationRecord
   validates_uniqueness_of :title, :case_sensitive => false
   validates_presence_of :title
   validate :validate_rename
-  validate :validate_locker_is_builder
+  validate :validate_locker_is_moderator
   validate :validate_not_locked
   attr_accessor :skip_secondary_validations
   attr_accessible :title, :body, :is_locked, :is_deleted, :other_names, :skip_secondary_validations
@@ -36,11 +36,7 @@ class WikiPage < ApplicationRecord
     end
 
     def body_matches(query)
-      if query =~ /\*/ && CurrentUser.user.is_builder?
-        where("body ILIKE ? ESCAPE E'\\\\'", query.to_escaped_for_sql_like)
-      else
-        where("body_index @@ plainto_tsquery(?)", query.to_escaped_for_tsquery_split)
-      end
+      where("body_index @@ plainto_tsquery(?)", query.to_escaped_for_tsquery_split)
     end
 
     def other_names_equal(names)
@@ -124,15 +120,15 @@ class WikiPage < ApplicationRecord
     titled(title).select("title, id").first
   end
 
-  def validate_locker_is_builder
-    if is_locked_changed? && !CurrentUser.is_builder?
-      errors.add(:is_locked, "can be modified by builders only")
+  def validate_locker_is_moderator
+    if is_locked_changed? && !CurrentUser.is_moderator?
+      errors.add(:is_locked, "can be modified by moderators only")
       return false
     end
   end
 
   def validate_not_locked
-    if is_locked? && !CurrentUser.is_builder?
+    if is_locked? && !CurrentUser.is_moderator?
       errors.add(:is_locked, "and cannot be updated")
       return false
     end
@@ -253,7 +249,7 @@ class WikiPage < ApplicationRecord
   end
 
   def visible?
-    CurrentUser.is_builder?
+    CurrentUser.is_moderator?
   end
 
   def other_names_array

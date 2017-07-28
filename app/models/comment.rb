@@ -17,7 +17,7 @@ class Comment < ApplicationRecord
   after_save(:if => lambda {|rec| rec.is_deleted? && rec.is_deleted_changed? && CurrentUser.id != rec.creator_id}) do |rec|
     ModAction.log("comment ##{rec.id} deleted by #{CurrentUser.name}")
   end
-  attr_accessible :body, :post_id, :do_not_bump_post, :is_deleted, :as => [:member, :gold, :platinum, :builder, :moderator, :admin]
+  attr_accessible :body, :post_id, :do_not_bump_post, :is_deleted, :as => [:member, :gold, :platinum, :moderator, :admin]
   attr_accessible :is_sticky, :as => [:moderator, :admin]
   mentionable(
     :message_field => :body, 
@@ -32,11 +32,7 @@ class Comment < ApplicationRecord
     end
 
     def body_matches(query)
-      if query =~ /\*/ && CurrentUser.user.is_builder?
-        where("body ILIKE ? ESCAPE E'\\\\'", query.to_escaped_for_sql_like)
-      else
-        where("body_index @@ plainto_tsquery(?)", query.to_escaped_for_tsquery_split).order("comments.id DESC")
-      end
+      where("body_index @@ plainto_tsquery(?)", query.to_escaped_for_tsquery_split).order("comments.id DESC")
     end
 
     def hidden(user)

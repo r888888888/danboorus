@@ -3,7 +3,7 @@ require 'test_helper'
 class TagsControllerTest < ActionController::TestCase
   context "The tags controller" do
     setup do
-      @user = FactoryGirl.create(:builder_user)
+      @user = FactoryGirl.create(:moderator_user)
       CurrentUser.user = @user
       CurrentUser.ip_addr = "127.0.0.1"
     end
@@ -11,17 +11,6 @@ class TagsControllerTest < ActionController::TestCase
     teardown do
       CurrentUser.user = nil
       CurrentUser.ip_addr = nil
-    end
-
-    context "edit action" do
-      setup do
-        @tag = FactoryGirl.create(:tag, :name => "aaa")
-      end
-
-      should "render" do
-        get :edit, {:id => @tag.id}, {:user_id => @user.id}
-        assert_response :success
-      end
     end
 
     context "index action" do
