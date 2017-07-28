@@ -54,7 +54,7 @@ class PostVersionTest < ActiveSupport::TestCase
     context "that should be merged" do
       setup do
         @parent = FactoryGirl.create(:post)
-        @post = FactoryGirl.create(:post, :tag_string => "aaa bbb ccc", :rating => "q", :source => "xyz")
+        @post = FactoryGirl.create(:post, :tag_string => "aaa bbb ccc", :rating => "e", :source => "xyz")
       end
 
       should "delete the previous version" do
@@ -69,7 +69,7 @@ class PostVersionTest < ActiveSupport::TestCase
       setup do
         PostArchive.sqs_service.stubs(:merge?).returns(false)
         Timecop.travel(1.minute.ago) do
-          @post = FactoryGirl.create(:post, :tag_string => "aaa bbb ccc", :rating => "q", :source => "xyz")
+          @post = FactoryGirl.create(:post, :tag_string => "aaa bbb ccc", :rating => "e", :source => "xyz")
         end
         @post.update_attributes(:tag_string => "bbb ccc xxx", :source => "")
       end
@@ -78,7 +78,7 @@ class PostVersionTest < ActiveSupport::TestCase
         assert_equal(2, @post.versions.size)
         @version = @post.versions.last
         assert_equal("bbb ccc xxx", @version.tags)
-        assert_equal("q", @version.rating)
+        assert_equal("e", @version.rating)
         assert_equal("", @version.source)
         assert_nil(@version.parent_id)
       end

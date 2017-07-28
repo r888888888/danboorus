@@ -89,7 +89,7 @@ class UploadsControllerTest < ActionController::TestCase
         assert_difference("Upload.count", 1) do
           file = Rack::Test::UploadedFile.new("#{Rails.root}/test/files/test.jpg", "image/jpeg")
           file.stubs(:tempfile).returns(file)
-          post :create, {:upload => {:file => file, :tag_string => "aaa", :rating => "q", :source => "aaa"}}, {:user_id => @user.id}
+          post :create, {:upload => {:file => file, :tag_string => "aaa", :rating => "s", :source => "aaa"}}, {:user_id => @user.id}
         end
       end
     end

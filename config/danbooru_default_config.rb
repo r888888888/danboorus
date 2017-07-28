@@ -382,11 +382,6 @@ module Danbooru
       false
     end
 
-    # enable some (donmai-specific) optimizations for post counts
-    def estimate_post_counts
-      false
-    end
-
     # reportbooru options - see https://github.com/r888888888/reportbooru
     def reportbooru_server
     end

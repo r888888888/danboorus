@@ -161,8 +161,6 @@
       Danbooru.Post.vote("down", post_id);
     } else if (s === 'vote-up') {
       Danbooru.Post.vote("up", post_id);
-    } else if (s === 'rating-q') {
-      Danbooru.Post.update(post_id, {"post[rating]": "q"});
     } else if (s === 'rating-s') {
       Danbooru.Post.update(post_id, {"post[rating]": "s"});
     } else if (s === 'rating-e') {

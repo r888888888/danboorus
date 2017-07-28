@@ -80,7 +80,7 @@ class Upload < ApplicationRecord
     def rating_given
       if rating.present?
         return true
-      elsif tag_string =~ /(?:\s|^)rating:([qse])/i
+      elsif tag_string =~ /(?:\s|^)rating:([se])/i
         self.rating = $1.downcase
         return true
       else

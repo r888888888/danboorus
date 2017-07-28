@@ -595,7 +595,7 @@ class PostTest < ActiveSupport::TestCase
             should "not update the rating" do
               @post.update_attributes(:tag_string => "aaa rating:z")
               @post.reload
-              assert_equal("q", @post.rating)
+              assert_equal("s", @post.rating)
             end
           end
 
@@ -1000,14 +1000,14 @@ class PostTest < ActiveSupport::TestCase
         end
 
         should "merge any parent, source, and rating changes that were made after loading the initial set" do
-          post = FactoryGirl.create(:post, :parent => nil, :source => "", :rating => "q")
+          post = FactoryGirl.create(:post, :parent => nil, :source => "", :rating => "e")
           parent_post = FactoryGirl.create(:post)
 
           # user a changes rating to safe, adds parent
           post_edited_by_user_a = Post.find(post.id)
           post_edited_by_user_a.old_parent_id = ""
           post_edited_by_user_a.old_source = ""
-          post_edited_by_user_a.old_rating = "q"
+          post_edited_by_user_a.old_rating = "e"
           post_edited_by_user_a.parent_id = parent_post.id
           post_edited_by_user_a.source = nil
           post_edited_by_user_a.rating = "s"
@@ -1017,10 +1017,10 @@ class PostTest < ActiveSupport::TestCase
           post_edited_by_user_b = Post.find(post.id)
           post_edited_by_user_b.old_parent_id = ""
           post_edited_by_user_b.old_source = ""
-          post_edited_by_user_b.old_rating = "q"
+          post_edited_by_user_b.old_rating = "e"
           post_edited_by_user_b.parent_id = nil
           post_edited_by_user_b.source = "http://example.com"
-          post_edited_by_user_b.rating = "q"
+          post_edited_by_user_b.rating = "s"
           post_edited_by_user_b.save
 
           # final post should be rated safe and have the set parent and source
@@ -1214,7 +1214,7 @@ class PostTest < ActiveSupport::TestCase
       subject { @post }
 
       should_not allow_value("S", "safe", "derp").for(:rating)
-      should allow_value("s", "q", "e").for(:rating)
+      should allow_value("s", "e").for(:rating)
     end
 
     context "A rating locked post" do
@@ -1755,18 +1755,15 @@ class PostTest < ActiveSupport::TestCase
       assert_tag_match([post2, post1], "search:all")
     end
 
-    should "return posts for a rating:<s|q|e> metatag" do
+    should "return posts for a rating:<s|e> metatag" do
       s = FactoryGirl.create(:post, :rating => "s")
-      q = FactoryGirl.create(:post, :rating => "q")
       e = FactoryGirl.create(:post, :rating => "e")
-      all = [e, q, s]
+      all = [e,  s]
 
       assert_tag_match([s], "rating:s")
-      assert_tag_match([q], "rating:q")
       assert_tag_match([e], "rating:e")
 
       assert_tag_match(all - [s], "-rating:s")
-      assert_tag_match(all - [q], "-rating:q")
       assert_tag_match(all - [e], "-rating:e")
     end
 
@@ -2000,7 +1997,7 @@ class PostTest < ActiveSupport::TestCase
       context "when shared between users on danbooru/safebooru" do
         setup do
           Danbooru.config.stubs(:blank_tag_search_fast_count).returns(nil)
-          FactoryGirl.create(:post, :tag_string => "aaa bbb", :rating => "q")
+          FactoryGirl.create(:post, :tag_string => "aaa bbb", :rating => "e")
           FactoryGirl.create(:post, :tag_string => "aaa bbb", :rating => "s")
           FactoryGirl.create(:post, :tag_string => "aaa bbb", :rating => "s")
           CurrentUser.stubs(:safe_mode?).returns(true)
@@ -2053,7 +2050,7 @@ class PostTest < ActiveSupport::TestCase
       setup do
         @post = FactoryGirl.create(:post, :rating => "s")
         Timecop.travel(2.hours.from_now) do
-          @post.update({ :rating => "q", :is_rating_locked => true }, :as => :builder)
+          @post.update({ :rating => "e", :is_rating_locked => true }, :as => :builder)
         end
       end
 
@@ -2080,7 +2077,7 @@ class PostTest < ActiveSupport::TestCase
     context "a post that has been updated" do
       setup do
         PostArchive.sqs_service.stubs(:merge?).returns(false)
-        @post = FactoryGirl.create(:post, :rating => "q", :tag_string => "aaa", :source => "")
+        @post = FactoryGirl.create(:post, :rating => "e", :tag_string => "aaa", :source => "")
         @post.update_attributes(:tag_string => "aaa bbb ccc ddd")
         @post.update_attributes(:tag_string => "bbb xxx yyy", :source => "xyz")
         @post.update_attributes(:tag_string => "bbb mmm yyy", :source => "abc")
@@ -2094,7 +2091,7 @@ class PostTest < ActiveSupport::TestCase
         should "correctly revert all fields" do
           assert_equal("aaa bbb ccc ddd", @post.tag_string)
           assert_equal("", @post.source)
-          assert_equal("q", @post.rating)
+          assert_equal("e", @post.rating)
         end
       end
 
@@ -2106,7 +2103,7 @@ class PostTest < ActiveSupport::TestCase
         should "correctly revert all fields" do
           assert_equal("bbb xxx yyy", @post.tag_string)
           assert_equal("xyz", @post.source)
-          assert_equal("q", @post.rating)
+          assert_equal("e", @post.rating)
         end
       end
     end

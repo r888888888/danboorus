@@ -14,7 +14,7 @@ class Post < ApplicationRecord
   before_validation :blank_out_nonexistent_parents
   before_validation :remove_parent_loops
   validates_uniqueness_of :md5, :on => :create
-  validates_inclusion_of :rating, in: %w(s q e), message: "rating must be s, q, or e"
+  validates_inclusion_of :rating, in: %w(s e), message: "rating must be s or e"
   validate :tag_names_are_valid
   validate :post_is_not_its_own_parent
   validate :updater_can_change_rating
@@ -330,9 +330,6 @@ class Post < ApplicationRecord
 
     def pretty_rating
       case rating
-      when "q"
-        "Questionable"
-
       when "e"
         "Explicit"
 
@@ -743,7 +740,7 @@ class Post < ApplicationRecord
         when /^source:(.*)$/i
           self.source = $1
 
-        when /^rating:([qse])/i
+        when /^rating:([se])/i
           self.rating = $1.downcase
 
         when /^(-?)locked:notes?$/i
@@ -975,28 +972,6 @@ class Post < ApplicationRecord
 
     def fast_count(tags = "", options = {})
       tags = tags.to_s.strip
-
-      # optimize some cases. these are just estimates but at these
-      # quantities being off by a few hundred doesn't matter much
-      if Danbooru.config.estimate_post_counts
-        if tags == ""
-          return (Post.maximum(:id) * (2200402.0 / 2232212)).floor
-
-        elsif tags =~ /^rating:s(?:afe)?$/
-          return (Post.maximum(:id) * (1648652.0 / 2200402)).floor
-
-        elsif tags =~ /^rating:q(?:uestionable)?$/
-          return (Post.maximum(:id) * (350101.0 / 2200402)).floor
-
-        elsif tags =~ /^rating:e(?:xplicit)?$/
-          return (Post.maximum(:id) * (201650.0 / 2200402)).floor
-
-        elsif tags =~ /status:deleted.status:deleted/
-          # temp fix for degenerate crawlers
-          return 0
-        end
-      end
-
       count = get_count_from_cache(tags)
 
       if count.to_i == 0

@@ -264,17 +264,13 @@ class PostQueryBuilder
       relation = relation.where("posts.has_children = TRUE")
     end
 
-    if q[:rating] =~ /^q/
-      relation = relation.where("posts.rating = 'q'")
-    elsif q[:rating] =~ /^s/
+    if q[:rating] =~ /^s/
       relation = relation.where("posts.rating = 's'")
     elsif q[:rating] =~ /^e/
       relation = relation.where("posts.rating = 'e'")
     end
 
-    if q[:rating_negated] =~ /^q/
-      relation = relation.where("posts.rating <> 'q'")
-    elsif q[:rating_negated] =~ /^s/
+    if q[:rating_negated] =~ /^s/
       relation = relation.where("posts.rating <> 's'")
     elsif q[:rating_negated] =~ /^e/
       relation = relation.where("posts.rating <> 'e'")

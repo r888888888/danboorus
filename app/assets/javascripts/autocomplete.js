@@ -313,7 +313,7 @@
       "any", "deleted", "active"
     ],
     rating: [
-      "safe", "questionable", "explicit"
+      "safe", "explicit"
     ],
     locked: [
       "rating", "note", "status"

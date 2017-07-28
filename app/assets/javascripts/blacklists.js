@@ -27,7 +27,7 @@
   }
 
   Danbooru.Blacklist.parse_entries = function() {
-    var entries = (Danbooru.meta("blacklisted-tags") || "nozomiisthebestlovelive").replace(/(rating:[qes])\w+/ig, "$1").toLowerCase().split(/,/);
+    var entries = (Danbooru.meta("blacklisted-tags") || "nozomiisthebestlovelive").replace(/(rating:[es])\w+/ig, "$1").toLowerCase().split(/,/);
 
     $.each(entries, function(i, tags) {
       var entry = Danbooru.Blacklist.parse_entry(tags);

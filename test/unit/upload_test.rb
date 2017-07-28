@@ -104,7 +104,7 @@ class UploadTest < ActiveSupport::TestCase
         context "for a zip that is not an ugoira" do
           should "not validate" do
             FileUtils.cp("#{Rails.root}/test/files/invalid_ugoira.zip", "#{Rails.root}/tmp")
-            @upload = Upload.create(:file => upload_zip("#{Rails.root}/tmp/invalid_ugoira.zip"), :rating => "q", :tag_string => "xxx")
+            @upload = Upload.create(:file => upload_zip("#{Rails.root}/tmp/invalid_ugoira.zip"), :rating => "e", :tag_string => "xxx")
             @upload.process!
             assert_equal("error: RuntimeError - missing frame data for ugoira", @upload.status)
           end

@@ -86,7 +86,7 @@ class PostArchiveTest < ActiveSupport::TestCase
     context "that should be merged" do
       setup do
         @parent = FactoryGirl.create(:post)
-        @post = FactoryGirl.create(:post, :tag_string => "aaa bbb ccc", :rating => "q", :source => "xyz")
+        @post = FactoryGirl.create(:post, :tag_string => "aaa bbb ccc", :rating => "s", :source => "xyz")
       end
 
       should "delete the previous version" do
@@ -100,7 +100,7 @@ class PostArchiveTest < ActiveSupport::TestCase
     context "that has been updated" do
       setup do
         PostArchive.sqs_service.stubs(:merge?).returns(false)
-        @post = FactoryGirl.create(:post, :tag_string => "aaa bbb ccc", :rating => "q", :source => "xyz")
+        @post = FactoryGirl.create(:post, :tag_string => "aaa bbb ccc", :rating => "e", :source => "xyz")
         @post.update_attributes(:tag_string => "bbb ccc xxx", :source => "")
       end
 
@@ -108,7 +108,7 @@ class PostArchiveTest < ActiveSupport::TestCase
         assert_equal(2, @post.versions.size)
         @version = @post.versions.sort_by(&:id).last
         assert_equal("bbb ccc xxx", @version.tags)
-        assert_equal("q", @version.rating)
+        assert_equal("s", @version.rating)
         assert_equal("", @version.source)
         assert_nil(@version.parent_id)
       end
@@ -122,8 +122,8 @@ class PostArchiveTest < ActiveSupport::TestCase
 
       should "should create a version if the rating changes" do
         assert_difference("@post.versions.size", 1) do
-          @post.update(rating: "s")
-          assert_equal("s", @post.versions.sort_by(&:id).last.rating)
+          @post.update(rating: "e")
+          assert_equal("e", @post.versions.sort_by(&:id).last.rating)
         end
       end
 

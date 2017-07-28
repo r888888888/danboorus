@@ -26,11 +26,11 @@ class PostsControllerTest < ActionController::TestCase
         
         should "work" do
           @user.api_burst_limit.times do
-            post :update, {:format => "json", :id => @post.id, :post => {:rating => "q"}, :login => @user.name, :api_key => @user.api_key.key}
+            post :update, {:format => "json", :id => @post.id, :post => {:rating => "s"}, :login => @user.name, :api_key => @user.api_key.key}
             assert_response :success
           end
 
-          post :update, {:format => "json", :id => @post.id, :post => {:rating => "q"}, :login => @user.name, :api_key => @user.api_key.key}
+          post :update, {:format => "json", :id => @post.id, :post => {:rating => "s"}, :login => @user.name, :api_key => @user.api_key.key}
           assert_response 429
         end
       end

@@ -2132,7 +2132,7 @@ CREATE TABLE posts (
     score integer DEFAULT 0 NOT NULL,
     source character varying DEFAULT ''::character varying NOT NULL,
     md5 character varying NOT NULL,
-    rating character(1) DEFAULT 'q'::bpchar NOT NULL,
+    rating character(1) NOT NULL,
     is_note_locked boolean DEFAULT false NOT NULL,
     is_rating_locked boolean DEFAULT false NOT NULL,
     is_status_locked boolean DEFAULT false NOT NULL,
