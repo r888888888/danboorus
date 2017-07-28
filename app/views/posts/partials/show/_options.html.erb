@@ -13,7 +13,6 @@
   <% if CurrentUser.is_builder? && post.has_notes? %>
     <li id="copy-all-notes-list"><%= link_to "Copy all notes", "#", :id => "copy-notes" %></li>
   <% end %>
-  <li><%= link_to "Add to favorite group", "#", :id => "open-favgroup-dialog-link" %></li>
 
   <% if post.is_status_locked? %>
     <li><span id="status-locked-notice">Status locked</span></li>

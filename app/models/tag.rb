@@ -1,6 +1,6 @@
 class Tag < ApplicationRecord
   COSINE_SIMILARITY_RELATED_TAG_THRESHOLD = 1000
-  METATAGS = "-user|user|commenter|comm|noter|noteupdater|artcomm|-pool|pool|ordpool|-favgroup|favgroup|-fav|fav|ordfav|md5|-rating|rating|-locked|locked|width|height|mpixels|ratio|score|favcount|filesize|source|-source|id|-id|date|age|order|limit|-status|status|tagcount|gentags|arttags|chartags|copytags|parent|-parent|child|pixiv_id|pixiv|search|upvote|downvote|filetype|-filetype|flagger|-flagger"
+  METATAGS = "-user|user|commenter|comm|noter|noteupdater|artcomm|-pool|pool|ordpool|-fav|fav|ordfav|md5|-rating|rating|-locked|locked|width|height|mpixels|ratio|score|favcount|filesize|source|-source|id|-id|date|age|order|limit|-status|status|tagcount|copytags|parent|-parent|child|pixiv_id|pixiv|search|upvote|downvote|filetype|-filetype|flagger|-flagger"
   SUBQUERY_METATAGS = "commenter|comm|noter|noteupdater|artcomm|flagger|-flagger"
   attr_accessible :is_locked, :as => [:moderator, :admin]
   has_one :wiki_page, :foreign_key => "title", :primary_key => "name"
@@ -408,16 +408,6 @@ class Tag < ApplicationRecord
             pool_id = Pool.name_to_id($2)
             q[:tags][:related] << "pool:#{pool_id}"
             q[:ordpool] = pool_id
-
-          when "-favgroup"
-            favgroup_id = FavoriteGroup.name_to_id($2)
-            q[:favgroups_neg] ||= []
-            q[:favgroups_neg] << favgroup_id
-
-          when "favgroup"
-            favgroup_id = FavoriteGroup.name_to_id($2)
-            q[:favgroups] ||= []
-            q[:favgroups] << favgroup_id
 
           when "-fav"
             q[:tags][:exclude] << "fav:#{User.name_to_id($2)}"

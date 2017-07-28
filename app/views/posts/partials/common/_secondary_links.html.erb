@@ -9,7 +9,6 @@
     <% end %>
     <% unless CurrentUser.is_anonymous? %>
       <li id="secondary-links-posts-favorites"><%= link_to "Favorites", favorites_path %></li>
-      <li id="secondary-links-posts-favorite-groups"><%= link_to "Favorite groups", favorite_groups_path %></li>
       <% if CurrentUser.has_saved_searches? %>
         <li id="secondary-links-posts-saved-searches"><%= link_to "Saved searches", posts_path(:tags => "search:all") %></li>
       <% end %>

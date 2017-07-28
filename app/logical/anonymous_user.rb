@@ -233,10 +233,6 @@ class AnonymousUser
     false
   end
 
-  def favorite_groups
-    []
-  end
-
   def disable_categorized_saved_searches?
     false
   end

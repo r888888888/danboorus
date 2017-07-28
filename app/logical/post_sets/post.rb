@@ -54,18 +54,6 @@ module PostSets
       ::Pool.find_by_name(pool_name)
     end
 
-    def favgroup_name
-      tag_string.match(/^favgroup:(\S+)$/i).try(:[], 1)
-    end
-
-    def has_favgroup?
-      is_single_tag? && favgroup_name && favgroup
-    end
-
-    def favgroup
-      ::FavoriteGroup.find_by_name(favgroup_name)
-    end
-
     def has_deleted?
       tag_string !~ /status/ && ::Post.tag_match("#{tag_string} status:deleted").where("true /* PostSets::Post#has_deleted */").exists?
     end

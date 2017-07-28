@@ -54,7 +54,7 @@ class TagTest < ActiveSupport::TestCase
 
     should "not strip out valid characters when scanning" do
       assert_equal(%w(aaa bbb), Tag.scan_tags("aaa bbb"))
-      assert_equal(%w(favgroup:yondemasu_yo,_azazel-san. pool:ichigo_100%), Tag.scan_tags("favgroup:yondemasu_yo,_azazel-san. pool:ichigo_100%"))
+      assert_equal(%w(pool:ichigo_100%), Tag.scan_tags("pool:ichigo_100%"))
     end
 
     should "cast values" do

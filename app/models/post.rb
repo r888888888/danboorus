@@ -665,7 +665,7 @@ class Post < ApplicationRecord
 
     def filter_metatags(tags)
       @pre_metatags, tags = tags.partition {|x| x =~ /\A(?:rating|parent|-parent|source|-?locked):/i}
-      @post_metatags, tags = tags.partition {|x| x =~ /\A(?:-pool|pool|newpool|fav|-fav|child|-favgroup|favgroup|upvote|downvote):/i}
+      @post_metatags, tags = tags.partition {|x| x =~ /\A(?:-pool|pool|newpool|fav|-fav|child|upvote|downvote):/i}
       apply_pre_metatags
       return tags
     end
@@ -711,22 +711,6 @@ class Post < ApplicationRecord
           child = Post.find($1)
           child.parent_id = id
           child.save
-
-        when /^-favgroup:(\d+)$/i
-          favgroup = FavoriteGroup.where("id = ?", $1.to_i).for_creator(CurrentUser.user.id).first
-          favgroup.remove!(self) if favgroup
-
-        when /^-favgroup:(.+)$/i
-          favgroup = FavoriteGroup.named($1).for_creator(CurrentUser.user.id).first
-          favgroup.remove!(self) if favgroup
-
-        when /^favgroup:(\d+)$/i
-          favgroup = FavoriteGroup.where("id = ?", $1.to_i).for_creator(CurrentUser.user.id).first
-          favgroup.add!(self) if favgroup
-
-        when /^favgroup:(.+)$/i
-          favgroup = FavoriteGroup.named($1).for_creator(CurrentUser.user.id).first
-          favgroup.add!(self) if favgroup
         end
       end
     end
@@ -837,31 +821,8 @@ class Post < ApplicationRecord
       ordered_users
     end
 
-    def favorite_groups(active_id=nil)
-      @favorite_groups ||= begin
-        groups = []
-
-        if active_id.present?
-          active_group = FavoriteGroup.where(:id => active_id.to_i).first
-          groups << active_group if active_group && active_group.contains?(self.id)
-        end
-
-        groups += CurrentUser.user.favorite_groups.select do |favgroup|
-          favgroup.contains?(self.id)
-        end
-
-        groups.uniq
-      end
-    end
-
     def remove_from_favorites
       Favorite.destroy_all(post_id: self.id)
-    end
-
-    def remove_from_fav_groups
-      FavoriteGroup.for_post(id).find_each do |group|
-        group.remove!(self)
-      end
     end
   end
 
@@ -1516,7 +1477,6 @@ class Post < ApplicationRecord
     super
     reset_tag_array_cache
     @pools = nil
-    @favorite_groups = nil
     @typed_tags = nil
     self
   end

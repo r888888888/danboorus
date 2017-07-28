@@ -93,7 +93,7 @@
     var prefixes = "-|~";
     var metatags = "order|-status|status|-rating|rating|-locked|locked|child|filetype|-filetype|" +
       "-user|user|commenter|comm|noter|noteupdater|artcomm|-fav|fav|ordfav|" +
-      "-pool|pool|ordpool|favgroup|-search|search";
+      "-pool|pool|ordpool|-search|search";
 
     $fields_multiple.autocomplete({
       delay: 100,
@@ -176,10 +176,6 @@
         case "-pool":
         case "ordpool":
           Danbooru.Autocomplete.pool_source(term, resp, metatag);
-          break;
-        case "favgroup":
-        case "-favgroup":
-          Danbooru.Autocomplete.favorite_group_source(term, resp, metatag);
           break;
         case "search":
         case "-search":
@@ -394,26 +390,6 @@
             value: metatag + ":" + pool.name,
             post_count: pool.post_count,
             category: pool.category
-          };
-        }));
-      }
-    });
-  }
-
-  Danbooru.Autocomplete.favorite_group_source = function(term, resp, metatag) {
-    $.ajax({
-      url: "/favorite_groups.json",
-      data: {
-        "search[name_matches]": term,
-        "limit": 10
-      },
-      method: "get",
-      success: function(data) {
-        resp($.map(data, function(favgroup) {
-          return {
-            label: favgroup.name.replace(/_/g, " "),
-            value: metatag + ":" + favgroup.name,
-            post_count: favgroup.post_count
           };
         }));
       }

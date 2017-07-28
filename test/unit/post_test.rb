@@ -1581,15 +1581,6 @@ class PostTest < ActiveSupport::TestCase
       assert_tag_match([parent], "child:any")
     end
 
-    should "return posts for the favgroup:<name> metatag" do
-      favgroups = FactoryGirl.create_list(:favorite_group, 2, creator: CurrentUser.user)
-      posts = favgroups.map { |g| FactoryGirl.create(:post, tag_string: "favgroup:#{g.name}") }
-
-      assert_tag_match([posts[0]], "favgroup:#{favgroups[0].name}")
-      assert_tag_match([posts[1]], "-favgroup:#{favgroups[0].name}")
-      assert_tag_match([], "-favgroup:#{favgroups[0].name} -favgroup:#{favgroups[1].name}")
-    end
-
     should "return posts for the user:<name> metatag" do
       users = FactoryGirl.create_list(:user, 2)
       posts = users.map { |u| FactoryGirl.create(:post, uploader: u) }

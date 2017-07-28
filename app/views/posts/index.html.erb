@@ -25,8 +25,6 @@
           <li><%= link_to "Wiki", wiki_page_path(@post_set.wiki_page), :id => "show-excerpt-link" %></li>
         <% elsif @post_set.has_pool? %>
           <li><%= link_to "Pool", pool_path(@post_set.pool), :id => "show-excerpt-link" %></li>
-        <% elsif @post_set.has_favgroup? %>
-          <li><%= link_to "Favorite Group", favorite_group_path(@post_set.favgroup), :id => "show-excerpt-link" %></li>
         <% elsif @post_set.is_single_tag? && !@post_set.is_metatag_search? %>
           <li><%= link_to "Wiki", "#", :id => "show-excerpt-link" %></li>
         <% end %>

@@ -114,7 +114,7 @@ private
           @error_message = post.errors.full_messages.join("; ")
           render :template => "static/error", :status => 500
         else
-          response_params = {:tags => params[:tags_query], :pool_id => params[:pool_id], :favgroup_id => params[:favgroup_id]}
+          response_params = {:tags => params[:tags_query], :pool_id => params[:pool_id]}
           response_params.reject!{|key, value| value.blank?}
           redirect_to post_path(post, response_params)
         end

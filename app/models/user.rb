@@ -282,10 +282,6 @@ class User < ApplicationRecord
     def remove_favorite!(post)
       Favorite.remove(post: post, user: self)
     end
-
-    def favorite_groups
-      FavoriteGroup.for_creator(CurrentUser.user.id).order("updated_at desc")
-    end
   end
 
   module LevelMethods
@@ -536,16 +532,6 @@ class User < ApplicationRecord
       end
     end
 
-    def favorite_group_limit
-      if is_platinum?
-        10
-      elsif is_gold?
-        5
-      else
-        3
-      end
-    end
-
     def api_regen_multiplier
       # regen this amount per second
       if is_platinum?
@@ -604,7 +590,7 @@ class User < ApplicationRecord
           :favorite_tags, :blacklisted_tags, :time_zone, :per_page,
           :custom_style, :favorite_count,
           :api_regen_multiplier, :api_burst_limit, :remaining_api_limit,
-          :statement_timeout, :favorite_group_limit, :favorite_limit,
+          :statement_timeout, :favorite_limit,
           :tag_query_limit, :max_saved_searches,
         ]
       end
@@ -616,8 +602,7 @@ class User < ApplicationRecord
     def full_attributes
       [
         :wiki_page_version_count, :pool_version_count,
-        :forum_post_count, :comment_count, :favorite_group_count,
-        :positive_feedback_count,
+        :forum_post_count, :comment_count, :positive_feedback_count,
         :neutral_feedback_count, :negative_feedback_count, :upload_limit,
         :max_upload_limit
       ]
@@ -649,10 +634,6 @@ class User < ApplicationRecord
 
     def comment_count
       Comment.for_creator(id).count
-    end
-
-    def favorite_group_count
-      FavoriteGroup.for_creator(id).count
     end
 
     def flag_count
