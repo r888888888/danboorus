@@ -17,7 +17,7 @@ class Comment < ApplicationRecord
   after_save(:if => lambda {|rec| rec.is_deleted? && rec.is_deleted_changed? && CurrentUser.id != rec.creator_id}) do |rec|
     ModAction.log("comment ##{rec.id} deleted by #{CurrentUser.name}")
   end
-  attr_accessible :body, :post_id, :do_not_bump_post, :is_deleted, :as => [:member, :gold, :platinum, :moderator, :admin]
+  attr_accessible :body, :post_id, :is_deleted, :as => [:member, :gold, :platinum, :moderator, :admin]
   attr_accessible :is_sticky, :as => [:moderator, :admin]
   mentionable(
     :message_field => :body, 
@@ -57,14 +57,6 @@ class Comment < ApplicationRecord
 
     def unsticky
       where("comments.is_sticky = false")
-    end
-
-    def bumping
-      where("comments.do_not_bump_post = false")
-    end
-
-    def nonbumping
-      where("comments.do_not_bump_post = true")
     end
 
     def post_tags_match(query)
@@ -111,9 +103,6 @@ class Comment < ApplicationRecord
 
       q = q.sticky if params[:is_sticky] == "true"
       q = q.unsticky if params[:is_sticky] == "false"
-
-      q = q.nonbumping if params[:do_not_bump_post] == "true"
-      q = q.bumping if params[:do_not_bump_post] == "false"
 
       case params[:order]
       when "post_id", "post_id_desc"
@@ -196,13 +185,6 @@ class Comment < ApplicationRecord
       Post.where(:id => post_id).update_all(:last_commented_at => nil)
     else
       Post.where(:id => post_id).update_all(:last_commented_at => other_comments.first.created_at)
-    end
-
-    other_comments = other_comments.where("do_not_bump_post = FALSE")
-    if other_comments.count == 0
-      Post.where(:id => post_id).update_all(:last_comment_bumped_at => nil)
-    else
-      Post.where(:id => post_id).update_all(:last_comment_bumped_at => other_comments.first.created_at)
     end
 
     true

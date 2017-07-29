@@ -78,7 +78,7 @@ private
   end
 
   def index_by_post
-    @posts = Post.where("last_comment_bumped_at IS NOT NULL").tag_match(params[:tags]).reorder("last_comment_bumped_at DESC NULLS LAST").paginate(params[:page], :limit => 5, :search_count => params[:search])
+    @posts = Post.where("last_commented_at IS NOT NULL").tag_match(params[:tags]).reorder("last_commented_at DESC NULLS LAST").paginate(params[:page], :limit => 5, :search_count => params[:search])
     @posts.each # hack to force rails to eager load
     respond_with(@posts) do |format|
       format.xml do
@@ -106,7 +106,7 @@ private
   end
 
   def create_params
-    params.require(:comment).permit(:post_id, :body, :do_not_bump_post, :is_sticky)
+    params.require(:comment).permit(:post_id, :body, :is_sticky)
   end
 
   def update_params

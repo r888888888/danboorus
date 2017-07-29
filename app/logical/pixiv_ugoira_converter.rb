@@ -3,8 +3,6 @@ class PixivUgoiraConverter
     folder = Zip::File.new(source_path)
     write_webm(folder, output_path, frame_data)
     write_preview(folder, preview_path)
-    RemoteFileManager.new(output_path).distribute
-    RemoteFileManager.new(preview_path).distribute
   end
 
   def self.write_webm(folder, write_path, frame_data)

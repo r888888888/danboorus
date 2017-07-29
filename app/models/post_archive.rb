@@ -63,6 +63,7 @@ class PostArchive < ApplicationRecord
         raise NotImplementedError.new("Archive service is not configured") if !enabled?
 
         json = {
+          "booru_id" => 0,
           "post_id" => post.id,
           "rating" => post.rating,
           "parent_id" => post.parent_id,

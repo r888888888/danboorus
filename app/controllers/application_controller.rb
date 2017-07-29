@@ -8,7 +8,6 @@ class ApplicationController < ActionController::Base
   before_filter :normalize_search
   before_filter :set_started_at_session
   before_filter :api_check
-  before_filter :set_safe_mode
   # before_filter :secure_cookies_check
   layout "default"
   force_ssl :if => :ssl_login?
@@ -184,10 +183,6 @@ class ApplicationController < ActionController::Base
         end
       end
     end
-  end
-
-  def set_safe_mode
-    CurrentUser.set_safe_mode(request)
   end
 
   def secure_cookies_check

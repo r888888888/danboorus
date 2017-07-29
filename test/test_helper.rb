@@ -24,12 +24,9 @@ end
 
 class ActiveSupport::TestCase
   include PostArchiveTestHelper
-  include ReportbooruHelper
   include DownloadTestHelper
 
   setup do
-    mock_popular_search_service!
-    mock_missed_search_service!
     WebMock.allow_net_connect!
   end
 

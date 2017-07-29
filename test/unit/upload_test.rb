@@ -20,7 +20,7 @@ class UploadTest < ActiveSupport::TestCase
 
     context "An upload" do
       teardown do
-        FileUtils.rm_f(Dir.glob("#{Rails.root}/tmp/test.*"))
+        FileUtils.rm_f(Dir.glob("#{Rails.root}/tmp/test-*"))
       end
 
       context "from a user that is limited" do
@@ -184,9 +184,7 @@ class UploadTest < ActiveSupport::TestCase
 
       context "resizer" do
         teardown do
-          FileUtils.rm_f(Dir.glob("#{Rails.root}/public/data/preview/test.*.jpg"))
-          FileUtils.rm_f(Dir.glob("#{Rails.root}/public/data/sample/test.*.jpg"))
-          FileUtils.rm_f(Dir.glob("#{Rails.root}/public/data/test.*.jpg"))
+          FileUtils.rm_f(Dir.glob("#{Rails.root}/public/data/**/test-*.jpg"))
         end
 
         should "generate several resized versions of the image" do

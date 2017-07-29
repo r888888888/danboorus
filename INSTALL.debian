@@ -103,8 +103,16 @@ sudo -u danbooru ssh-keygen
 
 mkdir -p /var/www/danbooru2/shared/config
 mkdir -p /var/www/danbooru2/shared/data
-mkdir -p /var/www/danbooru2/shared/data/preview
-mkdir -p /var/www/danbooru2/shared/data/sample
+for i in {0..9} {a..f} ; do 
+  for j in {0..9} {a..f} ; do
+    for k in {0..9} {a..f} ; do
+      mkdir -p /var/www/danbooru2/shared/data/$i/$j/$k
+      mkdir -p /var/www/danbooru2/shared/data/preview/$i/$j/$k
+      mkdir -p /var/www/danbooru2/shared/data/sample/$i/$j/$k
+    done
+  done
+done
+
 chown -R danbooru:danbooru /var/www/danbooru2
 curl -L -s $GITHUB_INSTALL_SCRIPTS/database.yml.templ -o /var/www/danbooru2/shared/config/database.yml
 curl -L -s $GITHUB_INSTALL_SCRIPTS/danbooru_local_config.rb.templ -o /var/www/danbooru2/shared/config/danbooru_local_config.rb

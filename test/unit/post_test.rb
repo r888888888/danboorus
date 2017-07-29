@@ -14,7 +14,7 @@ class PostTest < ActiveSupport::TestCase
     super
 
     Timecop.travel(2.weeks.ago) do
-      @user = FactoryGirl.create(:user)
+      @user = FactoryGirl.create(:member_user)
     end
     CurrentUser.user = @user
     CurrentUser.ip_addr = "127.0.0.1"
@@ -376,11 +376,6 @@ class PostTest < ActiveSupport::TestCase
         setup do
           @post.update(:tag_string => "aaa bbb ccc ddd tagme")
           CurrentUser.user = FactoryGirl.create(:user)
-        end
-
-        should "not allow you to remove tags" do
-          @post.update_attributes(:tag_string => "aaa")
-          assert_equal(["You must have an account at least 1 week old to remove tags"], @post.errors.full_messages)
         end
 
         should "allow you to remove request tags" do
@@ -747,20 +742,14 @@ class PostTest < ActiveSupport::TestCase
 
           context "upvote:self or downvote:self" do
             context "by a member" do
-              should "not upvote the post" do
-                assert_raises PostVote::Error do
-                  @post.update(:tag_string => "upvote:self")
-                end
-
-                assert_equal(0, @post.score)
+              should "upvote the post" do
+                @post.update(:tag_string => "upvote:self")
+                assert_equal(1, @post.score)
               end
 
-              should "not downvote the post" do
-                assert_raises PostVote::Error do
-                  @post.update(:tag_string => "downvote:self")
-                end
-
-                assert_equal(0, @post.score)
+              should "downvote the post" do
+                @post.update(:tag_string => "downvote:self")
+                assert_equal(-1, @post.score)
               end
             end
 
@@ -861,20 +850,6 @@ class PostTest < ActiveSupport::TestCase
 
         should "have the appropriate file type tag added automatically" do
           assert_match(/flash/, @post.tag_string)
-        end
-      end
-
-      context "with *_(cosplay) tags" do
-        setup do
-          @post.add_tag("hakurei_reimu_(cosplay)")
-          @post.add_tag("hatsune_miku_(cosplay)")
-          @post.save
-        end
-
-        should "add the character tags and the cosplay tag" do
-          assert(@post.has_tag?("hakurei_reimu"))
-          assert(@post.has_tag?("hatsune_miku"))
-          assert(@post.has_tag?("cosplay"))
         end
       end
 
@@ -1222,7 +1197,7 @@ class PostTest < ActiveSupport::TestCase
       subject { @post }
 
       should_not allow_value("S", "safe", "derp").for(:rating)
-      should_not allow_value("s", "e").for(:rating)
+      should_not allow_value("e").for(:rating)
     end
   end
 
@@ -1241,23 +1216,9 @@ class PostTest < ActiveSupport::TestCase
         end
       end
 
-      should "decrement the post's score for gold users" do
+      should "decrement the post's score for users" do
         assert_difference("@post.score", -1) do
           @post.remove_favorite!(@user)
-        end
-      end
-
-      should "not decrement the post's score for basic users" do
-        @member = FactoryGirl.create(:user)
-
-        assert_no_difference("@post.score") { @post.add_favorite!(@member) }
-        assert_no_difference("@post.score") { @post.remove_favorite!(@member) }
-      end
-
-      should "not decrement the user's favorite_count if the user did not favorite the post" do
-        @post2 = FactoryGirl.create(:post)
-        assert_no_difference("@user.favorite_count") do
-          @post2.remove_favorite!(@user)
         end
       end
     end
@@ -1286,12 +1247,6 @@ class PostTest < ActiveSupport::TestCase
       should "increment the post's score for gold users" do
         @post.add_favorite!(@user)
         assert_equal(1, @post.score)
-      end
-
-      should "not increment the post's score for basic users" do
-        @member = FactoryGirl.create(:user)
-        @post.add_favorite!(@member)
-        assert_equal(0, @post.score)
       end
 
       should "update the fav strings ont he post" do
@@ -1325,7 +1280,7 @@ class PostTest < ActiveSupport::TestCase
         @gold1 = FactoryGirl.create(:gold_user)
         @voter = FactoryGirl.create(:user)
 
-        @child.add_favorite!(@user1)
+        @child.add_favorite!(@user)
         @child.add_favorite!(@gold1)
         @child.add_favorite!(@voter)
         @parent.add_favorite!(@voter)
@@ -1348,7 +1303,7 @@ class PostTest < ActiveSupport::TestCase
       should "create a vote for each user who can vote" do
         assert(@parent.votes.where(user: @gold1).exists?)
         assert(@parent.votes.where(user: @voter).exists?)
-        assert_equal(4, @parent.score)
+        assert_equal(3, @parent.score)
       end
     end
   end
@@ -1794,12 +1749,11 @@ class PostTest < ActiveSupport::TestCase
           score: n,
           fav_count: n,
           file_size: 1.megabyte * n,
-          # posts[0] is portrait, posts[1] is landscape. posts[1].mpixels > posts[0].mpixels.
           image_height: 100*n*n,
           image_width: 100*(3-n)*n,
         )
 
-        FactoryGirl.create(:comment, post: p, do_not_bump_post: false)
+        FactoryGirl.create(:comment, post: p)
         FactoryGirl.create(:note, post: p)
         p
       end
@@ -1809,10 +1763,7 @@ class PostTest < ActiveSupport::TestCase
       assert_tag_match(posts.reverse, "order:favcount")
       assert_tag_match(posts.reverse, "order:change")
       assert_tag_match(posts.reverse, "order:comment")
-      assert_tag_match(posts.reverse, "order:comment_bumped")
       assert_tag_match(posts.reverse, "order:note")
-      assert_tag_match(posts.reverse, "order:mpixels")
-      assert_tag_match(posts.reverse, "order:portrait")
       assert_tag_match(posts.reverse, "order:filesize")
       assert_tag_match(posts.reverse, "order:rank")
 
@@ -1821,26 +1772,8 @@ class PostTest < ActiveSupport::TestCase
       assert_tag_match(posts, "order:favcount_asc")
       assert_tag_match(posts, "order:change_asc")
       assert_tag_match(posts, "order:comment_asc")
-      assert_tag_match(posts, "order:comment_bumped_asc")
       assert_tag_match(posts, "order:note_asc")
-      assert_tag_match(posts, "order:mpixels_asc")
-      assert_tag_match(posts, "order:landscape")
       assert_tag_match(posts, "order:filesize_asc")
-    end
-
-    should "return posts for order:comment_bumped" do
-      post1 = FactoryGirl.create(:post)
-      post2 = FactoryGirl.create(:post)
-      post3 = FactoryGirl.create(:post)
-
-      CurrentUser.scoped(FactoryGirl.create(:gold_user), "127.0.0.1") do
-        comment1 = FactoryGirl.create(:comment, :post => post1)
-        comment2 = FactoryGirl.create(:comment, :post => post2, :do_not_bump_post => true)
-        comment3 = FactoryGirl.create(:comment, :post => post3)
-      end
-
-      assert_tag_match([post3, post1, post2], "order:comment_bumped")
-      assert_tag_match([post2, post1, post3], "order:comment_bumped_asc")
     end
 
     should "return posts for a filesize search" do
@@ -1882,14 +1815,6 @@ class PostTest < ActiveSupport::TestCase
   end
 
   context "Voting:" do
-    should "not allow members to vote" do
-      @user = FactoryGirl.create(:user)
-      @post = FactoryGirl.create(:post)
-      CurrentUser.scoped(@user) do
-        assert_raises(PostVote::Error) { @post.vote!("up") }
-      end
-    end
-
     should "not allow duplicate votes" do
       user = FactoryGirl.create(:gold_user)
       post = FactoryGirl.create(:post)
@@ -1971,31 +1896,6 @@ class PostTest < ActiveSupport::TestCase
     end
 
     context "The cache" do
-      context "when shared between users on danbooru/safebooru" do
-        setup do
-          Danbooru.config.stubs(:blank_tag_search_fast_count).returns(nil)
-          FactoryGirl.create(:post, :tag_string => "aaa bbb", :rating => "e")
-          FactoryGirl.create(:post, :tag_string => "aaa bbb", :rating => "s")
-          FactoryGirl.create(:post, :tag_string => "aaa bbb", :rating => "s")
-          CurrentUser.stubs(:safe_mode?).returns(true)
-          Post.fast_count("aaa")
-          CurrentUser.stubs(:safe_mode?).returns(false)
-          Post.fast_count("bbb")
-        end
-
-        should "be accurate on danbooru" do
-          CurrentUser.stubs(:safe_mode?).returns(false)
-          assert_equal(3, Post.fast_count("aaa"))
-          assert_equal(3, Post.fast_count("bbb"))
-        end
-
-        should "be accurate on safebooru" do
-          CurrentUser.stubs(:safe_mode?).returns(true)
-          assert_equal(2, Post.fast_count("aaa"))
-          assert_equal(2, Post.fast_count("bbb"))
-        end
-      end
-
       context "when shared between users with the deleted post filter on/off" do
         setup do
           FactoryGirl.create(:post, :tag_string => "aaa bbb", :is_deleted => true)

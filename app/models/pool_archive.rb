@@ -46,6 +46,7 @@ class PoolArchive < ApplicationRecord
     raise NotImplementedError.new("Archive service is not configured.") if !enabled?
 
     json = {
+      booru_id: 0,
       pool_id: pool.id,
       post_ids: pool.post_ids.scan(/\d+/).map(&:to_i),
       updater_id: CurrentUser.id,

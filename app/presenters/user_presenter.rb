@@ -102,8 +102,8 @@ class UserPresenter
   end
 
   def commented_posts_count(template)
-    count = CurrentUser.without_safe_mode { Post.fast_count("commenter:#{user.name}") }
-    template.link_to(count, template.posts_path(:tags => "commenter:#{user.name} order:comment_bumped"))
+    count = Post.fast_count("commenter:#{user.name}")
+    template.link_to(count, template.posts_path(:tags => "commenter:#{user.name} order:comment"))
   end
 
   def post_version_count(template)
@@ -115,7 +115,7 @@ class UserPresenter
   end
 
   def noted_posts_count(template)
-    count = CurrentUser.without_safe_mode { Post.fast_count("noteupdater:#{user.name}") }
+    count = Post.fast_count("noteupdater:#{user.name}")
     template.link_to(count, template.posts_path(:tags => "noteupdater:#{user.name} order:note"))
   end
 

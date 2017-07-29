@@ -23,8 +23,6 @@ The following features are not supported:
 * Popular search reports
 * IQDB
 * CCS
-* Saved searches
-* Post appeals
 * Legacy API
 * Post replacements
 * Bulk update requests
@@ -33,6 +31,9 @@ The following features are not supported:
 * Tag corrections
 * Post bans
 * Post flags
+* Post appeals
+* Saved search categories
+* User feedback categories
 
 Some other important feature differences:
 
@@ -40,6 +41,7 @@ Some other important feature differences:
 default.
 * There are only four user levels now: basic, gold, platinum, and admin.
 * Users can additionaly have Booru-specific permissions: moderator and founder.
+* There is no questionable rating.
 
 Because Danboorus uses a payment processor, some content is banned: children, lolita, pre-teen, snuff, scat, mutilation, bestiality, and rape. There are no exceptions. Any banned content will be deleted and expunged.
 

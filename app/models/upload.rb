@@ -355,19 +355,23 @@ class Upload < ApplicationRecord
 
   module FilePathMethods
     def md5_file_path
-      prefix = Rails.env == "test" ? "test." : ""
-      "#{Rails.root}/public/data/#{prefix}#{md5}.#{file_ext}"
+      prefix = Rails.env == "test" ? "test-" : ""
+      "#{Rails.root}/public/data/#{file_nesting}/#{prefix}#{md5}.#{file_ext}"
+    end
+
+    def file_nesting
+      "#{md5[0]}/#{md5[1]}/#{md5[2]}"
     end
 
     def resized_file_path_for(width)
-      prefix = Rails.env == "test" ? "test." : ""
+      prefix = Rails.env == "test" ? "test-" : ""
 
       case width
       when Danbooru.config.small_image_width
-        "#{Rails.root}/public/data/preview/#{prefix}#{md5}.jpg"
+        "#{Rails.root}/public/data/preview/#{file_nesting}/#{prefix}#{md5}.jpg"
 
       when Danbooru.config.large_image_width
-        "#{Rails.root}/public/data/sample/#{prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
+        "#{Rails.root}/public/data/sample/#{file_nesting}/#{prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
       end
     end
 

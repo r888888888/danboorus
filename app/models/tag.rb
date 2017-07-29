@@ -450,9 +450,6 @@ class Tag < ApplicationRecord
           when "height"
             q[:height] = parse_helper($2)
 
-          when "mpixels"
-            q[:mpixels] = parse_helper_fudged($2, :float)
-
           when "ratio"
             q[:ratio] = parse_helper($2, :ratio)
 

@@ -70,10 +70,6 @@ class Post < ApplicationRecord
         FileUtils.rm_f(file_path)
         FileUtils.rm_f(large_file_path)
         FileUtils.rm_f(preview_file_path)
-
-        RemoteFileManager.new(file_path).delete
-        RemoteFileManager.new(large_file_path).delete
-        RemoteFileManager.new(preview_file_path).delete
       end
     end
 
@@ -82,22 +78,23 @@ class Post < ApplicationRecord
     end
 
     def distribute_files
-      RemoteFileManager.new(file_path).distribute
-      RemoteFileManager.new(preview_file_path).distribute if has_preview?
-      RemoteFileManager.new(large_file_path).distribute if has_large?
     end
 
     def file_path_prefix
-      Rails.env == "test" ? "test." : ""
+      Rails.env.test? ? "test-" : ""
+    end
+
+    def file_nesting
+      "#{md5[0]}/#{md5[1]}/#{md5[2]}"
     end
 
     def file_path
-      "#{Rails.root}/public/data/#{file_path_prefix}#{md5}.#{file_ext}"
+      "#{Rails.root}/public/data/#{file_nesting}/#{file_path_prefix}#{md5}.#{file_ext}"
     end
 
     def large_file_path
       if has_large?
-        "#{Rails.root}/public/data/sample/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
+        "#{Rails.root}/public/data/sample/#{file_nesting}/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
       else
         file_path
       end
@@ -112,7 +109,7 @@ class Post < ApplicationRecord
     end
 
     def preview_file_path
-      "#{Rails.root}/public/data/preview/#{file_path_prefix}#{md5}.jpg"
+      "#{Rails.root}/public/data/preview/#{file_nesting}/#{file_path_prefix}#{md5}.jpg"
     end
 
     def file_name
@@ -121,18 +118,18 @@ class Post < ApplicationRecord
 
     def file_url
        if Danbooru.config.use_s3_proxy?(self)
-         "/cached/data/#{file_path_prefix}#{md5}.#{file_ext}"
+         "/cached/data/#{file_nesting}/#{file_path_prefix}#{md5}.#{file_ext}"
        else
-         "/data/#{file_path_prefix}#{md5}.#{file_ext}"
+         "/data/#{file_nesting}/#{file_path_prefix}#{md5}.#{file_ext}"
        end
     end
 
     def large_file_url
       if has_large?
         if Danbooru.config.use_s3_proxy?(self)
-          "/cached/data/sample/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
+          "/cached/data/sample/#{file_nesting}/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
         else
-          "/data/sample/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
+          "/data/sample/#{file_nesting}/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
         end
       else
         file_url
@@ -144,7 +141,7 @@ class Post < ApplicationRecord
         return "/images/download-preview.png"
       end
 
-      "/data/preview/#{file_path_prefix}#{md5}.jpg"
+      "/data/preview/#{file_nesting}/#{file_path_prefix}#{md5}.jpg"
     end
 
     def complete_preview_file_url
@@ -767,7 +764,7 @@ class Post < ApplicationRecord
 
     def add_favorite!(user)
       Favorite.add(post: self, user: user)
-      vote!("up", user) if user.is_voter?
+      vote!("up", user)
     rescue PostVote::Error
     end
 
@@ -777,7 +774,7 @@ class Post < ApplicationRecord
 
     def remove_favorite!(user)
       Favorite.remove(post: self, user: user)
-      unvote!(user) if user.is_voter?
+      unvote!(user)
     rescue PostVote::Error
     end
 
@@ -877,10 +874,6 @@ class Post < ApplicationRecord
     end
 
     def vote!(vote, voter = CurrentUser.user)
-      unless voter.is_voter?
-        raise PostVote::Error.new("You do not have permission to vote")
-      end
-
       unless can_be_voted_by?(voter)
         raise PostVote::Error.new("You have already voted for this post")
       end
@@ -910,7 +903,7 @@ class Post < ApplicationRecord
     def get_count_from_cache(tags)
       count = Cache.get(count_cache_key(tags))
 
-      if count.nil? && !CurrentUser.safe_mode? && !CurrentUser.hide_deleted_posts?
+      if count.nil? && !CurrentUser.hide_deleted_posts?
         count = select_value_sql("SELECT post_count FROM tags WHERE name = ?", tags.to_s)
       end
 
@@ -930,10 +923,6 @@ class Post < ApplicationRecord
     end
 
     def count_cache_key(tags)
-      if CurrentUser.safe_mode?
-        tags = "#{tags} rating:s".strip
-      end
-      
       if CurrentUser.user && CurrentUser.hide_deleted_posts? && tags !~ /(?:^|\s)(?:-)?status:.+/
         tags = "#{tags} -status:deleted".strip
       end
@@ -1106,7 +1095,6 @@ class Post < ApplicationRecord
           update_children_on_destroy
           decrement_tag_post_counts
           remove_from_all_pools
-          remove_from_fav_groups
           remove_from_favorites
           destroy
           update_parent_on_destroy
@@ -1121,12 +1109,8 @@ class Post < ApplicationRecord
       end
 
       Post.transaction do
-        flag!(reason, is_deletion: true)
-
         self.is_deleted = true
-        update_columns(
-          :is_deleted => is_deleted
-        )
+        update_column(:is_deleted, is_deleted)
         give_favorites_to_parent if options[:move_favorites]
         update_parent_on_save
 
@@ -1143,7 +1127,6 @@ class Post < ApplicationRecord
       end
 
       self.is_deleted = false
-      flags.each {|x| x.resolve!}
       save
       Post.expire_cache_for_all(tag_array)
       ModAction.log("undeleted post ##{id}")
@@ -1298,9 +1281,7 @@ class Post < ApplicationRecord
     end
 
     def sample(query, sample_size)
-      CurrentUser.without_safe_mode do
-        tag_match(query).reorder(:md5).limit(sample_size)
-      end
+      tag_match(query).reorder(:md5).limit(sample_size)
     end
 
     # unflattens the tag_string into one tag per row.
@@ -1401,8 +1382,6 @@ class Post < ApplicationRecord
 
   def visible?
     return false if !Danbooru.config.can_user_see_post?(CurrentUser.user, self)
-    return false if CurrentUser.safe_mode? && rating != "s"
-    return false if CurrentUser.safe_mode? && has_tag?("toddlercon|toddler|diaper|tentacle|rape|bestiality|beastiality|lolita|loli|nude|shota|pussy|penis")
     return false if is_deleted? && !CurrentUser.is_moderator?
     return true
   end

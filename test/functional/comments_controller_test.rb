@@ -104,7 +104,6 @@ class CommentsControllerTest < ActionController::TestCase
           id: @comment.id,
           comment: {
             body: "herp derp",
-            do_not_bump_post: true,
             is_deleted: true,
             post_id: FactoryGirl.create(:post).id,
           }
@@ -114,7 +113,6 @@ class CommentsControllerTest < ActionController::TestCase
         @comment.reload
 
         assert_equal("herp derp", @comment.body)
-        assert_equal(false, @comment.do_not_bump_post)
         assert_equal(true, @comment.is_deleted)
         assert_equal(@post.id, @comment.post_id)
 

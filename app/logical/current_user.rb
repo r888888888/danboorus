@@ -46,30 +46,8 @@ class CurrentUser
     user.name
   end
 
-  def self.safe_mode?
-    Thread.current[:safe_mode]
-  end
-
   def self.admin_mode?
     Thread.current[:admin_mode]
-  end
-
-  def self.without_safe_mode
-    prev = Thread.current[:safe_mode]
-    Thread.current[:safe_mode] = false
-    Thread.current[:admin_mode] = true
-    yield
-  ensure
-    Thread.current[:safe_mode] = prev
-    Thread.current[:admin_mode] = false
-  end
-
-  def self.set_safe_mode(req)
-    if req.host =~ /safe/ || req.params[:safe_mode]
-      Thread.current[:safe_mode] = true
-    else
-      Thread.current[:safe_mode] = false
-    end
   end
 
   def self.method_missing(method, *params, &block)

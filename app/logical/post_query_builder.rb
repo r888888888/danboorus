@@ -97,12 +97,7 @@ class PostQueryBuilder
       raise ::Post::SearchError.new("You cannot search for more than #{Danbooru.config.tag_query_limit} tags at a time")
     end
 
-    if CurrentUser.safe_mode?
-      relation = relation.where("posts.rating = 's'")
-    end
-
     relation = add_range_relation(q[:post_id], "posts.id", relation)
-    relation = add_range_relation(q[:mpixels], "posts.image_width * posts.image_height / 1000000.0", relation)
     relation = add_range_relation(q[:ratio], "ROUND(1.0 * posts.image_width / GREATEST(1, posts.image_height), 2)", relation)
     relation = add_range_relation(q[:width], "posts.image_width", relation)
     relation = add_range_relation(q[:height], "posts.image_height", relation)
@@ -313,8 +308,6 @@ class PostQueryBuilder
 
     if q[:order] == "rank"
       relation = relation.where("posts.score > 0 and posts.created_at >= ?", 2.days.ago)
-    elsif q[:order] == "landscape" || q[:order] == "portrait"
-      relation = relation.where("posts.image_width IS NOT NULL and posts.image_height IS NOT NULL")
     end
 
     case q[:order]
@@ -354,33 +347,11 @@ class PostQueryBuilder
     when "comment_asc", "comm_asc"
       relation = relation.order("posts.last_commented_at ASC NULLS LAST, posts.id ASC")
 
-    when "comment_bumped"
-      relation = relation.order("posts.last_comment_bumped_at DESC NULLS LAST")
-
-    when "comment_bumped_asc"
-      relation = relation.order("posts.last_comment_bumped_at ASC NULLS FIRST")
-
     when "note"
       relation = relation.order("posts.last_noted_at DESC NULLS LAST")
 
     when "note_asc"
       relation = relation.order("posts.last_noted_at ASC NULLS FIRST")
-
-    when "mpixels", "mpixels_desc"
-      relation = relation.where("posts.image_width is not null and posts.image_height is not null")
-      # Use "w*h/1000000", even though "w*h" would give the same result, so this can use
-      # the posts_mpixels index.
-      relation = relation.order("posts.image_width * posts.image_height / 1000000.0 DESC")
-
-    when "mpixels_asc"
-      relation = relation.where("posts.image_width is not null and posts.image_height is not null")
-      relation = relation.order("posts.image_width * posts.image_height / 1000000.0 ASC")
-
-    when "portrait"
-      relation = relation.order("1.0 * posts.image_width / GREATEST(1, posts.image_height) ASC")
-
-    when "landscape"
-      relation = relation.order("1.0 * posts.image_width / GREATEST(1, posts.image_height) DESC")
 
     when "filesize", "filesize_desc"
       relation = relation.order("posts.file_size DESC")

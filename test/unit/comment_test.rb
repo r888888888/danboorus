@@ -92,33 +92,11 @@ class CommentTest < ActiveSupport::TestCase
         assert_equal(["must exist"], comment.errors[:post])
       end
 
-      should "not bump the parent post" do
-        post = FactoryGirl.create(:post)
-        comment = FactoryGirl.create(:comment, :do_not_bump_post => true, :post => post)
-        post.reload
-        assert_nil(post.last_comment_bumped_at)
-
-        comment = FactoryGirl.create(:comment, :post => post)
-        post.reload
-        assert_not_nil(post.last_comment_bumped_at)
-      end
-
-      should "not bump the post after exceeding the threshold" do
-        Danbooru.config.stubs(:comment_threshold).returns(1)
-        p = FactoryGirl.create(:post)
-        c1 = FactoryGirl.create(:comment, :post => p)
-        Timecop.travel(2.seconds.from_now) do
-          c2 = FactoryGirl.create(:comment, :post => p)
-        end
-        p.reload
-        assert_equal(c1.created_at.to_s, p.last_comment_bumped_at.to_s)
-      end
-
       should "always record the last_commented_at properly" do
         post = FactoryGirl.create(:post)
         Danbooru.config.stubs(:comment_threshold).returns(1)
 
-        c1 = FactoryGirl.create(:comment, :do_not_bump_post => true, :post => post)
+        c1 = FactoryGirl.create(:comment, :post => post)
         post.reload
         assert_equal(c1.created_at.to_s, post.last_commented_at.to_s)
 

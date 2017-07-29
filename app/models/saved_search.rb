@@ -18,7 +18,7 @@ class SavedSearch < ApplicationRecord
       def post_ids(user_id)
         return [] unless enabled?
 
-        Cache.get("ss-#{user_id}", 60) do
+        Cache.get(cache_key(user_id), 60) do
           queries = SavedSearch.queries_for(user_id)
           return [] if queries.empty?
 
@@ -54,6 +54,10 @@ class SavedSearch < ApplicationRecord
 
   def self.queries_for(user_id, options = {})
     SavedSearch.where(user_id: user_id).map(&:normalized_query).sort.uniq
+  end
+
+  def self.cache_key(user_id)
+    "ss:#{user_id}"
   end
 
   def normalized_query

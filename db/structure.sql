@@ -516,7 +516,6 @@ CREATE TABLE comments (
     updated_at timestamp without time zone,
     updater_id integer,
     updater_ip_addr inet,
-    do_not_bump_post boolean DEFAULT false NOT NULL,
     is_deleted boolean DEFAULT false NOT NULL,
     is_sticky boolean DEFAULT false NOT NULL
 );
@@ -2127,7 +2126,6 @@ CREATE TABLE posts (
     fav_string text DEFAULT ''::text NOT NULL,
     pool_string text DEFAULT ''::text NOT NULL,
     last_noted_at timestamp without time zone,
-    last_comment_bumped_at timestamp without time zone,
     fav_count integer DEFAULT 0 NOT NULL,
     tag_string text DEFAULT ''::text NOT NULL,
     tag_index tsvector,
@@ -2611,13 +2609,6 @@ ALTER SEQUENCE wiki_pages_id_seq OWNED BY wiki_pages.id;
 --
 
 ALTER TABLE ONLY bans ALTER COLUMN id SET DEFAULT nextval('bans_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY bulk_update_requests ALTER COLUMN id SET DEFAULT nextval('bulk_update_requests_id_seq'::regclass);
 
 
 --
@@ -5492,13 +5483,6 @@ CREATE INDEX index_posts_on_file_size ON posts USING btree (file_size);
 
 
 --
--- Name: index_posts_on_last_comment_bumped_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_posts_on_last_comment_bumped_at ON posts USING btree (last_comment_bumped_at DESC NULLS LAST);
-
-
---
 -- Name: index_posts_on_last_noted_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5510,13 +5494,6 @@ CREATE INDEX index_posts_on_last_noted_at ON posts USING btree (last_noted_at DE
 --
 
 CREATE UNIQUE INDEX index_posts_on_md5 ON posts USING btree (md5);
-
-
---
--- Name: index_posts_on_mpixels; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_posts_on_mpixels ON posts USING btree (((((image_width * image_height))::numeric / 1000000.0)));
 
 
 --
