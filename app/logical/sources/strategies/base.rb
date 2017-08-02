@@ -52,14 +52,14 @@ module Sources
 
       # Given a tag from the source site, should return an array of corresponding Danbooru tags.
       def translate_tag(untranslated_tag)
-        translated_tags = Tag.where(name: WikiPage.active.other_names_equal([untranslated_tag]).uniq.select(:title))
+        translated_tags = Tag.where(name: WikiPage.active.other_names_equal([untranslated_tag]).pluck(:title)).pluck(:name)
 
         if translated_tags.empty?
           normalized_name = [Tag.normalize_name(untranslated_tag)]
-          translated_tags = Tag.nonempty.where(name: normalized_name)
+          translated_tags = Tag.nonempty.where(name: normalized_name).pluck(:name)
         end
 
-        translated_tags
+        translated_tags.map {|x| [x, ""]}
       end
 
       # Should be set to a url for sites that prevent hotlinking, or left nil for sites that don't.

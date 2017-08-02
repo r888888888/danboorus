@@ -108,7 +108,7 @@ class PostArchiveTest < ActiveSupport::TestCase
         assert_equal(2, @post.versions.size)
         @version = @post.versions.sort_by(&:id).last
         assert_equal("bbb ccc xxx", @version.tags)
-        assert_equal("s", @version.rating)
+        assert_equal("e", @version.rating)
         assert_equal("", @version.source)
         assert_nil(@version.parent_id)
       end
@@ -117,13 +117,13 @@ class PostArchiveTest < ActiveSupport::TestCase
         @post.stubs(:apply_post_metatags).raises(NotImplementedError)
 
         assert_raise(NotImplementedError) { @post.update(rating: "s") }
-        assert_equal(1, @post.versions.size)
+        assert_equal(3, @post.versions.size)
       end
 
       should "should create a version if the rating changes" do
         assert_difference("@post.versions.size", 1) do
-          @post.update(rating: "e")
-          assert_equal("e", @post.versions.sort_by(&:id).last.rating)
+          @post.update(rating: "s")
+          assert_equal("s", @post.versions.sort_by(&:id).last.rating)
         end
       end
 
