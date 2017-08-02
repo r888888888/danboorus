@@ -14,8 +14,6 @@ class UploadTest < ActiveSupport::TestCase
     teardown do
       CurrentUser.user = nil
       CurrentUser.ip_addr = nil
-
-      @upload.delete_temp_file if @upload
     end
 
     context "An upload" do
@@ -23,25 +21,12 @@ class UploadTest < ActiveSupport::TestCase
         FileUtils.rm_f(Dir.glob("#{Rails.root}/tmp/test-*"))
       end
 
-      context "from a user that is limited" do
-        setup do
-          CurrentUser.user = FactoryGirl.create(:user, :created_at => 1.year.ago)
-          User.any_instance.stubs(:upload_limit).returns(0)
-        end
-        
-        should "fail creation" do
-          @upload = FactoryGirl.build(:jpg_upload, :tag_string => "")
-          @upload.save
-          assert_equal(["You have reached your upload limit for the day"], @upload.errors.full_messages)
-        end
-      end
-
       context "image size calculator" do
-        should "discover the dimensions for a compressed SWF" do
+        should "zzz discover the dimensions for a compressed SWF" do
           @upload = FactoryGirl.create(:upload, :file_path => "#{Rails.root}/test/files/compressed.swf")
           @upload.calculate_dimensions(@upload.file_path)
-          assert_equal(607, @upload.image_width)
-          assert_equal(756, @upload.image_height)
+          assert_equal(500, @upload.image_width)
+          assert_equal(335, @upload.image_height)
         end
 
         should "discover the dimensions for a JPG with JFIF data" do
@@ -131,11 +116,10 @@ class UploadTest < ActiveSupport::TestCase
 
         should "initialize the final path after downloading a file" do
           @upload = FactoryGirl.create(:source_upload)
-          path = "#{Rails.root}/tmp/test.download.jpg"
-          assert_nothing_raised {@upload.download_from_source(path)}
-          assert(File.exists?(path))
-          assert_equal(8558, File.size(path))
-          assert_equal(path, @upload.file_path)
+          Tempfile.create("test") do |file|
+            assert_nothing_raised {@upload.download_from_source(file.path)}
+            assert_equal(8558, File.size(file.path))
+          end
         end
       end
 
@@ -160,25 +144,28 @@ class UploadTest < ActiveSupport::TestCase
         should "parse and process a cgi file representation" do
           FileUtils.cp("#{Rails.root}/test/files/test.jpg", "#{Rails.root}/tmp")
           @upload = Upload.new(:file => upload_jpeg("#{Rails.root}/tmp/test.jpg"))
-          assert_nothing_raised {@upload.convert_cgi_file}
-          assert(File.exists?(@upload.file_path))
-          assert_equal(28086, File.size(@upload.file_path))
+          Tempfile.create("test") do |file|
+            assert_nothing_raised {@upload.convert_cgi_file(file.path)}
+            assert(File.exists?(@upload.file_path))
+            assert_equal(28086, File.size(@upload.file_path))
+          end
         end
 
         should "process a transparent png" do
           FileUtils.cp("#{Rails.root}/test/files/alpha.png", "#{Rails.root}/tmp")
           @upload = Upload.new(:file => upload_file("#{Rails.root}/tmp/alpha.png", "image/png", "alpha.png"))
-          assert_nothing_raised {@upload.convert_cgi_file}
-          assert(File.exists?(@upload.file_path))
-          assert_equal(1136, File.size(@upload.file_path))
+          Tempfile.create("test") do |file|
+            assert_nothing_raised {@upload.convert_cgi_file(file.path)}
+            assert_equal(1136, File.size(file.path))
+          end
         end
       end
 
       context "hash calculator" do
         should "caculate the hash" do
-          @upload = FactoryGirl.create(:jpg_upload)
+          @upload = FactoryGirl.create(:blank_jpg_upload)
           @upload.calculate_hash(@upload.file_path)
-          assert_equal("ecef68c44edb8a0d6a3070b5f8e8ee76", @upload.md5)
+          assert_equal("674c66d7b7b901cfa6dd87d9bd01a17a", @upload.md5)
         end
       end
 
@@ -212,9 +199,10 @@ class UploadTest < ActiveSupport::TestCase
           :rating => "s",
           :uploader_ip_addr => "127.0.0.1",
           :tag_string => "hoge foo"
-          )
+        )
         assert_difference("Post.count") do
           assert_nothing_raised {@upload.process!}
+          puts @upload.errors.full_messages
         end
 
         post = Post.last
@@ -249,7 +237,7 @@ class UploadTest < ActiveSupport::TestCase
       assert_equal("0d94800c4b520bf3d8adda08f95d31e2", post.md5)
       assert_equal(60, post.image_width)
       assert_equal(60, post.image_height)
-      assert_equal("https://i3.pixiv.net/img-zip-ugoira/img/2014/10/05/23/42/23/46378654_ugoira1920x1080.zip", post.source)
+      assert_equal("https://i.pximg.net/img-zip-ugoira/img/2014/10/05/23/42/23/46378654_ugoira1920x1080.zip", post.source)
       assert_operator(File.size(post.large_file_path), :>, 0)
       assert_operator(File.size(post.preview_file_path), :>, 0)
     end
@@ -261,7 +249,6 @@ class UploadTest < ActiveSupport::TestCase
         :tag_string => "hoge foo"
         )
       @upload.file = upload_jpeg("#{Rails.root}/test/files/test.jpg")
-      @upload.convert_cgi_file
 
       assert_difference("Post.count") do
         assert_nothing_raised {@upload.process!}
@@ -285,17 +272,6 @@ class UploadTest < ActiveSupport::TestCase
       assert_difference("Post.count") do
         assert_nothing_raised {@upload.process!}
       end
-    end
-
-    should "delete the temporary file upon completion" do
-      @upload = FactoryGirl.create(:source_upload,
-        :rating => "s",
-        :uploader_ip_addr => "127.0.0.1",
-        :tag_string => "hoge foo"
-        )
-
-      @upload.process!
-      assert(!File.exists?(@upload.temp_file_path))
     end
   end
 end

@@ -80,72 +80,8 @@ class Post < ApplicationRecord
     def distribute_files
     end
 
-    def file_path_prefix
-      Rails.env.test? ? "test-" : ""
-    end
-
-    def file_nesting
-      "#{md5[0]}/#{md5[1]}/#{md5[2]}"
-    end
-
-    def file_path
-      "#{Rails.root}/public/data/#{file_nesting}/#{file_path_prefix}#{md5}.#{file_ext}"
-    end
-
-    def large_file_path
-      if has_large?
-        "#{Rails.root}/public/data/sample/#{file_nesting}/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
-      else
-        file_path
-      end
-    end
-
-    def large_file_ext
-      if is_ugoira?
-        "webm"
-      else
-        "jpg"
-      end
-    end
-
-    def preview_file_path
-      "#{Rails.root}/public/data/preview/#{file_nesting}/#{file_path_prefix}#{md5}.jpg"
-    end
-
-    def file_name
-      "#{file_path_prefix}#{md5}.#{file_ext}"
-    end
-
-    def file_url
-       if Danbooru.config.use_s3_proxy?(self)
-         "/cached/data/#{file_nesting}/#{file_path_prefix}#{md5}.#{file_ext}"
-       else
-         "/data/#{file_nesting}/#{file_path_prefix}#{md5}.#{file_ext}"
-       end
-    end
-
-    def large_file_url
-      if has_large?
-        if Danbooru.config.use_s3_proxy?(self)
-          "/cached/data/sample/#{file_nesting}/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
-        else
-          "/data/sample/#{file_nesting}/#{file_path_prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
-        end
-      else
-        file_url
-      end
-    end
-
-    def preview_file_url
-      if !has_preview?
-        return "/images/download-preview.png"
-      end
-
-      "/data/preview/#{file_nesting}/#{file_path_prefix}#{md5}.jpg"
-    end
-
     def complete_preview_file_url
-      "http://#{Danbooru.config.hostname}#{preview_file_url}"
+      "http://#{Danbooru.config.hostname}/#{preview_file_url}"
     end
 
     def file_url_for(user)
@@ -223,9 +159,9 @@ class Post < ApplicationRecord
     extend ActiveSupport::Concern
 
     def queue_backup
-      Post.delay(queue: "default", priority: -1).backup_file(file_path, id: id, type: :original)
-      Post.delay(queue: "default", priority: -1).backup_file(large_file_path, id: id, type: :large) if has_large?
-      Post.delay(queue: "default", priority: -1).backup_file(preview_file_path, id: id, type: :preview) if has_preview?
+      Post.delay(queue: "default", priority: -1).backup_file(file_path, id: id, key: file_url)
+      Post.delay(queue: "default", priority: -1).backup_file(large_file_path, id: id, key: large_file_url) if has_large?
+      Post.delay(queue: "default", priority: -1).backup_file(preview_file_path, id: id, key: preview_file_url) if has_preview?
     end
 
     module ClassMethods
@@ -1354,6 +1290,7 @@ class Post < ApplicationRecord
     end
   end
   
+  include PostFileNameBuilder
   include FileMethods
   include BackupMethods
   include ImageMethods

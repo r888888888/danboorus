@@ -5,14 +5,12 @@ class Upload < ApplicationRecord
   class Error < Exception ; end
 
   attr_accessor :file, :image_width, :image_height, :file_ext, :md5, 
-    :file_size, :as_pending, 
+    :file_size, :as_pending,
     :referer_url, :downloaded_source
   belongs_to :uploader, :class_name => "User"
   belongs_to :post
   before_validation :initialize_uploader, :on => :create
   before_validation :initialize_status, :on => :create
-  before_create :convert_cgi_file
-  after_destroy :delete_temp_file
   validate :uploader_is_not_limited, :on => :create
   validate :file_or_source_is_present, :on => :create
   validate :rating_given
@@ -49,8 +47,8 @@ class Upload < ApplicationRecord
       end
     end
 
-    def validate_file_exists
-      unless file_path && File.exists?(file_path)
+    def validate_file_exists(path)
+      unless path && File.exists?(path)
         raise "file does not exist"
       end
     end
@@ -71,8 +69,8 @@ class Upload < ApplicationRecord
       end
     end
 
-    def validate_md5_confirmation_after_move
-      if !md5_confirmation.blank? && md5_confirmation != Digest::MD5.file(md5_file_path).hexdigest
+    def validate_md5_confirmation_after_move(path)
+      if !md5_confirmation.blank? && md5_confirmation != Digest::MD5.file(path).hexdigest
         raise "md5 mismatch"
       end
     end
@@ -106,26 +104,30 @@ class Upload < ApplicationRecord
     def process_upload
       CurrentUser.scoped(uploader, uploader_ip_addr) do
         update_attribute(:status, "processing")
-        self.source = strip_source
-        if is_downloadable?
-          self.downloaded_source, self.source = download_from_source(temp_file_path)
+        Tempfile.create("upload") do |file|
+          temp_path = file.path
+          convert_cgi_file(temp_path)
+          self.source = strip_source
+          if is_downloadable?
+            self.downloaded_source, self.source = download_from_source(temp_path)
+          end
+          validate_file_exists(temp_path)
+          self.content_type = file_header_to_content_type(temp_path)
+          self.file_ext = content_type_to_file_ext(content_type)
+          validate_file_content_type
+          calculate_hash(temp_path)
+          validate_md5_uniqueness
+          validate_md5_confirmation
+          tag_audio
+          validate_video_duration
+          calculate_file_size(temp_path)
+          if has_dimensions?
+            calculate_dimensions(temp_path)
+          end
+          generate_resizes(temp_path)
+          move_file(temp_path)
+          validate_md5_confirmation_after_move(file_path)
         end
-        validate_file_exists
-        self.content_type = file_header_to_content_type(file_path)
-        self.file_ext = content_type_to_file_ext(content_type)
-        validate_file_content_type
-        calculate_hash(file_path)
-        validate_md5_uniqueness
-        validate_md5_confirmation
-        tag_audio
-        validate_video_duration
-        calculate_file_size(file_path)
-        if has_dimensions?
-          calculate_dimensions(file_path)
-        end
-        generate_resizes(file_path)
-        move_file
-        validate_md5_confirmation_after_move
         save
       end
     end
@@ -159,9 +161,6 @@ class Upload < ApplicationRecord
 
     rescue Exception => x
       update_attributes(:status => "error: #{x.class} - #{x.message}", :backtrace => x.backtrace.join("\n"))
-      
-    ensure
-      delete_temp_file
     end
 
     def async_conversion?
@@ -190,22 +189,18 @@ class Upload < ApplicationRecord
   end
 
   module FileMethods
-    def delete_temp_file(path = nil)
-      FileUtils.rm_f(path || temp_file_path)
+    def move_file(path)
+      return if File.exists?(file_path)
+      FileUtils.cp(path, file_path)
     end
 
-    def move_file
-      return if File.exists?(md5_file_path)
-      FileUtils.mv(file_path, md5_file_path)
+    def calculate_file_size(path)
+      self.file_size = File.size(path)
     end
 
-    def calculate_file_size(source_path)
-      self.file_size = File.size(source_path)
-    end
-
-    # Calculates the MD5 based on whatever is in temp_file_path
-    def calculate_hash(source_path)
-      self.md5 = Digest::MD5.file(source_path).hexdigest
+    # Calculates the MD5 based on whatever is in
+    def calculate_hash(path)
+      self.md5 = Digest::MD5.file(path).hexdigest
     end
 
     def is_image?
@@ -226,58 +221,57 @@ class Upload < ApplicationRecord
   end
 
   module ResizerMethods
-    def generate_resizes(source_path)
-      generate_resize_for(Danbooru.config.small_image_width, Danbooru.config.small_image_width, source_path, 85)
+    def generate_resizes(path)
+      generate_resize_for(Danbooru.config.small_image_width, Danbooru.config.small_image_width, path, preview_file_path, 85)
 
       if is_image? && image_width > Danbooru.config.large_image_width
-        generate_resize_for(Danbooru.config.large_image_width, nil, source_path)
+        generate_resize_for(Danbooru.config.large_image_width, nil, path, large_file_path)
       end
     end
 
-    def generate_video_preview_for(width, height, output_path)
+    def generate_video_preview_for(width, height, dest_path)
       dimension_ratio = image_width.to_f / image_height
       if dimension_ratio > 1
         height = (width / dimension_ratio).to_i
       else
         width = (height * dimension_ratio).to_i
       end
-      video.screenshot(output_path, {:seek_time => 0, :resolution => "#{width}x#{height}"})
-      FileUtils.chmod(0664, output_path)
+      video.screenshot(dest_path, {:seek_time => 0, :resolution => "#{width}x#{height}"})
+      FileUtils.chmod(0664, dest_path)
     end
 
-    def generate_resize_for(width, height, source_path, quality = 90)
+    def generate_resize_for(width, height, source_path, dest_path, quality = 90)
       unless File.exists?(source_path)
         raise Error.new("file not found")
       end
 
-      output_path = resized_file_path_for(width)
       if is_image?
-        Danbooru.resize(source_path, output_path, width, height, quality)
+        Danbooru.resize(source_path, dest_path, width, height, quality)
       elsif is_ugoira?
         if Delayed::Worker.delay_jobs
-          # by the time this runs we'll have moved source_path to md5_file_path
-          ugoira_service.generate_resizes(md5_file_path, resized_file_path_for(Danbooru.config.large_image_width), resized_file_path_for(Danbooru.config.small_image_width))
+          # by the time this runs we'll have moved source_path to file_path
+          ugoira_service.generate_resizes(file_path, resized_file_path_for(Danbooru.config.large_image_width), dest_path)
         else
-          ugoira_service.generate_resizes(source_path, resized_file_path_for(Danbooru.config.large_image_width), resized_file_path_for(Danbooru.config.small_image_width), false)
+          ugoira_service.generate_resizes(source_path, resized_file_path_for(Danbooru.config.large_image_width), dest_path, false)
         end
       elsif is_video?
-        generate_video_preview_for(width, height, output_path)
+        generate_video_preview_for(width, height, dest_path)
       end
     end
   end
 
   module DimensionMethods
     # Figures out the dimensions of the image.
-    def calculate_dimensions(file_path)
+    def calculate_dimensions(path)
       if is_video?
         self.image_width = video.width
         self.image_height = video.height
       elsif is_ugoira?
-        ugoira_service.calculate_dimensions(file_path)
+        ugoira_service.calculate_dimensions(path)
         self.image_width = ugoira_service.width
         self.image_height = ugoira_service.height
       else
-        File.open(file_path, "rb") do |file|
+        File.open(path, "rb") do |file|
           image_size = ImageSpec.new(file)
           self.image_width = image_size.width
           self.image_height = image_size.height
@@ -324,8 +318,8 @@ class Upload < ApplicationRecord
       end
     end
 
-    def file_header_to_content_type(source_path)
-      case File.read(source_path, 16)
+    def file_header_to_content_type(path)
+      case File.read(path, 16)
       when /^\xff\xd8/n
         "image/jpeg"
 
@@ -353,41 +347,6 @@ class Upload < ApplicationRecord
     end
   end
 
-  module FilePathMethods
-    def md5_file_path
-      prefix = Rails.env == "test" ? "test-" : ""
-      "#{Rails.root}/public/data/#{file_nesting}/#{prefix}#{md5}.#{file_ext}"
-    end
-
-    def file_nesting
-      "#{md5[0]}/#{md5[1]}/#{md5[2]}"
-    end
-
-    def resized_file_path_for(width)
-      prefix = Rails.env == "test" ? "test-" : ""
-
-      case width
-      when Danbooru.config.small_image_width
-        "#{Rails.root}/public/data/preview/#{file_nesting}/#{prefix}#{md5}.jpg"
-
-      when Danbooru.config.large_image_width
-        "#{Rails.root}/public/data/sample/#{file_nesting}/#{prefix}#{Danbooru.config.large_image_prefix}#{md5}.#{large_file_ext}"
-      end
-    end
-
-    def large_file_ext
-      if is_ugoira?
-        "webm"
-      else
-        "jpg"
-      end
-    end
-
-    def temp_file_path
-      @temp_file_path ||= File.join(Rails.root, "tmp", "upload_#{Time.now.to_f}.#{Process.pid}")
-    end
-  end
-
   module DownloaderMethods
     def strip_source
       source.to_s.strip
@@ -395,13 +354,12 @@ class Upload < ApplicationRecord
 
     # Determines whether the source is downloadable
     def is_downloadable?
-      source =~ /^https?:\/\// && file_path.blank?
+      source =~ /^https?:\/\// && file.blank?
     end
 
-    # Downloads the file to destination_path
-    def download_from_source(destination_path)
-      self.file_path = destination_path
-      download = Downloads::File.new(source, destination_path, :referer_url => referer_url)
+    # Downloads the file
+    def download_from_source(path)
+      download = Downloads::File.new(source, path, :referer_url => referer_url)
       download.download!
       ugoira_service.load(download.data)
       [download.downloaded_source, download.source]
@@ -409,19 +367,17 @@ class Upload < ApplicationRecord
   end
 
   module CgiFileMethods
-    def convert_cgi_file
+    def convert_cgi_file(path)
       return if file.blank? || file.size == 0
 
-      self.file_path = temp_file_path
-
       if file.respond_to?(:tempfile) && file.tempfile
-        FileUtils.cp(file.tempfile.path, file_path)
+        FileUtils.cp(file.tempfile.path, path)
       else
-        File.open(file_path, 'wb') do |out|
+        File.open(path, 'wb') do |out|
           out.write(file.read)
         end
       end
-      FileUtils.chmod(0664, file_path)
+      FileUtils.chmod(0664, path)
     end
   end
 
@@ -503,6 +459,7 @@ class Upload < ApplicationRecord
     end
   end
 
+  include PostFileNameBuilder
   include ConversionMethods
   include ValidationMethods
   include FileMethods
@@ -510,7 +467,6 @@ class Upload < ApplicationRecord
   include DimensionMethods
   include ContentTypeMethods
   include DownloaderMethods
-  include FilePathMethods
   include CgiFileMethods
   include StatusMethods
   include UploaderMethods

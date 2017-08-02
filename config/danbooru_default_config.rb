@@ -107,10 +107,6 @@ module Danbooru
       850
     end
 
-    def large_image_prefix
-      ""
-    end
-
     # When calculating statistics based on the posts table, gather this many posts to sample from.
     def post_sample_size
       300
@@ -212,14 +208,6 @@ module Danbooru
     end
 
     def pixiv_password
-      nil
-    end
-
-    def pixiv_whitecube_login
-      nil
-    end
-
-    def pixiv_whitecube_password
       nil
     end
 
@@ -360,11 +348,6 @@ module Danbooru
     end
 
     def addthis_key
-    end
-
-    # enable s3-nginx proxy caching
-    def use_s3_proxy?(post)
-      false
     end
 
     # include essential tags in image urls (requires nginx/apache rewrites)
