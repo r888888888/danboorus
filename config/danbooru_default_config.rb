@@ -75,7 +75,6 @@ module Danbooru
     def customize_new_user(user)
       # user.level = User::Levels::MEMBER
       #
-      # user.base_upload_limit = 10
       # user.comment_threshold = -1
       # user.blacklisted_tags = ["spoilers", "guro", "scat", "furry -rating:s"].join("\n")
       # user.default_image_size = "large"

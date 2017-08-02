@@ -27,6 +27,32 @@ module Sources::Strategies
       "https://#{artist_name}.tumblr.com/"
     end
 
+    def artist_commentary_title
+      case post[:type]
+      when "text", "link"
+        post[:title]
+      else
+        nil
+      end
+    end
+
+    def artist_commentary_desc
+      case post[:type]
+      when "text"
+        post[:body]
+      when "link"
+        post[:description]
+      when "photo", "video"
+        post[:caption]
+      else
+        nil
+      end
+    end
+
+    def dtext_artist_commentary_desc
+      DText.from_html(artist_commentary_desc).strip
+    end
+
     def artist_name
       post[:blog_name]
     end
@@ -47,6 +73,7 @@ module Sources::Strategies
         []
       end
 
+      urls += self.class.parse_inline_images(artist_commentary_desc)
       urls
     end
 

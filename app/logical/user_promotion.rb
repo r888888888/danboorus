@@ -11,7 +11,6 @@ class UserPromotion
   def promote!
     validate
     user.level = new_level
-    user.inviter_id = promoter.id
     create_user_feedback unless options[:skip_feedback]
     create_dmail unless options[:skip_dmail]
     user.save

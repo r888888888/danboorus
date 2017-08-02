@@ -135,14 +135,6 @@ class UserPresenter
     end
   end
 
-  def inviter(template)
-    if user.inviter_id
-      template.link_to_user(user.inviter)
-    else
-      "None"
-    end
-  end
-
   def feedbacks(template)
     count = user.feedback.count
 

@@ -68,14 +68,6 @@ class AnonymousUser
     true
   end
 
-  def upload_limit
-    0
-  end
-
-  def base_upload_limit
-    0
-  end
-
   def uploaded_tags
     ""
   end

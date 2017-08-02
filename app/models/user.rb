@@ -73,7 +73,6 @@ class User < ApplicationRecord
   has_many :saved_searches
   has_many :forum_posts, lambda {order("forum_posts.created_at")}, :foreign_key => "creator_id"
   has_many :user_name_change_requests, lambda {visible.order("user_name_change_requests.created_at desc")}
-  belongs_to :inviter, :class_name => "User"
   after_update :create_mod_action
   accepts_nested_attributes_for :dmail_filter
 
@@ -96,16 +95,6 @@ class User < ApplicationRecord
 
     def ban_expired?
       is_banned? && recent_ban.try(:expired?)
-    end
-  end
-
-  module InvitationMethods
-    def invite!(level)
-      if level.to_i <= Levels::PLATINUM
-        self.level = level
-        self.inviter_id = CurrentUser.id
-        save
-      end
     end
   end
 
@@ -482,18 +471,6 @@ class User < ApplicationRecord
       true
     end
 
-    def base_upload_limit
-      nil
-    end
-
-    def max_upload_limit
-      nil
-    end
-
-    def upload_limit
-      nil
-    end
-
     def tag_query_limit
       if is_platinum?
         Danbooru.config.base_tag_query_limit * 2
@@ -560,7 +537,7 @@ class User < ApplicationRecord
 
     def method_attributes
       list = super + [
-        :id, :created_at, :name, :inviter_id, :level, :base_upload_limit,
+        :id, :created_at, :name, :level,
         :post_upload_count, :post_update_count, :note_update_count,
         :is_banned, :level_string,
       ]
@@ -755,7 +732,6 @@ class User < ApplicationRecord
   include BlacklistMethods
   include ForumMethods
   include LimitMethods
-  include InvitationMethods
   include ApiMethods
   include CountMethods
   extend SearchMethods
