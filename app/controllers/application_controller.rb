@@ -8,20 +8,16 @@ class ApplicationController < ActionController::Base
   before_filter :normalize_search
   before_filter :set_started_at_session
   before_filter :api_check
-  # before_filter :secure_cookies_check
+  before_filter :secure_cookies_check
   layout "default"
-  force_ssl :if => :ssl_login?
+  force_ssl
 
-  rescue_from Exception, :with => :rescue_exception
+  # rescue_from Exception, :with => :rescue_exception
   rescue_from User::PrivilegeError, :with => :access_denied
   rescue_from SessionLoader::AuthenticationFailure, :with => :authentication_failed
   rescue_from Danbooru::Paginator::PaginationError, :with => :render_pagination_limit
 
   protected
-
-  def ssl_login?
-    cookies[:ssl_login].present?
-  end
 
   def enable_cors
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -186,10 +182,6 @@ class ApplicationController < ActionController::Base
   end
 
   def secure_cookies_check
-    if request.ssl?
-      Rails.application.config.session_store :cookie_store, :key => '_danbooru_session', :secure => true
-    else
-      Rails.application.config.session_store :cookie_store, :key => '_danbooru_session', :secure => false
-    end
+    Rails.application.config.session_store :cookie_store, :key => '_danbooru_session', :secure => true
   end
 end

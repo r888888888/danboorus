@@ -1,5 +1,5 @@
 class PostVotesController < ApplicationController
-  before_filter :voter_only
+  before_filter :member_only
   skip_before_filter :api_check
 
   def create

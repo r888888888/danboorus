@@ -33,16 +33,6 @@ class PostVotesControllerTest < ActionController::TestCase
         end
       end
 
-      should "not allow members to vote" do
-        CurrentUser.scoped(FactoryGirl.create(:member_user)) do
-          p1 = FactoryGirl.create(:post)
-          post :create, {:post_id => p1.id, :score => "up", :format => "js"}, {:user_id => CurrentUser.id}
-
-          assert_response 403
-          assert_equal(0, p1.reload.score)
-        end
-      end
-
       should "increment a post's score if the score is positive" do
         post :create, {:post_id => @post.id, :score => "up", :format => "js"}, {:user_id => @user.id}
         assert_response :success

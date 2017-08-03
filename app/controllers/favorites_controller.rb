@@ -51,10 +51,10 @@ class FavoritesController < ApplicationController
 
     if @post
       @post.remove_favorite!(CurrentUser.user)
-      path = mobile_post_path(@post)
+      path = post_path(@post)
     else
       Favorite.remove(post_id: params[:id], user: CurrentUser.user)
-      path = mobile_posts_path
+      path = posts_path
     end
 
     respond_with(@post) do |format|

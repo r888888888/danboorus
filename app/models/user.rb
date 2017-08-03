@@ -65,7 +65,6 @@ class User < ApplicationRecord
   has_many :bans, lambda {order("bans.id desc")}
   has_one :recent_ban, lambda {order("bans.id desc")}, :class_name => "Ban"
 
-  has_one :api_key
   has_one :dmail_filter
   has_one :token_bucket
   has_many :note_versions, :foreign_key => "updater_id"
@@ -201,15 +200,6 @@ class User < ApplicationRecord
     module ClassMethods
       def authenticate(name, pass)
         authenticate_hash(name, sha1(pass))
-      end
-
-      def authenticate_api_key(name, api_key)
-        key = ApiKey.where(:key => api_key).first
-        return nil if key.nil?
-        user = find_by_name(name)
-        return nil if user.nil?
-        return user if key.user_id == user.id
-        nil
       end
 
       def authenticate_hash(name, hash)

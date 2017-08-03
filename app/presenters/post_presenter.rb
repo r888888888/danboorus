@@ -96,6 +96,10 @@ class PostPresenter < Presenter
     @tag_set_presenter ||= TagSetPresenter.new(@post.tag_array)
   end
 
+  def tag_string
+    @post.tag_string
+  end
+
   def preview_html
     PostPresenter.preview(@post)
   end

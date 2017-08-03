@@ -203,6 +203,13 @@ Rails.application.routes.draw do
     end
   end
 
+  get "/static/keyboard_shortcuts" => "static#keyboard_shortcuts", :as => "keyboard_shortcuts"
+  get "/static/bookmarklet" => "static#bookmarklet", :as => "bookmarklet"
+  get "/static/site_map" => "static#site_map", :as => "site_map"
+  get "/static/terms_of_service" => "static#terms_of_service", :as => "terms_of_service"
+  post "/static/accept_terms_of_service" => "static#accept_terms_of_service", :as => "accept_terms_of_service"
+  get "/static/contact" => "static#contact", :as => "contact"
+
   root :to => "posts#index"
 
   get "*other", :to => "static#not_found"
