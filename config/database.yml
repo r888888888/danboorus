@@ -1,0 +1,56 @@
+development:
+  adapter: postgresql
+  database: db_instance_development
+  pool: 5
+  timeout: 5000
+  host: postgres
+
+test:
+  adapter: postgresql
+  database: db_instance_test
+  pool: 5
+  timeout: 5000
+  host: postgres
+
+production:
+  adapter: postgresql
+  database: db_instance_production
+  pool: 5
+  timeout: 5000
+  host: postgres
+
+core_development:
+  adapter: postgresql
+  database: db_core_development
+  pool: 5
+  timeout: 5000
+  host: postgres
+
+core_test:
+  adapter: postgresql
+  database: db_core_test
+  pool: 5
+  timeout: 5000
+  host: postgres
+
+core_production:
+  adapter: postgresql
+  database: db_core_production
+  pool: 5
+  timeout: 5000
+  host: postgres
+
+archive_development:
+  adapter: postgresql
+  database: db_archive_development
+  host: postgres
+
+archive_test:
+  adapter: postgresql
+  database: db_archive_test
+  host: postgres
+
+archive_production:
+  adapter: postgresql
+  database: db_archive_development
+  host: postgres
