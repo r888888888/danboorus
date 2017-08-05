@@ -8,8 +8,10 @@ RUN apt-get update
 RUN apt-get -y install apt-utils build-essential automake libssl-dev libxml2-dev libxslt-dev ncurses-dev sudo libreadline-dev flex bison ragel memcached libmemcached-dev git curl libcurl4-openssl-dev imagemagick libmagickcore-dev libmagickwand-dev sendmail-bin sendmail postgresql-client libpq-dev nginx ssh coreutils libavcodec-dev mkvtoolnix emacs24-nox
 RUN useradd -ms /bin/bash danbooru -u 1000
 RUN mkdir /app
+RUN mkdir -p /var/www/danbooru/shared
 COPY . /app
 RUN chown -R danbooru:danbooru /app
+RUN chown -R danbooru:danbooru /var/www/danbooru
 EXPOSE 3000
 USER danbooru
 ENV RAILS_ENV production
