@@ -64,7 +64,29 @@ module Sources
       end
 
       should "get the image url" do
-        assert_equal("http://pbs.twimg.com/media/B7jfc1JCcAEyeJh.png:orig", @site.image_url)
+        assert_equal("https://pbs.twimg.com/media/B7jfc1JCcAEyeJh.png:orig", @site.image_url)
+      end
+    end
+
+    context "An extended tweet" do
+      should "extract the correct image url" do
+        @site = Sources::Site.new("https://twitter.com/onsen_musume_jp/status/865534101918330881")
+        @site.get
+
+        assert_equal(["https://pbs.twimg.com/media/DAL-ntWV0AEbhes.jpg:orig"], @site.image_urls)
+      end
+ 
+      should "extract all the image urls" do
+        @site = Sources::Site.new("https://twitter.com/aoimanabu/status/892370963630743552")
+        @site.get
+
+        urls = %w[
+          https://pbs.twimg.com/media/DGJWp59UIAA_-en.jpg:orig
+          https://pbs.twimg.com/media/DGJWqGLUwAAn2RL.jpg:orig
+          https://pbs.twimg.com/media/DGJWqT_UMAAvmSK.jpg:orig
+        ]
+
+        assert_equal(urls, @site.image_urls)
       end
     end
 
@@ -83,7 +105,7 @@ module Sources
       end
 
       should "get the image url" do
-        assert_equal("http://pbs.twimg.com/media/B4HSEP5CUAA4xyu.png:orig", @site.image_url)
+        assert_equal("https://pbs.twimg.com/media/B4HSEP5CUAA4xyu.png:orig", @site.image_url)
       end
 
       should "get the tags" do

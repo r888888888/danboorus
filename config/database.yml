@@ -1,56 +1,62 @@
 development:
   adapter: postgresql
   database: db_instance_development
-  pool: 5
-  timeout: 5000
-  host: postgres
+  host: <%= ENV["DB_INSTANCE_DEVELOPMENT_HOST"] %>
+  user: <%= ENV["DB_INSTANCE_DEVELOPMENT_USER"] %>
+  password: <%= ENV["DB_INSTANCE_DEVELOPMENT_PASSWORD"] %>
 
 test:
   adapter: postgresql
   database: db_instance_test
-  pool: 5
-  timeout: 5000
-  host: postgres
+  host: <%= ENV["DB_INSTANCE_TEST_HOST"] %>
+  user: <%= ENV["DB_INSTANCE_TEST_USER"] %>
+  password: <%= ENV["DB_INSTANCE_TEST_PASSWORD"] %>
 
 production:
   adapter: postgresql
   database: db_instance_production
-  pool: 5
-  timeout: 5000
-  host: postgres
+  host: <%= ENV["DB_INSTANCE_PRODUCTION_HOST"] %>
+  user: <%= ENV["DB_INSTANCE_PRODUCTION_USER"] %>
+  password: <%= ENV["DB_INSTANCE_PRODUCTION_PASSWORD"] %>
 
 core_development:
   adapter: postgresql
   database: db_core_development
-  pool: 5
-  timeout: 5000
-  host: postgres
+  host: <%= ENV["DB_CORE_DEVELOPMENT_HOST"] %>
+  user: <%= ENV["DB_CORE_DEVELOPMENT_USER"] %>
+  password: <%= ENV["DB_CORE_DEVELOPMENT_PASSWORD"] %>
 
 core_test:
   adapter: postgresql
   database: db_core_test
-  pool: 5
-  timeout: 5000
-  host: postgres
+  host: <%= ENV["DB_CORE_TEST_HOST"] %>
+  user: <%= ENV["DB_CORE_TEST_USER"] %>
+  password: <%= ENV["DB_CORE_TEST_PASSWORD"] %>
 
 core_production:
   adapter: postgresql
   database: db_core_production
-  pool: 5
-  timeout: 5000
-  host: postgres
+  host: <%= ENV["DB_CORE_PRODUCTION_HOST"] %>
+  user: <%= ENV["DB_CORE_PRODUCTION_USER"] %>
+  password: <%= ENV["DB_CORE_PRODUCTION_PASSWORD"] %>
 
 archive_development:
   adapter: postgresql
   database: db_archive_development
-  host: postgres
+  host: <%= ENV["DB_ARCHIVE_DEVELOPMENT_HOST"] %>
+  user: <%= ENV["DB_ARCHIVE_DEVELOPMENT_USER"] %>
+  password: <%= ENV["DB_ARCHIVE_DEVELOPMENT_PASSWORD"] %>
 
 archive_test:
   adapter: postgresql
   database: db_archive_test
-  host: postgres
+  host: <%= ENV["DB_ARCHIVE_TEST_HOST"] %>
+  user: <%= ENV["DB_ARCHIVE_TEST_USER"] %>
+  password: <%= ENV["DB_ARCHIVE_TEST_PASSWORD"] %>
 
 archive_production:
   adapter: postgresql
   database: db_archive_development
-  host: postgres
+  host: <%= ENV["DB_ARCHIVE_PRODUCTION_HOST"] %>
+  user: <%= ENV["DB_ARCHIVE_PRODUCTION_USER"] %>
+  password: <%= ENV["DB_ARCHIVE_PRODUCTION_PASSWORD"] %>

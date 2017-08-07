@@ -1,5 +1,7 @@
 module Sources::Strategies
   class Twitter < Base
+    attr_reader :image_urls
+
     def self.url_match?(url)
       url =~ %r!https?://(?:mobile\.)?twitter\.com/\w+/status/\d+! || url =~ %r{https?://pbs\.twimg\.com/media/}
     end
@@ -18,22 +20,19 @@ module Sources::Strategies
 
     def api_response
       status_id = status_id_from_url(url)
-      @api_response ||= TwitterService.new.client.status(status_id)
+      @api_response ||= TwitterService.new.client.status(status_id, tweet_mode: "extended")
     end
 
     def get
       attrs = api_response.attrs
       @artist_name = attrs[:user][:name]
       @profile_url = "https://twitter.com/" + attrs[:user][:screen_name]
-      @image_url = image_urls.first
+      @image_urls = TwitterService.new.image_urls(api_response)
+      @image_url = @image_urls.first
       @tags = attrs[:entities][:hashtags].map do |text:, indices:|
         [text, "https://twitter.com/hashtag/#{text}"]
       end
     rescue ::Twitter::Error::Forbidden
-    end
-
-    def image_urls
-      TwitterService.new.image_urls(url)
     end
 
     def status_id_from_url(url)

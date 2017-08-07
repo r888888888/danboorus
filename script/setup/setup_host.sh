@@ -2,7 +2,5 @@
 
 useradd danbooru -u 1000
 
-mkdir -p /var/www/danbooru/shared/data/original
-mkdir -p /var/www/danbooru/shared/data/preview
-mkdir -p /var/www/danbooru/shared/data/sample
-chown -R danbooru:danbooru /var/www/danbooru/shared
+mkdir -p /var/www/danbooru/shared/data
+chown -R danbooru:danbooru /var/www/danbooru
