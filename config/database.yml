@@ -4,6 +4,7 @@ development:
   host: <%= ENV["DB_INSTANCE_DEVELOPMENT_HOST"] %>
   user: <%= ENV["DB_INSTANCE_DEVELOPMENT_USER"] %>
   password: <%= ENV["DB_INSTANCE_DEVELOPMENT_PASSWORD"] %>
+  port: <%= ENV["DB_INSTANCE_DEVELOPMENT_PORT"]%>
 
 test:
   adapter: postgresql
@@ -11,6 +12,7 @@ test:
   host: <%= ENV["DB_INSTANCE_TEST_HOST"] %>
   user: <%= ENV["DB_INSTANCE_TEST_USER"] %>
   password: <%= ENV["DB_INSTANCE_TEST_PASSWORD"] %>
+  port: <%= ENV["DB_INSTANCE_TEST_PORT"]%>
 
 production:
   adapter: postgresql
@@ -18,6 +20,7 @@ production:
   host: <%= ENV["DB_INSTANCE_PRODUCTION_HOST"] %>
   user: <%= ENV["DB_INSTANCE_PRODUCTION_USER"] %>
   password: <%= ENV["DB_INSTANCE_PRODUCTION_PASSWORD"] %>
+  port: <%= ENV["DB_INSTANCE_PRODUCTION_PORT"]%>
 
 core_development:
   adapter: postgresql
@@ -25,6 +28,7 @@ core_development:
   host: <%= ENV["DB_CORE_DEVELOPMENT_HOST"] %>
   user: <%= ENV["DB_CORE_DEVELOPMENT_USER"] %>
   password: <%= ENV["DB_CORE_DEVELOPMENT_PASSWORD"] %>
+  port: <%= ENV["DB_CORE_DEVELOPMENT_PORT"] %>
 
 core_test:
   adapter: postgresql
@@ -32,6 +36,7 @@ core_test:
   host: <%= ENV["DB_CORE_TEST_HOST"] %>
   user: <%= ENV["DB_CORE_TEST_USER"] %>
   password: <%= ENV["DB_CORE_TEST_PASSWORD"] %>
+  port: <%= ENV["DB_CORE_TEST_PORT"] %>
 
 core_production:
   adapter: postgresql
@@ -39,6 +44,7 @@ core_production:
   host: <%= ENV["DB_CORE_PRODUCTION_HOST"] %>
   user: <%= ENV["DB_CORE_PRODUCTION_USER"] %>
   password: <%= ENV["DB_CORE_PRODUCTION_PASSWORD"] %>
+  port: <%= ENV["DB_CORE_PRODUCTION_PORT"] %>
 
 archive_development:
   adapter: postgresql
@@ -46,6 +52,7 @@ archive_development:
   host: <%= ENV["DB_ARCHIVE_DEVELOPMENT_HOST"] %>
   user: <%= ENV["DB_ARCHIVE_DEVELOPMENT_USER"] %>
   password: <%= ENV["DB_ARCHIVE_DEVELOPMENT_PASSWORD"] %>
+  port: <%= ENV["DB_ARCHIVE_DEVELOPMENT_PORT"] %>
 
 archive_test:
   adapter: postgresql
@@ -53,6 +60,7 @@ archive_test:
   host: <%= ENV["DB_ARCHIVE_TEST_HOST"] %>
   user: <%= ENV["DB_ARCHIVE_TEST_USER"] %>
   password: <%= ENV["DB_ARCHIVE_TEST_PASSWORD"] %>
+  port: <%= ENV["DB_ARCHIVE_TEST_PORT"] %>
 
 archive_production:
   adapter: postgresql
@@ -60,3 +68,4 @@ archive_production:
   host: <%= ENV["DB_ARCHIVE_PRODUCTION_HOST"] %>
   user: <%= ENV["DB_ARCHIVE_PRODUCTION_USER"] %>
   password: <%= ENV["DB_ARCHIVE_PRODUCTION_PASSWORD"] %>
+  port: <%= ENV["DB_ARCHIVE_PRODUCTION_PORT"] %>

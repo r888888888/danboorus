@@ -4,7 +4,7 @@ Rails.application.configure do
       config.cache_store = :memory_store, { size: 32.megabytes }
       Rails.cache = ActiveSupport::Cache.lookup_store(Rails.application.config.cache_store)
     else
-      config.cache_store = :dalli_store, Danbooru.config.memcached_servers, { namespace: Danbooru.config.safe_app_name }
+      config.cache_store = :dalli_store, Danbooru.config.memcached_servers.split(/,/), { namespace: Danbooru.config.safe_app_name }
       Rails.cache = ActiveSupport::Cache.lookup_store(Rails.application.config.cache_store)
 
       Rails.cache.dalli.alive!
