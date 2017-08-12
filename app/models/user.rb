@@ -59,6 +59,8 @@ class User < ApplicationRecord
   before_create :promote_to_admin_if_first_user
   before_create :customize_new_user
   #after_create :notify_sock_puppets
+  has_many :memberships
+  has_many :boorus, through: :memberships
   has_many :feedback, :class_name => "UserFeedback", :dependent => :destroy
   has_many :posts, :foreign_key => "uploader_id"
   has_many :post_votes

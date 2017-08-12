@@ -28,6 +28,7 @@ class Post < ApplicationRecord
   after_save :expire_essential_tag_string_cache
   after_commit :delete_files, :on => :destroy
 
+  belongs_to :booru
   belongs_to :updater, :class_name => "User"
   belongs_to :uploader, :class_name => "User"
   belongs_to :parent, :class_name => "Post"

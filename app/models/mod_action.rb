@@ -1,4 +1,5 @@
 class ModAction < ApplicationRecord
+  belongs_to :booru
   belongs_to :creator, :class_name => "User"
   before_validation :initialize_creator, :on => :create
   validates_presence_of :creator_id

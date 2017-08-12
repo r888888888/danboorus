@@ -1,6 +1,7 @@
 class CommentVote < ApplicationRecord
   class Error < Exception ; end
 
+  belongs_to :booru
   belongs_to :comment
   belongs_to :user
   before_validation :initialize_user, :on => :create

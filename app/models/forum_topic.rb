@@ -13,6 +13,7 @@ class ForumTopic < ApplicationRecord
 
   attr_accessible :title, :original_post_attributes, :category_id, :as => [:member, :gold, :platinum, :moderator, :admin, :default]
   attr_accessible :is_sticky, :is_locked, :is_deleted, :min_level, :as => [:admin, :moderator]
+  belongs_to :booru
   belongs_to :creator, :class_name => "User"
   belongs_to :updater, :class_name => "User"
   has_many :posts, lambda {order("forum_posts.id asc")}, :class_name => "ForumPost", :foreign_key => "topic_id", :dependent => :destroy

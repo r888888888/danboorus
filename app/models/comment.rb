@@ -3,6 +3,7 @@ class Comment < ApplicationRecord
 
   validate :validate_post_exists, :on => :create
   validates_format_of :body, :with => /\S/, :message => 'has no content'
+  belongs_to :booru
   belongs_to :post
   belongs_to :creator, :class_name => "User"
   belongs_to :updater, :class_name => "User"

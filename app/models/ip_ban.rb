@@ -1,5 +1,6 @@
 class IpBan < ApplicationRecord
   IP_ADDR_REGEX = /\A(?:[0-9]{1,3}\.){3}[0-9]{1,3}\Z/
+  belongs_to :booru
   belongs_to :creator, :class_name => "User"
   before_validation :initialize_creator, :on => :create
   validates_presence_of :reason, :creator, :ip_addr

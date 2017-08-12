@@ -1,4 +1,5 @@
 class NewsUpdate < ApplicationRecord
+  belongs_to :booru
   belongs_to :creator, :class_name => "User"
   belongs_to :updater, :class_name => "User"
   scope :recent, lambda {where("created_at >= ?", 2.weeks.ago).order("created_at desc").limit(5)}

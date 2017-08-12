@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   helper :pagination
+  around_filter :load_booru
   before_filter :reset_current_user
   before_filter :set_current_user
   after_filter :reset_current_user
@@ -18,6 +19,17 @@ class ApplicationController < ActionController::Base
   rescue_from Danbooru::Paginator::PaginationError, :with => :render_pagination_limit
 
   protected
+
+  def load_booru
+    if params[:booru_id]
+      Booru.current = Booru.find_by_slug(params[:booru_id])
+    end
+
+    yield
+
+  ensure
+    Booru.current = nil
+  end
 
   def enable_cors
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -182,6 +194,6 @@ class ApplicationController < ActionController::Base
   end
 
   def secure_cookies_check
-    Rails.application.config.session_store :cookie_store, :key => '_danbooru_session', :secure => true
+    Rails.application.config.session_store :cookie_store, :key => '_danboorus_session', :secure => true
   end
 end

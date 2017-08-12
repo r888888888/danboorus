@@ -42,6 +42,7 @@ class SavedSearch < ApplicationRecord
 
   include ListbooruMethods
 
+  belongs_to :booru
   belongs_to :user
   validates :query, :presence => true
   validate :validate_count

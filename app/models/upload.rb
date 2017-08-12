@@ -7,6 +7,7 @@ class Upload < ApplicationRecord
   attr_accessor :file, :image_width, :image_height, :file_ext, :md5, 
     :file_size, :as_pending,
     :referer_url, :downloaded_source
+  belongs_to :booru
   belongs_to :uploader, :class_name => "User"
   belongs_to :post
   before_validation :initialize_uploader, :on => :create

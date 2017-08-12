@@ -2,6 +2,7 @@ class Note < ApplicationRecord
   class RevertError < Exception ; end
 
   attr_accessor :updater_id, :updater_ip_addr, :html_id
+  belongs_to :booru
   belongs_to :post
   belongs_to :creator, :class_name => "User"
   belongs_to :updater, :class_name => "User"

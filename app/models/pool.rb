@@ -9,6 +9,7 @@ class Pool < ApplicationRecord
   validate :updater_can_change_category
   validate :name_does_not_conflict_with_metatags
   validate :updater_can_remove_posts
+  belongs_to :booru
   belongs_to :creator, :class_name => "User"
   belongs_to :updater, :class_name => "User"
   before_validation :normalize_post_ids

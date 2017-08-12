@@ -1,4 +1,5 @@
 class DmailFilter < ApplicationRecord
+  belongs_to :booru
   belongs_to :user
   attr_accessible :words, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :admin]
   validates_presence_of :user

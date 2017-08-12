@@ -6,6 +6,7 @@ class WikiPage < ApplicationRecord
   before_validation :initialize_creator, :on => :create
   before_validation :initialize_updater
   after_save :create_version
+  belongs_to :booru
   belongs_to :creator, :class_name => "User"
   belongs_to :updater, :class_name => "User"
   validates_uniqueness_of :title, :case_sensitive => false

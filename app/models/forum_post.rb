@@ -4,6 +4,7 @@ class ForumPost < ApplicationRecord
   attr_accessible :body, :topic_id, :as => [:member, :gold, :platinum, :admin, :moderator, :default]
   attr_accessible :is_locked, :is_sticky, :is_deleted, :as => [:admin, :moderator]
   attr_readonly :topic_id
+  belongs_to :booru
   belongs_to :creator, :class_name => "User"
   belongs_to :updater, :class_name => "User"
   belongs_to :topic, :class_name => "ForumTopic"

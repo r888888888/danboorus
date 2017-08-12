@@ -1,4 +1,5 @@
 class ForumSubscription < ApplicationRecord
+  belongs_to :booru
   belongs_to :user
   belongs_to :forum_topic
   attr_accessible :user, :forum_topic, :user_id, :forum_topic_id, :last_read_at, :delete_key

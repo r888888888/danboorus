@@ -1,6 +1,7 @@
 class PostVote < ApplicationRecord
   class Error < Exception ; end
 
+  belongs_to :booru
   belongs_to :post
   belongs_to :user
   attr_accessor :vote

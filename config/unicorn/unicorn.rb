@@ -1,7 +1,6 @@
 require "dotenv"
 
 rails_env = ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
-Dotenv.load(".env.local", ".env.#{rails_env}", ".env", "/run/secrets/danboorus_env")
 
 addr = ENV["UNICORN_LISTEN"] || "127.0.0.1:9000"
 app_path = ENV["UNICORN_ROOT"] || Dir.pwd
