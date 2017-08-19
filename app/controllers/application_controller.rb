@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   before_filter :api_check
   before_filter :secure_cookies_check
   layout "default"
-  force_ssl
+  force_ssl :if => lambda {Rails.env.production?}
 
   rescue_from Exception, :with => :rescue_exception
   rescue_from User::PrivilegeError, :with => :access_denied
@@ -21,8 +21,10 @@ class ApplicationController < ActionController::Base
   protected
 
   def load_booru
-    if params[:booru_id]
-      Booru.current = Booru.find_by_slug(params[:booru_id])
+    if params[:b]
+      Booru.current = Booru.find_by_slug(params[:b])
+    elsif request.subdomain.present?
+      Booru.current = Booru.find_by_slug(request.subdomain)
     end
 
     yield
@@ -35,13 +37,6 @@ class ApplicationController < ActionController::Base
     response.headers["Access-Control-Allow-Origin"] = "*"
   end
 
-  def require_reportbooru_key
-    unless params[:key] == Danbooru.config.reportbooru_key
-      render(text: "forbidden", status: 403)
-      return false
-    end
-  end
-  
   def api_check
     if !CurrentUser.is_anonymous? && !request.get? && !request.head?
       if CurrentUser.user.token_bucket.nil?

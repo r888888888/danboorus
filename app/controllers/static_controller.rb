@@ -20,6 +20,9 @@ class StaticController < ApplicationController
   def site_map
   end
 
+  def pricing
+  end
+
   private
 
   def check_desktop_mode

@@ -1,0 +1,12 @@
+<div id="c-static">
+  <div id="a-pricing">
+    <h1><%= Danbooru.config.app_name %> Pricing</h1>
+
+    <p>You can build as many Boorus as you want for free.</p>
+    <p>A free Booru can have up to 30,000 uploads. After that, users can still comment, vote, and keep favorites, but can no longer upload new things. You (or any other user) can pay $10 to add a credit for 10,000 additional uploads. Alternatively, you can agree to buy a subscription for $10 a month to automatically add 15,000 upload slots every month.</p>
+  </div>
+</div>
+
+<% content_for(:page_title) do %>
+  Pricing - <%= Danbooru.config.app_name %>
+<% end %>

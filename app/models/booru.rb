@@ -1,7 +1,15 @@
 class Booru < ApplicationRecord
-	validates_length_of :name, maximum: 255
-	validates_inclusion_of :status, in: %w(active deleted migrating migrated)
+	PROTECTED_NAMES = %w(www)
+
+	validates_length_of :name, maximum: 63
+	validates_uniqueness_of :name
+	validates_uniqueness_of :slug
+	validates_exclusion_of :name, in: PROTECTED_NAMES
+	validates_inclusion_of :status, in: %w(active deleted)
 	belongs_to :creator, class_name: "User"
+	before_validation :initialize_slug
+	before_validation :initialize_creator
+	before_validation :initialize_status
 	has_many :bans
 	has_many :comments
 	has_many :comment_votes
@@ -37,6 +45,18 @@ class Booru < ApplicationRecord
 	end
 
 	def self.find_by_slug(slug)
-		where(slug: slug.downcase).first
+		where(slug: slug).first
+	end
+
+	def initialize_status
+		self.status ||= "active"
+	end
+
+	def initialize_creator
+		self.creator_id = CurrentUser.id
+	end
+
+	def initialize_slug
+		self.slug = name.downcase.gsub(/[^a-z0-9]+/, "-").gsub(/\A-+|-+\z/, "").gsub(/\A\d+/, "").gsub(/-{2,}/, "-")
 	end
 end

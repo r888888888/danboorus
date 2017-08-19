@@ -1,0 +1,21 @@
+<div id="c-boorus">
+  <div id="a-new">
+    <h1>Build Your Booru</h1>
+
+    <p>Boorus are free to start but cost money as they grow. <%= link_to "Read more about pricing", "/static/pricing" %>.</p>
+
+    <div>
+      <%= simple_form_for(@booru) do |f| %>
+        <%= f.input :name %>
+        <%= f.input :desc, label: "Description" %>
+        <%= f.button :submit, "Submit", :data => { :disable_with => "Submitting..." } %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%#= render "secondary_links" %>
+
+<% content_for(:page_title) do %>
+  New Booru - <%= Danbooru.config.app_name %>
+<% end %>

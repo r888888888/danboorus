@@ -10,7 +10,6 @@ class User < ApplicationRecord
     MEMBER = 20
     GOLD = 30
     PLATINUM = 31
-    MODERATOR = 40
     ADMIN = 50
   end
 
@@ -18,7 +17,7 @@ class User < ApplicationRecord
   Roles = Levels.constants.map(&:downcase) + [
     :anonymous,
     :banned,
-    :verified,
+    :verified
   ]
 
   BOOLEAN_ATTRIBUTES = %w(
@@ -58,7 +57,6 @@ class User < ApplicationRecord
   after_update :update_remote_cache
   before_create :promote_to_admin_if_first_user
   before_create :customize_new_user
-  #after_create :notify_sock_puppets
   has_many :memberships
   has_many :boorus, through: :memberships
   has_many :feedback, :class_name => "UserFeedback", :dependent => :destroy
@@ -66,7 +64,6 @@ class User < ApplicationRecord
   has_many :post_votes
   has_many :bans, lambda {order("bans.id desc")}
   has_one :recent_ban, lambda {order("bans.id desc")}, :class_name => "Ban"
-
   has_one :dmail_filter
   has_one :token_bucket
   has_many :note_versions, :foreign_key => "updater_id"
@@ -268,9 +265,16 @@ class User < ApplicationRecord
           "Member" => Levels::MEMBER,
           "Gold" => Levels::GOLD,
           "Platinum" => Levels::PLATINUM,
-          "Moderator" => Levels::MODERATOR,
           "Admin" => Levels::ADMIN
         }
+      end
+
+      def is_admin?
+        Booru.current && Booru.current.creator_id == id
+      end
+
+      def is_moderator?
+        Booru.current && Booru.current.memberships.where(is_moderator: true, user_id: id).exists?
       end
 
       def level_string(value)
@@ -287,12 +291,9 @@ class User < ApplicationRecord
         when Levels::PLATINUM
           "Platinum"
 
-        when Levels::MODERATOR
-          "Moderator"
-
         when Levels::ADMIN
           "Admin"
-          
+        
         else
           ""
         end

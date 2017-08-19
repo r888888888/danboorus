@@ -432,14 +432,14 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
-
 --
 -- Name: bans; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE bans (
     id integer NOT NULL,
-    user_id integer,
+    booru_id integer NOT NULL,
+    user_id integer NOT NULL,
     reason text NOT NULL,
     banner_id integer NOT NULL,
     expires_at timestamp without time zone NOT NULL,
@@ -468,11 +468,48 @@ ALTER SEQUENCE bans_id_seq OWNED BY bans.id;
 
 
 --
+-- Name: boorus; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE boorus (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    slug character varying NOT NULL,
+    "desc" character varying DEFAULT ''::character varying NOT NULL,
+    creator_id integer NOT NULL,
+    host character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    status character varying NOT NULL
+);
+
+
+--
+-- Name: boorus_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE boorus_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: boorus_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE boorus_id_seq OWNED BY boorus.id;
+
+
+--
 -- Name: comment_votes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE comment_votes (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     comment_id integer NOT NULL,
     user_id integer NOT NULL,
     score integer NOT NULL,
@@ -506,6 +543,7 @@ ALTER SEQUENCE comment_votes_id_seq OWNED BY comment_votes.id;
 
 CREATE TABLE comments (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     post_id integer NOT NULL,
     creator_id integer NOT NULL,
     body text NOT NULL,
@@ -657,6 +695,7 @@ ALTER SEQUENCE dmails_id_seq OWNED BY dmails.id;
 CREATE TABLE favorites (
     id integer NOT NULL,
     user_id integer,
+    booru_id integer,
     post_id integer
 );
 
@@ -1686,6 +1725,7 @@ ALTER SEQUENCE favorites_id_seq OWNED BY favorites.id;
 
 CREATE TABLE forum_posts (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     topic_id integer NOT NULL,
     creator_id integer NOT NULL,
     updater_id integer NOT NULL,
@@ -1722,6 +1762,7 @@ ALTER SEQUENCE forum_posts_id_seq OWNED BY forum_posts.id;
 
 CREATE TABLE forum_subscriptions (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     user_id integer,
     forum_topic_id integer,
     last_read_at timestamp without time zone,
@@ -1754,6 +1795,7 @@ ALTER SEQUENCE forum_subscriptions_id_seq OWNED BY forum_subscriptions.id;
 
 CREATE TABLE forum_topic_visits (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     user_id integer,
     forum_topic_id integer,
     last_read_at timestamp without time zone,
@@ -1787,6 +1829,7 @@ ALTER SEQUENCE forum_topic_visits_id_seq OWNED BY forum_topic_visits.id;
 
 CREATE TABLE forum_topics (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     creator_id integer NOT NULL,
     updater_id integer NOT NULL,
     title character varying NOT NULL,
@@ -1827,6 +1870,7 @@ ALTER SEQUENCE forum_topics_id_seq OWNED BY forum_topics.id;
 
 CREATE TABLE ip_bans (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     creator_id integer NOT NULL,
     ip_addr inet NOT NULL,
     reason text NOT NULL,
@@ -1855,11 +1899,46 @@ ALTER SEQUENCE ip_bans_id_seq OWNED BY ip_bans.id;
 
 
 --
+-- Name: memberships; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE memberships (
+    id integer NOT NULL,
+    booru_id integer NOT NULL,
+    user_id integer NOT NULL,
+    is_admin boolean DEFAULT false NOT NULL,
+    is_moderator boolean DEFAULT false NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: memberships_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE memberships_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: memberships_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE memberships_id_seq OWNED BY memberships.id;
+
+
+--
 -- Name: mod_actions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE mod_actions (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     creator_id integer NOT NULL,
     description text NOT NULL,
     created_at timestamp without time zone,
@@ -1925,6 +2004,7 @@ ALTER SEQUENCE news_updates_id_seq OWNED BY news_updates.id;
 
 CREATE TABLE note_versions (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     note_id integer NOT NULL,
     post_id integer NOT NULL,
     updater_id integer NOT NULL,
@@ -1966,6 +2046,7 @@ ALTER SEQUENCE note_versions_id_seq OWNED BY note_versions.id;
 
 CREATE TABLE notes (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     creator_id integer NOT NULL,
     post_id integer NOT NULL,
     x integer NOT NULL,
@@ -2006,6 +2087,7 @@ ALTER SEQUENCE notes_id_seq OWNED BY notes.id;
 
 CREATE TABLE pixiv_ugoira_frame_data (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     post_id integer,
     data text NOT NULL,
     content_type character varying NOT NULL
@@ -2037,6 +2119,7 @@ ALTER SEQUENCE pixiv_ugoira_frame_data_id_seq OWNED BY pixiv_ugoira_frame_data.i
 
 CREATE TABLE pools (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     name character varying,
     creator_id integer NOT NULL,
     description text,
@@ -2075,6 +2158,7 @@ ALTER SEQUENCE pools_id_seq OWNED BY pools.id;
 
 CREATE TABLE post_votes (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     post_id integer NOT NULL,
     user_id integer NOT NULL,
     score integer NOT NULL,
@@ -2108,6 +2192,7 @@ ALTER SEQUENCE post_votes_id_seq OWNED BY post_votes.id;
 
 CREATE TABLE posts (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     up_score integer DEFAULT 0 NOT NULL,
@@ -2169,6 +2254,7 @@ ALTER SEQUENCE posts_id_seq OWNED BY posts.id;
 
 CREATE TABLE saved_searches (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     user_id integer,
     query text,
     created_at timestamp without time zone,
@@ -2202,85 +2288,6 @@ ALTER SEQUENCE saved_searches_id_seq OWNED BY saved_searches.id;
 CREATE TABLE schema_migrations (
     version character varying NOT NULL
 );
-
-
-
---
--- Name: tag_aliases; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE tag_aliases (
-    id integer NOT NULL,
-    antecedent_name character varying NOT NULL,
-    consequent_name character varying NOT NULL,
-    creator_id integer NOT NULL,
-    creator_ip_addr inet NOT NULL,
-    forum_topic_id integer,
-    status text DEFAULT 'pending'::text NOT NULL,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    post_count integer DEFAULT 0 NOT NULL,
-    approver_id integer,
-    forum_post_id integer
-);
-
-
---
--- Name: tag_aliases_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE tag_aliases_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: tag_aliases_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE tag_aliases_id_seq OWNED BY tag_aliases.id;
-
-
---
--- Name: tag_implications; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE tag_implications (
-    id integer NOT NULL,
-    antecedent_name character varying NOT NULL,
-    consequent_name character varying NOT NULL,
-    descendant_names text NOT NULL,
-    creator_id integer NOT NULL,
-    creator_ip_addr inet NOT NULL,
-    forum_topic_id integer,
-    status text DEFAULT 'pending'::text NOT NULL,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    approver_id integer,
-    forum_post_id integer
-);
-
-
---
--- Name: tag_implications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE tag_implications_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: tag_implications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE tag_implications_id_seq OWNED BY tag_implications.id;
 
 
 --
@@ -2335,6 +2342,7 @@ CREATE UNLOGGED TABLE token_buckets (
 
 CREATE TABLE uploads (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     source text,
     file_path character varying,
     content_type character varying,
@@ -2531,6 +2539,7 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
 CREATE TABLE wiki_page_versions (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     wiki_page_id integer NOT NULL,
     updater_id integer NOT NULL,
     updater_ip_addr inet NOT NULL,
@@ -2569,6 +2578,7 @@ ALTER SEQUENCE wiki_page_versions_id_seq OWNED BY wiki_page_versions.id;
 
 CREATE TABLE wiki_pages (
     id integer NOT NULL,
+    booru_id integer NOT NULL,
     creator_id integer NOT NULL,
     title character varying NOT NULL,
     body text NOT NULL,
@@ -2607,6 +2617,13 @@ ALTER SEQUENCE wiki_pages_id_seq OWNED BY wiki_pages.id;
 --
 
 ALTER TABLE ONLY bans ALTER COLUMN id SET DEFAULT nextval('bans_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY boorus ALTER COLUMN id SET DEFAULT nextval('boorus_id_seq'::regclass);
 
 
 --
@@ -3390,6 +3407,13 @@ ALTER TABLE ONLY ip_bans ALTER COLUMN id SET DEFAULT nextval('ip_bans_id_seq'::r
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY memberships ALTER COLUMN id SET DEFAULT nextval('memberships_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY mod_actions ALTER COLUMN id SET DEFAULT nextval('mod_actions_id_seq'::regclass);
 
 
@@ -3514,6 +3538,14 @@ ALTER TABLE ONLY bans
 
 
 --
+-- Name: boorus_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY boorus
+    ADD CONSTRAINT boorus_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: comment_votes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3599,6 +3631,14 @@ ALTER TABLE ONLY forum_topics
 
 ALTER TABLE ONLY ip_bans
     ADD CONSTRAINT ip_bans_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: memberships_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY memberships
+    ADD CONSTRAINT memberships_pkey PRIMARY KEY (id);
 
 
 --
@@ -3738,13 +3778,6 @@ ALTER TABLE ONLY wiki_pages
 
 
 --
--- Name: index_bans_on_banner_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_bans_on_banner_id ON bans USING btree (banner_id);
-
-
---
 -- Name: index_bans_on_expires_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3755,56 +3788,56 @@ CREATE INDEX index_bans_on_expires_at ON bans USING btree (expires_at);
 -- Name: index_bans_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_bans_on_user_id ON bans USING btree (user_id);
+CREATE INDEX index_bans_on_user_id ON bans USING btree (booru_id, user_id);
+
+
+--
+-- Name: index_boorus_on_slug; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_boorus_on_slug ON boorus USING btree (slug);
 
 
 --
 -- Name: index_comment_votes_on_comment_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_comment_votes_on_comment_id ON comment_votes USING btree (comment_id);
+CREATE INDEX index_comment_votes_on_comment_id ON comment_votes USING btree (booru_id, comment_id);
 
 
 --
 -- Name: index_comment_votes_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_comment_votes_on_created_at ON comment_votes USING btree (created_at);
+CREATE INDEX index_comment_votes_on_created_at ON comment_votes USING btree (booru_id, created_at);
 
 
 --
 -- Name: index_comment_votes_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_comment_votes_on_user_id ON comment_votes USING btree (user_id);
-
-
---
--- Name: index_comments_on_body_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_comments_on_body_index ON comments USING gin (body_index);
+CREATE INDEX index_comment_votes_on_user_id ON comment_votes USING btree (booru_id, user_id);
 
 
 --
 -- Name: index_comments_on_creator_id_and_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_comments_on_creator_id_and_post_id ON comments USING btree (creator_id, post_id);
+CREATE INDEX index_comments_on_creator_id_and_post_id ON comments USING btree (booru_id, creator_id, post_id);
 
 
 --
 -- Name: index_comments_on_ip_addr; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_comments_on_ip_addr ON comments USING btree (ip_addr);
+CREATE INDEX index_comments_on_ip_addr ON comments USING btree (booru_id, ip_addr);
 
 
 --
 -- Name: index_comments_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_comments_on_post_id ON comments USING btree (post_id);
+CREATE INDEX index_comments_on_post_id ON comments USING btree (booru_id, post_id);
 
 
 --
@@ -5348,6 +5381,20 @@ CREATE UNIQUE INDEX index_ip_bans_on_ip_addr ON ip_bans USING btree (ip_addr);
 
 
 --
+-- Name: index_memberships_on_booru_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_memberships_on_booru_id ON memberships USING btree (booru_id);
+
+
+--
+-- Name: index_memberships_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_memberships_on_user_id ON memberships USING btree (user_id);
+
+
+--
 -- Name: index_news_updates_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5773,4 +5820,7 @@ CREATE TRIGGER trigger_wiki_pages_on_update_for_other_names BEFORE INSERT OR UPD
 
 SET search_path TO "$user", public;
 
+INSERT INTO schema_migrations (version) VALUES ('20170809005434');
+
+INSERT INTO schema_migrations (version) VALUES ('20170811233521');
 
