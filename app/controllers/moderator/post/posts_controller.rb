@@ -4,7 +4,7 @@ module Moderator
       before_filter :find_post
       before_filter :moderator_only
       skip_before_filter :api_check
-      respond_to :html, :json, :xml
+      respond_to :html, :json
 
       def confirm_delete
       end

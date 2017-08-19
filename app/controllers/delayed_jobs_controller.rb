@@ -1,5 +1,5 @@
 class DelayedJobsController < ApplicationController
-  respond_to :html, :xml, :json, :js
+  respond_to :html, :json, :js
   before_filter :admin_only, except: [:index]
 
   def index

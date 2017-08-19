@@ -6,9 +6,6 @@ Rails.application.routes.draw do
     collection do
       get :search
     end
-    member do
-      post :undelete
-    end
   end
   resources :delayed_jobs, :only => [:index, :destroy] do
     member do

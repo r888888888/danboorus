@@ -1,6 +1,6 @@
 class DmailsController < ApplicationController
-  respond_to :html, :xml, :json
-  before_filter :basic_only, except: [:index, :show, :destroy, :mark_all_as_read]
+  respond_to :html, :json
+  before_filter :basic_only, except: %i(index show destroy mark_all_as_read)
 
   def new
     if params[:respond_to_id]
@@ -64,6 +64,6 @@ private
   end
 
   def create_params
-    params.fetch(:dmail, {}).permit(:title, :body, :to_name, :to_id)
+    params.require(:dmail).permit(:title, :body, :to_name, :to_id)
   end
 end

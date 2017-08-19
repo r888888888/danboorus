@@ -21,8 +21,8 @@ class Favorite < ApplicationRecord
     Favorite.transaction do
       User.where(:id => user.id).select("id").lock("FOR UPDATE NOWAIT").first
 
-      return if Favorite.for_user(user.id).where(:user_id => user.id, :post_id => post.id).exists?
-      Favorite.create!(:user_id => user.id, :post_id => post.id)
+      return if Favorite.for_user(user.id).where(user_id: user.id, post_id: post.id).exists?
+      Favorite.create!(booru_id: Booru.current.id, user_id: user.id, post_id: post.id)
       Post.where(:id => post.id).update_all("fav_count = fav_count + 1")
       post.append_user_to_fav_string(user.id)
       User.where(:id => user.id).update_all("favorite_count = favorite_count + 1")

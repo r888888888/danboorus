@@ -5538,7 +5538,7 @@ CREATE INDEX index_posts_on_last_noted_at ON posts USING btree (last_noted_at DE
 -- Name: index_posts_on_md5; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_posts_on_md5 ON posts USING btree (md5);
+CREATE UNIQUE INDEX index_posts_on_md5 ON posts USING btree (booru_id, md5);
 
 
 --

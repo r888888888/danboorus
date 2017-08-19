@@ -1,4 +1,5 @@
 class BoorusController < ApplicationController
+  before_filter :basic_only
   before_filter :find_booru, only: [:edit, :update, :show, :destroy]
 
   def new
@@ -6,7 +7,7 @@ class BoorusController < ApplicationController
   end
 
   def create
-    @booru = Booru.create(params.require(:booru).permit(:name, :desc))
+    @booru = Booru.create(booru_params.permit(:name, :desc))
     respond_with(@booru)
   end
 
@@ -14,7 +15,7 @@ class BoorusController < ApplicationController
   end
 
   def update
-    @booru.update(params.require(:booru).permit(:desc))
+    @booru.update(booru_params.permit(:desc))
   end
 
   def show
@@ -24,6 +25,10 @@ class BoorusController < ApplicationController
   end
 
 private
+
+  def booru_params
+    params.require(:booru)
+  end
 
   def find_booru
     @booru = Booru.find(params[:booru_id])

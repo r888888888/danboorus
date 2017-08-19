@@ -1,7 +1,7 @@
 class BansController < ApplicationController
   before_filter :moderator_only, :except => [:show, :index]
   before_filter :load_ban, only: [:edit, :show, :update, :destroy]
-  respond_to :html, :xml, :json
+  respond_to :html, :json
 
   def new
     @ban = Ban.new(ban_params)
@@ -32,7 +32,7 @@ class BansController < ApplicationController
   end
 
   def update
-    if @ban.update_attributes(ban_params)
+    if @ban.update(ban_params)
       redirect_to ban_path(@ban), :notice => "Ban updated"
     else
       render :action => "edit"

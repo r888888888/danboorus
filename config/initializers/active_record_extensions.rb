@@ -22,6 +22,33 @@ module Danbooru
         ensure
           connection.execute("SET STATEMENT_TIMEOUT = #{CurrentUser.user.try(:statement_timeout) || 3_000}") unless Rails.env == "test"
         end
+
+        def belongs_to_booru
+          class_eval do
+            belongs_to :booru
+            before_validation(on: :create) do |rec| 
+              rec.booru_id = Booru.current.id
+            end
+          end
+        end
+
+        def belongs_to_creator
+          class_eval do
+            belongs_to :creator, class_name: "User"
+            before_validation(on: :create) do |rec| 
+              rec.creator_id = CurrentUser.id
+            end
+          end
+        end
+
+        def belongs_to_updater
+          class_eval do
+            belongs_to :creator, class_name: "User"
+            before_validation(on: :update) do |rec| 
+              rec.creator_id = CurrentUser.id
+            end
+          end
+        end
       end
 
       %w(execute select_value select_values select_all).each do |method_name|

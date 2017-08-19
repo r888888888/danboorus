@@ -1,8 +1,6 @@
 class ForumPost < ApplicationRecord
   include Mentionable
 
-  attr_accessible :body, :topic_id, :as => [:basic, :gold, :platinum, :admin, :default]
-  attr_accessible :is_locked, :is_sticky, :is_deleted, :as => [:admin, :moderator]
   attr_readonly :topic_id
   belongs_to :booru
   belongs_to :creator, :class_name => "User"
@@ -54,7 +52,7 @@ class ForumPost < ApplicationRecord
     end
 
     def permitted
-      joins(:topic).where("forum_topics.min_level <= ?", CurrentUser.level)
+      where(booru_id: Booru.current.id).joins(:topic).where("forum_topics.min_level <= ?", CurrentUser.level)
     end
 
     def search(params)

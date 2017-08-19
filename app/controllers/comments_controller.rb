@@ -1,6 +1,7 @@
 class CommentsController < ApplicationController
-  respond_to :html, :xml, :json
-  before_filter :member_only, :except => [:index, :search, :show]
+  respond_to :html, :json
+  before_filter :member_only, except: %i(index show)
+  before_filter :load_comment, only: %i(update edit show)
   skip_before_filter :api_check
 
   def index
@@ -21,9 +22,7 @@ class CommentsController < ApplicationController
   end
 
   def update
-    @comment = Comment.find(params[:id])
-    check_privilege(@comment)
-    @comment.update(update_params, :as => CurrentUser.role)
+    @comment.update(update_params(@comment))
     respond_with(@comment, :location => post_path(@comment.post_id))
   end
 
@@ -41,45 +40,32 @@ class CommentsController < ApplicationController
   end
 
   def edit
-    @comment = Comment.find(params[:id])
-    check_privilege(@comment)
     respond_with(@comment)
   end
 
   def show
-    @comment = Comment.find(params[:id])
     respond_with(@comment, methods: [:quoted_response])
   end
 
-  def destroy
-    @comment = Comment.find(params[:id])
-    check_privilege(@comment)
-    @comment.delete!
-    respond_with(@comment) do |format|
-      format.js
-    end
-  end
-
-  def undelete
-    @comment = Comment.find(params[:id])
-    check_privilege(@comment)
-    @comment.undelete!
-    respond_with(@comment) do |format|
-      format.js
-    end
-  end
-
 private
+  def load_post
+    @post = Booru.current.posts.find(params[:post_id])
+  end
+
+  def load_comment
+    @comment = Booru.current.comments.find(params[:id])
+  end
+
   def index_for_post
-    @post = Post.find(params[:post_id])
+    @post = load_post()
     @comments = @post.comments
     @comments = @comments.visible(CurrentUser.user) unless params[:include_below_threshold]
     render :action => "index_for_post"
   end
 
   def index_by_post
-    @posts = Post.where("last_commented_at IS NOT NULL").tag_match(params[:tags]).reorder("last_commented_at DESC NULLS LAST").paginate(params[:page], :limit => 5, :search_count => params[:search])
-    @posts.each # hack to force rails to eager load
+    @posts = Post.where(booru_id: Booru.current.id).where("last_commented_at IS NOT NULL").tag_match(params[:tags]).reorder("last_commented_at DESC NULLS LAST").paginate(params[:page], :limit => 5, :search_count => params[:search])
+    @posts.to_a # hack to force rails to eager load
     respond_with(@posts) do |format|
       format.xml do
         render :xml => @posts.to_xml(:root => "posts")
@@ -99,17 +85,23 @@ private
     end
   end
 
-  def check_privilege(comment)
-    if !comment.editable_by?(CurrentUser.user)
-      raise User::PrivilegeError
+  def create_params
+    params.require(:comment).tap do |x|
+      if CurrentUser.is_moderator?
+        x.permit(:post_id, :body, :is_sticky)
+      else
+        x.permit(:post_id, :body)
+      end
     end
   end
 
-  def create_params
-    params.require(:comment).permit(:post_id, :body, :is_sticky)
-  end
-
-  def update_params
-    params.require(:comment).permit(:body, :is_deleted, :is_sticky)
+  def update_params(comment)
+    params.require(:comment).tap do |x|
+      if CurrentUser.is_moderator?
+        x.permit(:body, :is_deleted, :is_sticky)
+      elsif comment.editable_by?(CurrentUser.user)
+        x.permit(:body)
+      end
+    end
   end
 end

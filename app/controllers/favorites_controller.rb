@@ -1,6 +1,6 @@
 class FavoritesController < ApplicationController
   before_filter :member_only, except: [:index]
-  respond_to :html, :xml, :json
+  respond_to :html, :json
   skip_before_filter :api_check
 
   def index
@@ -15,17 +15,13 @@ class FavoritesController < ApplicationController
       end
 
       @favorite_set = PostSets::Favorite.new(user_id, params[:page], params)
-      respond_with(@favorite_set.posts) do |format|
-        format.xml do
-          render :xml => @favorite_set.posts.to_xml(:root => "posts")
-        end
-      end
+      respond_with(@favorite_set.posts)
     end
   end
 
   def create
     if CurrentUser.favorite_limit.nil? || CurrentUser.favorite_count < CurrentUser.favorite_limit
-      @post = Post.find(params[:post_id])
+      @post = Booru.current.posts.find(params[:post_id])
       @post.add_favorite!(CurrentUser.user)
     else
       @error_msg = "You can only keep up to #{CurrentUser.favorite_limit} favorites. Upgrade your account to save more."
@@ -33,27 +29,27 @@ class FavoritesController < ApplicationController
 
     respond_with(@post) do |format|
       format.html do
-        redirect_to(mobile_post_path(@post))
+        redirect_to(post_path(@post))
       end
       format.js
       format.json do
         if @post
-          render :json => {:success => true}.to_json
+          render json: {success: true}.to_json
         else
-          render :json => {:success => false, :reason => @error_msg}.to_json, :status => 422
+          render json: {success: false, reason: @error_msg}.to_json, status: 422
         end
       end
     end
   end
 
   def destroy
-    @post = Post.find_by_id(params[:id])
+    @post = Booru.current.posts.where(id: params[:id]).first
 
     if @post
       @post.remove_favorite!(CurrentUser.user)
       path = post_path(@post)
     else
-      Favorite.remove(post_id: params[:id], user: CurrentUser.user)
+      Favorite.remove(booru_id: Booru.current.id, post_id: params[:id], user: CurrentUser.user)
       path = posts_path
     end
 
@@ -63,7 +59,7 @@ class FavoritesController < ApplicationController
       end
       format.js
       format.json do
-        render :json => {:success => true}.to_json
+        render json: {success: true}.to_json
       end
     end
   end
