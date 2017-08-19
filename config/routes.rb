@@ -1,27 +1,6 @@
 Rails.application.routes.draw do
-  namespace :admin do
-    resources :users, :only => [:edit, :update]
-  end
-  namespace :moderator do
-    namespace :post do
-      resources :posts, :only => [:delete, :undelete, :expunge, :confirm_delete] do
-        member do
-          get :confirm_delete
-          post :expunge
-          post :delete
-          post :undelete
-          get :confirm_move_favorites
-          post :move_favorites
-        end
-      end
-    end
-    resources :ip_addrs, :only => [:index, :search] do
-      collection do
-        get :search
-      end
-    end
-  end
   resources :bans
+  resources :boorus
   resources :comments do
     resource :votes, :controller => "comment_votes", :only => [:create, :destroy]
     collection do
@@ -29,6 +8,18 @@ Rails.application.routes.draw do
     end
     member do
       post :undelete
+    end
+  end
+  resources :delayed_jobs, :only => [:index, :destroy] do
+    member do
+      put :run
+      put :retry
+      put :cancel
+    end
+  end
+  resources :dmails, :only => [:new, :create, :index, :show, :destroy] do
+    collection do
+      post :mark_all_as_read
     end
   end
   resource  :dtext_preview, :only => [:create]
@@ -55,7 +46,38 @@ Rails.application.routes.draw do
     resource :visit, :controller => "forum_topic_visits"
   end
   resources :ip_bans
+  namespace :maintenance do
+    namespace :user do
+      resource :email_notification, :only => [:show, :destroy]
+      resource :password_reset, :only => [:new, :create, :edit, :update]
+      resource :login_reminder, :only => [:new, :create]
+      resource :deletion, :only => [:show, :destroy]
+      resource :email_change, :only => [:new, :create]
+      resource :dmail_filter, :only => [:edit, :update]
+    end
+  end
+  resource :membership, only: [:new, :create, :show, :destroy]
   resources :mod_actions
+  namespace :moderator do
+    resources :promotions, only: [:index, :new, :create, :destroy]
+    namespace :post do
+      resources :posts, :only => [:delete, :undelete, :expunge, :confirm_delete] do
+        member do
+          get :confirm_delete
+          post :expunge
+          post :delete
+          post :undelete
+          get :confirm_move_favorites
+          post :move_favorites
+        end
+      end
+    end
+    resources :ip_addrs, :only => [:index, :search] do
+      collection do
+        get :search
+      end
+    end
+  end
   resources :news_updates
   resources :notes do
     collection do
@@ -109,6 +131,11 @@ Rails.application.routes.draw do
   end
   resource :related_tag, :only => [:show, :update]
   resources :saved_searches, :except => [:show]
+  resource :session do
+    collection do
+      get :sign_out
+    end
+  end
   resource :source, :only => [:show]
   resources :tags do
     collection do
@@ -121,44 +148,7 @@ Rails.application.routes.draw do
       get :image_proxy
     end
   end
-  resources :wiki_pages do
-    member do
-      put :revert
-    end
-    collection do
-      get :search
-      get :show_or_new
-    end
-  end
-  resources :wiki_page_versions, :only => [:index, :show, :diff] do
-    collection do
-      get :diff
-    end
-  end
-
-  resources :boorus
-  resources :dmails, :only => [:new, :create, :index, :show, :destroy] do
-    collection do
-      post :mark_all_as_read
-    end
-  end
-  resource :session do
-    collection do
-      get :sign_out
-    end
-  end
-  namespace :maintenance do
-    namespace :user do
-      resource :email_notification, :only => [:show, :destroy]
-      resource :password_reset, :only => [:new, :create, :edit, :update]
-      resource :login_reminder, :only => [:new, :create]
-      resource :deletion, :only => [:show, :destroy]
-      resource :email_change, :only => [:new, :create]
-      resource :dmail_filter, :only => [:edit, :update]
-    end
-  end
   resources :users, constraints: {id: /\d+|me/} do
-    resources :memberships
     resource :password, :only => [:edit], :controller => "maintenance/user/passwords"
     collection do
       get :search
@@ -181,13 +171,21 @@ Rails.application.routes.draw do
       post :reject
     end
   end
-  resources :delayed_jobs, :only => [:index, :destroy] do
+  resources :wiki_pages do
     member do
-      put :run
-      put :retry
-      put :cancel
+      put :revert
+    end
+    collection do
+      get :search
+      get :show_or_new
     end
   end
+  resources :wiki_page_versions, :only => [:index, :show, :diff] do
+    collection do
+      get :diff
+    end
+  end
+
 
   get "/static/keyboard_shortcuts" => "static#keyboard_shortcuts", :as => "keyboard_shortcuts"
   get "/static/bookmarklet" => "static#bookmarklet", :as => "bookmarklet"

@@ -18,7 +18,7 @@ class Comment < ApplicationRecord
   after_save(:if => lambda {|rec| rec.is_deleted? && rec.is_deleted_changed? && CurrentUser.id != rec.creator_id}) do |rec|
     ModAction.log("comment ##{rec.id} deleted by #{CurrentUser.name}")
   end
-  attr_accessible :body, :post_id, :is_deleted, :as => [:member, :gold, :platinum, :moderator, :admin]
+  attr_accessible :body, :post_id, :is_deleted, :as => [:basic, :gold, :platinum, :moderator, :admin]
   attr_accessible :is_sticky, :as => [:moderator, :admin]
   mentionable(
     :message_field => :body, 

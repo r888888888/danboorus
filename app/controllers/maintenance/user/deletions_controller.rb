@@ -1,6 +1,8 @@
 module Maintenance
   module User
     class DeletionsController < ApplicationController
+      before_filter :basic_only
+      
       def show
       end
 

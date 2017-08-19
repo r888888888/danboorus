@@ -1,6 +1,8 @@
 module Maintenance
   module User
     class EmailChangesController < ApplicationController
+      before_filter :basic_only
+
       def new
       end
 

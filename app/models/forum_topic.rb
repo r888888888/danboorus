@@ -11,7 +11,7 @@ class ForumTopic < ApplicationRecord
     Admin: User::Levels::ADMIN,
   }
 
-  attr_accessible :title, :original_post_attributes, :category_id, :as => [:member, :gold, :platinum, :moderator, :admin, :default]
+  attr_accessible :title, :original_post_attributes, :category_id, :as => [:basic, :gold, :platinum, :moderator, :admin, :default]
   attr_accessible :is_sticky, :is_locked, :is_deleted, :min_level, :as => [:admin, :moderator]
   belongs_to :booru
   belongs_to :creator, :class_name => "User"

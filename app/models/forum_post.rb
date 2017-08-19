@@ -1,7 +1,7 @@
 class ForumPost < ApplicationRecord
   include Mentionable
 
-  attr_accessible :body, :topic_id, :as => [:member, :gold, :platinum, :admin, :moderator, :default]
+  attr_accessible :body, :topic_id, :as => [:basic, :gold, :platinum, :admin, :default]
   attr_accessible :is_locked, :is_sticky, :is_deleted, :as => [:admin, :moderator]
   attr_readonly :topic_id
   belongs_to :booru

@@ -81,7 +81,7 @@ module PostSets
     end
 
     def posts
-      if tag_array.any? {|x| x =~ /^-?source:.*\*.*pixiv/} && !CurrentUser.user.is_member?
+      if tag_array.any? {|x| x =~ /^-?source:.*\*.*pixiv/} && !CurrentUser.user.is_basic?
         raise SearchError.new("Your search took too long to execute and was canceled")
       end
 

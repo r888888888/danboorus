@@ -1,13 +1,13 @@
 class BansController < ApplicationController
   before_filter :moderator_only, :except => [:show, :index]
+  before_filter :load_ban, only: [:edit, :show, :update, :destroy]
   respond_to :html, :xml, :json
 
   def new
-    @ban = Ban.new(params[:ban])
+    @ban = Ban.new(ban_params)
   end
 
   def edit
-    @ban = Ban.find(params[:id])
   end
 
   def index
@@ -18,12 +18,11 @@ class BansController < ApplicationController
   end
 
   def show
-    @ban = Ban.find(params[:id])
     respond_with(@ban)
   end
 
   def create
-    @ban = Ban.create(params[:ban])
+    @ban = Ban.create(ban_params)
 
     if @ban.errors.any?
       render :action => "new"
@@ -33,8 +32,7 @@ class BansController < ApplicationController
   end
 
   def update
-    @ban = Ban.find(params[:id])
-    if @ban.update_attributes(params[:ban])
+    if @ban.update_attributes(ban_params)
       redirect_to ban_path(@ban), :notice => "Ban updated"
     else
       render :action => "edit"
@@ -42,8 +40,17 @@ class BansController < ApplicationController
   end
 
   def destroy
-    @ban = Ban.find(params[:id])
     @ban.destroy
     redirect_to bans_path, :notice => "Ban destroyed"
+  end
+
+private
+
+  def ban_params
+    params.require(:ban).permit(:reason, :duration, :user_id, :user_name)
+  end
+  
+  def load_ban
+    @ban = Booru.current.bans.find(params[:id])
   end
 end

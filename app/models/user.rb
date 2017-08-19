@@ -7,7 +7,7 @@ class User < ApplicationRecord
 
   module Levels
     BLOCKED = 10
-    MEMBER = 20
+    BASIC = 20
     GOLD = 30
     PLATINUM = 31
     ADMIN = 50
@@ -17,7 +17,8 @@ class User < ApplicationRecord
   Roles = Levels.constants.map(&:downcase) + [
     :anonymous,
     :banned,
-    :verified
+    :verified,
+    :moderator
   ]
 
   BOOLEAN_ATTRIBUTES = %w(
@@ -335,7 +336,7 @@ class User < ApplicationRecord
     end
 
     def is_member?
-      true
+      Membership.where(booru_id: Booru.current.id, user_id: id).exists?
     end
 
     def is_blocked?
@@ -351,11 +352,11 @@ class User < ApplicationRecord
     end
 
     def is_moderator?
-      level >= Levels::MODERATOR
+      Membership.where(booru_id: Booru.current.id, user_id: id, is_moderator: true).exists?
     end
 
     def is_mod?
-      level >= Levels::MODERATOR
+      is_moderator?
     end
 
     def is_admin?
@@ -387,7 +388,7 @@ class User < ApplicationRecord
     end
 
     def generate_email_verification_key
-      self.email_verification_key = Digest::SHA1.hexdigest("#{Time.now.to_f}--#{name}--#{rand(1_000_000)}--")
+      self.email_verification_key = SecureRandom.urlsafe_base64(32)
     end
 
     def verify!(key)

@@ -2,9 +2,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   helper :pagination
   around_filter :load_booru
-  before_filter :reset_current_user
-  before_filter :set_current_user
-  after_filter :reset_current_user
+  around_filter :load_user
   before_filter :set_title
   before_filter :normalize_search
   before_filter :set_started_at_session
@@ -142,12 +140,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def set_current_user
+  def load_user
     session_loader = SessionLoader.new(session, cookies, request, params)
     session_loader.load
-  end
 
-  def reset_current_user
+    yield
+
+  ensure
     CurrentUser.user = nil
     CurrentUser.ip_addr = nil
   end
@@ -170,7 +169,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_title
-    @page_title = Danbooru.config.app_name + "/#{params[:controller]}"
+    @page_title = Danbooru.config.app_name
   end
 
   def normalize_search
