@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    session_creator = SessionCreator.new(session, cookies, params[:name], params[:password], request.remote_ip, params[:remember], request.ssl?)
+    session_creator = SessionCreator.new(session, cookies, params[:name], params[:password], request.remote_ip, params[:remember])
 
     if session_creator.authenticate
       url = params[:url] if params[:url] && params[:url].start_with?("/")
@@ -17,7 +17,7 @@ class SessionsController < ApplicationController
   def destroy
     session.delete(:user_id)
     cookies.delete(:user_name)
-    cookies.delete(:password_hash)
+    cookies.delete(:user_id)
     redirect_to(posts_path, :notice => "You are now logged out.")
   end
 

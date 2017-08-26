@@ -1,11 +1,18 @@
 require 'test_helper'
 
 class SessionsControllerTest < ActionController::TestCase
-  context "the sessions controller" do
-    setup do
-      @user = FactoryGirl.create(:user)
-    end
+  include DefaultHelper
 
+  setup do
+    CurrentUser.clear!
+    @user = FactoryGirl.create(:user)
+  end
+
+  teardown do
+    CurrentUser.clear!
+  end
+
+  context "the sessions controller" do
     context "new action" do
       should "render" do
         get :new
@@ -40,13 +47,11 @@ class SessionsControllerTest < ActionController::TestCase
 
     context "destroy action" do
       setup do
-        CurrentUser.user = @user
-        CurrentUser.ip_addr = "127.0.0.1"
+        CurrentUser.test!(@user)
       end
 
       teardown do
-        CurrentUser.user = nil
-        CurrentUser.ip_addr = nil
+        CurrentUser.clear!
       end
 
       should "clear the session" do
