@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory(:user, aliases: [:creator, :updater]) do
     name {(rand(1_000_000) + 10).to_s}
     password "password"
-    password_hash {User.sha1("password")}
+    bcrypt_password_hash {User.bcrypt("password")}
     email {FFaker::Internet.email}
     default_image_size "large"
     level 20
