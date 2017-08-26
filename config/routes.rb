@@ -30,16 +30,11 @@ Rails.application.routes.draw do
     end
   end
   resources :forum_topics do
-    member do
-      post :undelete
-      get :new_merge
-      post :create_merge
-      post :subscribe
-      post :unsubscribe
-    end
     collection do
       post :mark_all_as_read
     end
+    resource :merge, only: %i(new create), controller: "forum_merges"
+    resources :subscriptions, only: %i(create destroy), controller: "forum_subscriptions"
     resource :visit, :controller => "forum_topic_visits"
   end
   resources :ip_bans

@@ -14,6 +14,16 @@ class CurrentUser
     end
   end
 
+  def self.test!(user)
+    self.user = user
+    self.ip_addr = "127.0.0.1"
+  end
+
+  def self.clear!
+    self.user = nil
+    self.ip_addr = nil
+  end
+
   def self.as_admin(&block)
     scoped(User.admins.first, "127.0.0.1", &block)
   end

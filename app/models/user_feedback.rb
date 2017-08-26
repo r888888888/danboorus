@@ -4,7 +4,7 @@ class UserFeedback < ApplicationRecord
   belongs_to :creator, :class_name => "User"
   before_validation :initialize_creator, :on => :create
   attr_accessor :disable_dmail_notification
-  attr_accessible :body, :user_id, :user_name, :disable_dmail_notification
+  # attr_accessible :body, :user_id, :user_name, :disable_dmail_notification
   validates_presence_of :user, :creator, :body
   validate :creator_is_gold
   validate :user_is_not_creator

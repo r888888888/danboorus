@@ -67,8 +67,8 @@ module Danbooru
     end
 
     # This is a salt used to make dictionary attacks on account passwords harder.
-    def password_salt(user)
-      CityHash.hash64(user.id).to_s(36)
+    def password_salt
+      app_name
     end
 
     # Set the default level, permissions, and other settings for new users here.

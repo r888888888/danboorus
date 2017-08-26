@@ -1,10 +1,10 @@
 class ForumTopicsController < ApplicationController
-  respond_to :html, :xml, :json
-  before_filter :member_only, :except => [:index, :show]
-  before_filter :moderator_only, :only => [:new_merge, :create_merge]
-  before_filter :normalize_search, :only => :index
-  before_filter :load_topic, :only => [:edit, :show, :update, :destroy, :undelete, :new_merge, :create_merge, :subscribe, :unsubscribe]
-  before_filter :check_min_level, :only => [:show, :edit, :update, :new_merge, :create_merge, :destroy, :undelete, :subscribe, :unsubscribe]
+  respond_to :html, :json
+  before_filter :member_only, except: %i(index show)
+  before_filter :moderator_only, only: %i(new_merge create_merge)
+  before_filter :normalize_search, only: %i(index)
+  before_filter :load_topic, only: %i(edit show update destroy undelete new_merge create_merge subscribe unsubscribe)
+  before_filter :check_min_level, only: %i(show edit update new_merge create_merge destroy undelete subscribe unsubscribe)
   skip_before_filter :api_check
 
   def new

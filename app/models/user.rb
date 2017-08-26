@@ -1,4 +1,3 @@
-require 'digest/sha1'
 require 'danbooru/has_bit_flags'
 
 class User < ApplicationRecord
@@ -36,8 +35,8 @@ class User < ApplicationRecord
   has_bit_flags BOOLEAN_ATTRIBUTES, :field => "bit_prefs"
 
   attr_accessor :password, :old_password
-  attr_accessible :dmail_filter_attributes, :password, :old_password, :password_confirmation, :password_hash, :email, :last_logged_in_at, :last_forum_read_at, :has_mail, :receive_email_notifications, :comment_threshold, :always_resize_images, :blacklisted_tags, :name, :ip_addr, :time_zone, :default_image_size, :per_page, :hide_deleted_posts, :enable_auto_complete, :custom_style, :show_deleted_children, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :admin]
-  attr_accessible :level, :as => :admin
+  # attr_accessible :dmail_filter_attributes, :password, :old_password, :password_confirmation, :password_hash, :email, :last_logged_in_at, :last_forum_read_at, :has_mail, :receive_email_notifications, :comment_threshold, :always_resize_images, :blacklisted_tags, :name, :ip_addr, :time_zone, :default_image_size, :per_page, :hide_deleted_posts, :enable_auto_complete, :custom_style, :show_deleted_children, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :admin]
+  # attr_accessible :level, :as => :admin
 
   validates :name, user_name: true, on: :create
   validates_uniqueness_of :email, :case_sensitive => false, :if => lambda {|rec| rec.email.present? && rec.email_changed? }
@@ -152,20 +151,19 @@ class User < ApplicationRecord
     end
 
     def bcrypt_cookie_password_hash
-      bcrypt_password_hash.slice(20, 100)
+      Digest::SHA1.hexdigest(bcrypt_password_hash)
     end
 
     def encrypt_password_on_create
-      self.password_hash = ""
-      self.bcrypt_password_hash = User.bcrypt(password)
+      self.bcrypt_password_hash = User.bcrypt("#{Danbooru.config.password_salt}#{password}")
     end
 
     def encrypt_password_on_update
       return if password.blank?
       return if old_password.blank?
 
-      if bcrypt_password == User.sha1(old_password)
-        self.bcrypt_password_hash = User.bcrypt(password)
+      if bcrypt_password == old_password
+        self.bcrypt_password_hash = User.bcrypt("#{Danbooru.config.password_salt}#{password}")
         return true
       else
         errors[:old_password] = "is incorrect"
@@ -199,21 +197,8 @@ class User < ApplicationRecord
 
     module ClassMethods
       def authenticate(name, pass)
-        authenticate_hash(name, sha1(pass))
-      end
-
-      def authenticate_hash(name, hash)
         user = find_by_name(name)
-        if user && user.bcrypt_password == hash
-          user
-        else
-          nil
-        end
-      end
-
-      def authenticate_cookie_hash(name, hash)
-        user = find_by_name(name)
-        if user && user.bcrypt_cookie_password_hash == hash
+        if user && user.bcrypt_password == "#{Danbooru.config.password_salt}#{pass}"
           user
         else
           nil
@@ -221,11 +206,7 @@ class User < ApplicationRecord
       end
 
       def bcrypt(pass)
-        BCrypt::Password.create(sha1(pass))
-      end
-
-      def sha1(pass)
-        Digest::SHA1.hexdigest("#{Danbooru.config.password_salt}--#{pass}--")
+        BCrypt::Password.create(pass)
       end
     end
   end

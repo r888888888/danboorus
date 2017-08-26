@@ -4,5 +4,5 @@ user = User.new(name: "albert", password: ENV["PASSWORD"], password_confirmation
 user.level = 50
 user.save
 CurrentUser.scoped(user, "127.0.0.1") do
-  Booru.create(name: "home", desc: "homebooru")
+  Booru.create(name: "home", desc: "homebooru", host: "localhost")
 end

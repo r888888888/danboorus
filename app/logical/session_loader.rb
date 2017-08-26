@@ -13,7 +13,7 @@ class SessionLoader
   def load
     if session[:user_id]
       load_session_user
-    elsif cookie_password_hash_valid?
+    elsif cookies.signed[:user_id]
       load_cookie_user
     else
       load_session_for_api
@@ -80,13 +80,8 @@ private
   end
 
   def load_cookie_user
-    CurrentUser.user = User.find_by_name(cookies.signed[:user_name])
     CurrentUser.ip_addr = request.remote_ip
-    session[:user_id] = CurrentUser.user.id
-  end
-
-  def cookie_password_hash_valid?
-    cookies[:password_hash] && cookies.signed[:user_name] && User.authenticate_cookie_hash(cookies.signed[:user_name], cookies[:password_hash])
+    CurrentUser.user = User.find_by_id(cookies.signed[:user_id])
   end
 
   def update_last_logged_in_at

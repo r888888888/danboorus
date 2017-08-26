@@ -1,14 +1,13 @@
 class SessionCreator
   attr_reader :session, :cookies, :name, :password, :ip_addr, :remember, :secure
 
-  def initialize(session, cookies, name, password, ip_addr, remember = false, secure = false)
+  def initialize(session, cookies, name, password, ip_addr, remember = false)
     @session = session
     @cookies = cookies
     @name = name
     @password = password
     @ip_addr = ip_addr
     @remember = remember
-    @secure = secure
   end
 
   def authenticate
@@ -17,22 +16,14 @@ class SessionCreator
 
       if remember.present?
         cookies.permanent.signed[:user_name] = {
-          :value => user.name,
-          :secure => secure,
-          :httponly => true
+          value: user.name,
+          secure: true,
+          httponly: true
         }
-        cookies.permanent[:password_hash] = {
-          :value => user.bcrypt_cookie_password_hash,
-          :secure => secure,
-          :httponly => true
-        }
-      end
-
-      if secure
-        cookies.permanent[:ssl_login] = {
-          :value => "1",
-          :secure => true,
-          :httponly => true
+        cookies.permanent.signed[:user_id] = {
+          value: user.id.to_s,
+          secure: true,
+          httponly: true
         }
       end
 
