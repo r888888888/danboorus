@@ -1,5 +1,6 @@
 class MembershipsController < ApplicationController
   before_filter :find_membership, only: [:edit, :update, :show, :destroy]
+  respond_to :html, :json
   
   def new
     @membership = Membership.new

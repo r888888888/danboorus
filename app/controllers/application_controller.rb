@@ -70,6 +70,24 @@ class ApplicationController < ActionController::Base
   def rescue_exception(exception)
     @exception = exception
 
+    if Rails.env.test?
+      colorize = lambda do |text, color_code|
+        "\e[#{color_code}m#{text}\e[0m"
+      end
+      print "\r" << (' ' * 50) << "\n"
+      stacktrace = exception.backtrace.map do |call|
+        if parts = call.match(/^(?<file>.+):(?<line>\d+):in `(?<code>.*)'$/)
+          file = parts[:file].sub /^#{Regexp.escape(File.join(Dir.getwd, ''))}/, ''
+          line = "#{colorize.call(file, 36)} #{colorize.call('(', 37)}#{colorize.call(parts[:line], 32)}#{colorize.call('): ', 37)} #{colorize.call(parts[:code], 31)}"
+        else
+          line = colorize.call(call, 31)
+        end
+        line
+      end
+      puts "#{exception.class}: #{exception.message}\n"
+      stacktrace.each { |line| puts line }
+    end
+
     if exception.is_a?(::ActiveRecord::StatementInvalid) && exception.to_s =~ /statement timeout/
       if Rails.env.production?
         NewRelic::Agent.notice_error(exception, :uri => request.original_url, :referer => request.referer, :request_params => params, :custom_params => {:user_id => CurrentUser.user.id, :user_ip_addr => CurrentUser.ip_addr})

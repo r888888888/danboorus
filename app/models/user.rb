@@ -244,15 +244,11 @@ class User < ApplicationRecord
 
       def level_hash
         return {
-          "Member" => Levels::MEMBER,
+          "Member" => Levels::BASIC,
           "Gold" => Levels::GOLD,
           "Platinum" => Levels::PLATINUM,
           "Admin" => Levels::ADMIN
         }
-      end
-
-      def is_admin?
-        Booru.current && Booru.current.creator_id == id
       end
 
       def is_moderator?
@@ -264,8 +260,8 @@ class User < ApplicationRecord
         when Levels::BLOCKED
           "Banned"
 
-        when Levels::MEMBER
-          "Member"
+        when Levels::BASIC
+          "Basic"
 
         when Levels::GOLD
           "Gold"
@@ -292,7 +288,7 @@ class User < ApplicationRecord
       if User.count == 0
         self.level = Levels::ADMIN
       else
-        self.level = Levels::MEMBER
+        self.level = Levels::BASIC
       end
     end
 
@@ -322,6 +318,10 @@ class User < ApplicationRecord
 
     def is_blocked?
       is_banned?
+    end
+
+    def is_basic?
+      level >= Levels::BASIC
     end
 
     def is_gold?
