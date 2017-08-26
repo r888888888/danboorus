@@ -155,15 +155,15 @@ class User < ApplicationRecord
     end
 
     def encrypt_password_on_create
-      self.bcrypt_password_hash = User.bcrypt("#{Danbooru.config.password_salt}#{password}")
+      self.bcrypt_password_hash = User.bcrypt(User.salt_password(password))
     end
 
     def encrypt_password_on_update
       return if password.blank?
       return if old_password.blank?
 
-      if bcrypt_password == old_password
-        self.bcrypt_password_hash = User.bcrypt("#{Danbooru.config.password_salt}#{password}")
+      if bcrypt_password == User.salt_password(old_password)
+        self.bcrypt_password_hash = User.bcrypt(User.salt_password(password))
         return true
       else
         errors[:old_password] = "is incorrect"
@@ -182,7 +182,7 @@ class User < ApplicationRecord
       end
 
       pass << rand(100).to_s
-      update_column(:bcrypt_password_hash, User.bcrypt(pass))
+      update_column(:bcrypt_password_hash, User.bcrypt(User.salt_password(pass)))
       pass
     end
 
@@ -198,11 +198,15 @@ class User < ApplicationRecord
     module ClassMethods
       def authenticate(name, pass)
         user = find_by_name(name)
-        if user && user.bcrypt_password == "#{Danbooru.config.password_salt}#{pass}"
+        if user && user.bcrypt_password == salt_password(pass)
           user
         else
           nil
         end
+      end
+
+      def salt_password(pass)
+        "#{Danbooru.config.password_salt}#{pass}"
       end
 
       def bcrypt(pass)
@@ -249,10 +253,6 @@ class User < ApplicationRecord
           "Platinum" => Levels::PLATINUM,
           "Admin" => Levels::ADMIN
         }
-      end
-
-      def is_moderator?
-        Booru.current && Booru.current.memberships.where(is_moderator: true, user_id: id).exists?
       end
 
       def level_string(value)
@@ -333,7 +333,7 @@ class User < ApplicationRecord
     end
 
     def is_moderator?
-      Membership.where(booru_id: Booru.current.id, user_id: id, is_moderator: true).exists?
+      is_admin? || Booru.current.memberships.where(user_id: id, is_moderator: true).exists?
     end
 
     def is_mod?

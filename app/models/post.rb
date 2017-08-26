@@ -28,7 +28,7 @@ class Post < ApplicationRecord
   after_save :expire_essential_tag_string_cache
   after_commit :delete_files, :on => :destroy
 
-  belongs_to :booru
+  belongs_to_booru
   belongs_to :updater, :class_name => "User"
   belongs_to :uploader, :class_name => "User"
   belongs_to :parent, :class_name => "Post"
@@ -44,9 +44,9 @@ class Post < ApplicationRecord
     has_many :versions, lambda {order("post_versions.updated_at ASC")}, :class_name => "PostArchive", :dependent => :destroy
   end
 
-  attr_accessible :source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes, :as => [:member, :gold, :platinum, :moderator, :admin, :default]
-  attr_accessible :is_rating_locked, :is_note_locked, :as => [:moderator, :admin]
-  attr_accessible :is_status_locked, :as => [:admin]
+  # attr_accessible :source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes, :as => [:member, :gold, :platinum, :moderator, :admin, :default]
+  # attr_accessible :is_rating_locked, :is_note_locked, :as => [:moderator, :admin]
+  # attr_accessible :is_status_locked, :as => [:admin]
   attr_accessor :old_tag_string, :old_parent_id, :old_source, :old_rating, :has_constraints, :disable_versioning, :view_count
 
   module FileMethods

@@ -1,21 +1,21 @@
 require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
+  include DefaultHelper
+
   context "A user" do
     setup do
       @user = FactoryGirl.create(:user)
-      CurrentUser.user = @user
-      CurrentUser.ip_addr = "127.0.0.1"
+      CurrentUser.test!(@user)
     end
 
     teardown do
-      CurrentUser.user = nil
-      CurrentUser.ip_addr = nil
+      CurrentUser.clear!
     end
 
     context "promoting a user" do
       setup do
-        CurrentUser.user = FactoryGirl.create(:moderator_user)
+        CurrentUser.test!(FactoryGirl.create(:moderator_user))
       end
 
       should "create a feedback" do
@@ -23,7 +23,7 @@ class UserTest < ActiveSupport::TestCase
           @user.promote_to!(User::Levels::GOLD)
         end
 
-        assert_equal("You have been promoted to a Gold level account from Member.", @user.feedback.last.body)
+        assert_equal("You have been promoted to a Gold level account from Basic.", @user.feedback.last.body)
       end
 
       should "send an automated dmail to the user" do
@@ -73,29 +73,36 @@ class UserTest < ActiveSupport::TestCase
     should "authenticate" do
       assert(User.authenticate(@user.name, "password"), "Authentication should have succeeded")
       assert(!User.authenticate(@user.name, "password2"), "Authentication should not have succeeded")
-      assert(User.authenticate_hash(@user.name, User.sha1("password")), "Authentication should have succeeded")
-      assert(!User.authenticate_hash(@user.name, User.sha1("xxx")), "Authentication should not have succeeded")
     end
 
     should "normalize its level" do
       user = FactoryGirl.create(:user, :level => User::Levels::ADMIN)
-      assert(user.is_moderator?)
-      assert(user.is_gold?)
-
-      user = FactoryGirl.create(:user, :level => User::Levels::MODERATOR)
-      assert(!user.is_admin?)
-      assert(user.is_moderator?)
-      assert(user.is_gold?)
-
-      user = FactoryGirl.create(:user, :level => User::Levels::GOLD)
-      assert(!user.is_admin?)
-      assert(!user.is_moderator?)
-      assert(user.is_gold?)
+      CurrentUser.scoped(user) do
+        assert(user.is_moderator?)
+        assert(user.is_gold?)
+      end
 
       user = FactoryGirl.create(:user)
-      assert(!user.is_admin?)
-      assert(!user.is_moderator?)
-      assert(!user.is_gold?)
+      CurrentUser.scoped(user) do
+        FactoryGirl.create(:membership, is_moderator: true)
+        assert(!user.is_admin?)
+        assert(user.is_moderator?)
+        assert(!user.is_gold?)
+      end
+
+      user = FactoryGirl.create(:user, :level => User::Levels::GOLD)
+      CurrentUser.scoped(user) do
+        assert(!user.is_admin?)
+        assert(!user.is_moderator?)
+        assert(user.is_gold?)
+      end
+
+      user = FactoryGirl.create(:user)
+      CurrentUser.scoped(user) do
+        assert(!user.is_admin?)
+        assert(!user.is_moderator?)
+        assert(!user.is_gold?)
+      end
     end
 
     context "name" do
@@ -194,25 +201,25 @@ class UserTest < ActiveSupport::TestCase
       should "not change the password if the password and old password are blank" do
         @user = FactoryGirl.create(:user, :password => "67890")
         @user.update_attributes(:password => "", :old_password => "")
-        assert(@user.bcrypt_password == User.sha1("67890"))
+        assert(@user.bcrypt_password == User.salt_password("67890"))
       end
 
       should "not change the password if the old password is incorrect" do
         @user = FactoryGirl.create(:user, :password => "67890")
         @user.update_attributes(:password => "12345", :old_password => "abcdefg")
-        assert(@user.bcrypt_password == User.sha1("67890"))
+        assert(@user.bcrypt_password == User.salt_password("67890"))
       end
 
       should "not change the password if the old password is blank" do
         @user = FactoryGirl.create(:user, :password => "67890")
         @user.update_attributes(:password => "12345", :old_password => "")
-        assert(@user.bcrypt_password == User.sha1("67890"))
+        assert(@user.bcrypt_password == User.salt_password("67890"))
       end
 
       should "change the password if the old password is correct" do
         @user = FactoryGirl.create(:user, :password => "67890")
         @user.update_attributes(:password => "12345", :old_password => "67890")
-        assert(@user.bcrypt_password == User.sha1("12345"))
+        assert(@user.bcrypt_password == User.salt_password("12345"))
       end
 
       context "in the json representation" do
