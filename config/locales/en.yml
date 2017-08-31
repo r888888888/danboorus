@@ -15,7 +15,7 @@ en:
         post_id: "You"
       comment_vote:
         comment: "You"
-        user_id: "You"
+        creator_id: "You"
       upload:
         uploader: "You"
         uploader_id: "You"

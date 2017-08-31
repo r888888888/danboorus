@@ -69,6 +69,8 @@ class Ban < ApplicationRecord
 
   def user_is_inferior
     if user
+      binding.pry if $stop
+      
       if user.is_admin?
         errors[:base] << "You can never ban an admin."
         false
@@ -80,7 +82,7 @@ class Ban < ApplicationRecord
       elsif banner.is_admin? || banner.is_moderator?
         true
       else
-        errors[:base] << "No one else can ban."
+        errors[:base] << "You cannot ban anyone."
         false
       end
     end

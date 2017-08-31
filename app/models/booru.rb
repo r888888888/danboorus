@@ -6,7 +6,7 @@ class Booru < ApplicationRecord
 	validates_uniqueness_of :slug
 	validates_exclusion_of :name, in: PROTECTED_NAMES
 	validates_inclusion_of :status, in: %w(active deleted)
-	belongs_to :creator, class_name: "User"
+	belongs_to_creator
 	before_validation :initialize_slug
 	before_validation :initialize_creator
 	before_validation :initialize_status

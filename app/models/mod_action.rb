@@ -1,7 +1,6 @@
 class ModAction < ApplicationRecord
   belongs_to_booru
-  belongs_to :creator, :class_name => "User"
-  before_validation :initialize_creator, :on => :create
+  belongs_to_creator
   validates_presence_of :creator_id
   # attr_accessible :description
 
@@ -18,9 +17,5 @@ class ModAction < ApplicationRecord
 
   def self.log(desc)
     create(:description => desc)
-  end
-
-  def initialize_creator
-    self.creator_id = CurrentUser.id
   end
 end

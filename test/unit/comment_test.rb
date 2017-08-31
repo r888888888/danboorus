@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class CommentTest < ActiveSupport::TestCase
+  include DefaultHelper
+
   context "A comment" do
     setup do
       user = FactoryGirl.create(:user)
@@ -70,7 +72,7 @@ class CommentTest < ActiveSupport::TestCase
         setup do
           @post = FactoryGirl.create(:post)
           @comment = FactoryGirl.create(:comment, :post_id => @post.id)
-          @comment.update({is_deleted: true}, as: :member)
+          @comment.update(is_deleted: true)
           @post.reload
         end
 
@@ -86,7 +88,8 @@ class CommentTest < ActiveSupport::TestCase
       end
 
       should "not validate if the post does not exist" do
-        comment = FactoryGirl.build(:comment, :post_id => -1)
+        comment = FactoryGirl.build(:comment)
+        comment.post_id = -1
 
         assert_not(comment.valid?)
         assert_equal(["must exist"], comment.errors[:post])
@@ -179,12 +182,13 @@ class CommentTest < ActiveSupport::TestCase
           @post = FactoryGirl.create(:post)
           @comment = FactoryGirl.create(:comment, :post_id => @post.id)
           @mod = FactoryGirl.create(:moderator_user)
-          CurrentUser.user = @mod
+          CurrentUser.test!(@mod)
         end
 
         should "create a mod action" do
           assert_difference("ModAction.count") do
-            @comment.update_attributes({:body => "nope"}, :as => :moderator)
+            @comment.update(:body => "nope")
+            assert_equal("nope", @comment.body)
           end
         end
       end

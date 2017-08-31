@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class BanTest < ActiveSupport::TestCase
+  include DefaultHelper
+
   context "A ban" do
     context "created by an admin" do
       setup do
@@ -59,6 +61,8 @@ class BanTest < ActiveSupport::TestCase
       end
 
       should "not be valid against an admin or moderator" do
+        assert(@banner.is_moderator?, "banner is not a moderator")
+
         user = FactoryGirl.create(:admin_user)
         ban = FactoryGirl.build(:ban, :user => user, :banner => @banner)
         ban.save
@@ -71,6 +75,8 @@ class BanTest < ActiveSupport::TestCase
       end
 
       should "be valid against anyone who is not an admin or a moderator" do
+        assert(@banner.is_moderator?, "banner is not a moderator")
+
         user = FactoryGirl.create(:gold_user)
         ban = FactoryGirl.create(:ban, :user => user, :banner => @banner)
         assert(ban.errors.empty?)

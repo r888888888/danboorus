@@ -31,6 +31,7 @@ FactoryGirl.define do
 
     factory(:moderator_user) do
       level 40
+      after(:create) {|user| CurrentUser.scoped(user) {create(:membership, is_moderator: true)} if Booru.current.present?}
     end
 
     factory(:mod_user) do

@@ -506,7 +506,7 @@ CREATE TABLE comment_votes (
     id integer NOT NULL,
     booru_id integer NOT NULL,
     comment_id integer NOT NULL,
-    user_id integer NOT NULL,
+    creator_id integer NOT NULL,
     score integer NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
