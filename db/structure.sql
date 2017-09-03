@@ -1836,7 +1836,7 @@ CREATE TABLE forum_topics (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     category_id integer DEFAULT 0 NOT NULL,
-    min_level integer DEFAULT 0 NOT NULL
+    mods_only boolean DEFAULT false NOT NULL
 );
 
 
@@ -3804,13 +3804,6 @@ CREATE INDEX index_comment_votes_on_comment_id ON comment_votes USING btree (boo
 --
 
 CREATE INDEX index_comment_votes_on_created_at ON comment_votes USING btree (booru_id, created_at);
-
-
---
--- Name: index_comment_votes_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_comment_votes_on_user_id ON comment_votes USING btree (booru_id, user_id);
 
 
 --

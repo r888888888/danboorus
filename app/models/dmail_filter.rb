@@ -1,5 +1,4 @@
 class DmailFilter < ApplicationRecord
-  belongs_to :booru
   belongs_to :user
   # attr_accessible :words, :as => [:moderator, :gold, :platinum, :basic, :anonymous, :default, :admin]
   validates_presence_of :user
@@ -12,7 +11,7 @@ class DmailFilter < ApplicationRecord
   end
 
   def filtered?(dmail)
-    dmail.from.level < User::Levels::MODERATOR && has_filter? && (dmail.body =~ regexp || dmail.title =~ regexp || dmail.from.name =~ regexp)
+    !dmail.from.is_moderator? && has_filter? && (dmail.body =~ regexp || dmail.title =~ regexp || dmail.from.name =~ regexp)
   end
 
   def has_filter?

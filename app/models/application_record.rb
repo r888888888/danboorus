@@ -51,7 +51,7 @@ class ApplicationRecord < ActiveRecord::Base
       def belongs_to_updater
         class_eval do
           belongs_to :updater, class_name: "User"
-          before_validation(on: :update) do |rec| 
+          before_validation do |rec| 
             rec.updater_id = CurrentUser.id
           end
 

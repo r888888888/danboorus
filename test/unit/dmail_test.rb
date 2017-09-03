@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class DmailTest < ActiveSupport::TestCase
+  include DefaultHelper
+  
   context "A dmail" do
     setup do
       @user = FactoryGirl.create(:user)

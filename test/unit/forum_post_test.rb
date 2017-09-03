@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class ForumPostTest < ActiveSupport::TestCase
+  include DefaultHelper
+  
   context "A forum post" do
     setup do
       @user = FactoryGirl.create(:user)

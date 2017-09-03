@@ -9,7 +9,6 @@ class Dmail < ApplicationRecord
     validate :validate_sender_is_not_banned
   end
 
-  belongs_to :booru
   belongs_to :owner, :class_name => "User"
   belongs_to :to, :class_name => "User"
   belongs_to :from, :class_name => "User"

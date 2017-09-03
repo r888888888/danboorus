@@ -2,12 +2,10 @@ class ForumPost < ApplicationRecord
   include Mentionable
 
   attr_readonly :topic_id
-  belongs_to :booru
-  belongs_to :creator, :class_name => "User"
-  belongs_to :updater, :class_name => "User"
+  belongs_to_booru
+  belongs_to_creator
+  belongs_to_updater
   belongs_to :topic, :class_name => "ForumTopic"
-  before_validation :initialize_creator, :on => :create
-  before_validation :initialize_updater
   before_validation :initialize_is_deleted, :on => :create
   after_create :update_topic_updated_at_on_create
   after_update :update_topic_updated_at_on_update_for_original_posts
@@ -44,7 +42,7 @@ class ForumPost < ApplicationRecord
     end
 
     def creator_name(name)
-      where("forum_posts.creator_id = (select _.id from users _ where lower(_.name) = ?)", name.mb_chars.downcase)
+      where("forum_posts.creator_id = ?", User.name_to_id(name))
     end
 
     def active
@@ -52,7 +50,11 @@ class ForumPost < ApplicationRecord
     end
 
     def permitted
-      where(booru_id: Booru.current.id).joins(:topic).where("forum_topics.min_level <= ?", CurrentUser.level)
+      q = where(booru_id: Booru.current.id).joins(:topic)
+      if !CurrentUser.is_moderator?
+        q = q.where("forum_topics.mods_only = false")
+      end
+      q
     end
 
     def search(params)
@@ -89,15 +91,7 @@ class ForumPost < ApplicationRecord
 
   module ApiMethods
     def as_json(options = {})
-      if CurrentUser.user.level < topic.min_level
-        options[:only] = [:id]
-      end
-
-      super(options)
-    end
-
-    def to_xml(options = {})
-      if CurrentUser.user.level < topic.min_level
+      if !CurrentUser.is_moderator? && topic.mods_only
         options[:only] = [:id]
       end
 
@@ -170,12 +164,12 @@ class ForumPost < ApplicationRecord
   end
 
   def delete!
-    update_attributes({:is_deleted => true}, :as => CurrentUser.role)
+    update(is_deleted: true)
     update_topic_updated_at_on_delete
   end
 
   def undelete!
-    update_attributes({:is_deleted => false}, :as => CurrentUser.role)
+    update(is_deleted: false)
     update_topic_updated_at_on_undelete
   end
 
@@ -203,24 +197,8 @@ class ForumPost < ApplicationRecord
     end
   end
 
-  def initialize_creator
-    self.creator_id = CurrentUser.id
-  end
-
-  def initialize_updater
-    self.updater_id = CurrentUser.id
-  end
-
   def initialize_is_deleted
     self.is_deleted = false if is_deleted.nil?
-  end
-
-  def creator_name
-    User.id_to_name(creator_id)
-  end
-
-  def updater_name
-    User.id_to_name(updater_id)
   end
 
   def quoted_response
@@ -237,7 +215,7 @@ class ForumPost < ApplicationRecord
 
   def delete_topic_if_original_post
     if is_deleted? && is_original_post?
-      topic.update_attribute(:is_deleted, true)
+      topic.update(is_deleted: true)
     end
 
     true

@@ -5,27 +5,20 @@ class ForumTopic < ApplicationRecord
     2 => "Bugs & Features"
   }
 
-  MIN_LEVELS = {
-    None: 0,
-    Moderator: User::Levels::MODERATOR,
-    Admin: User::Levels::ADMIN,
-  }
-
-  attr_accessible :title, :original_post_attributes, :category_id, :as => [:basic, :gold, :platinum, :moderator, :admin, :default]
-  attr_accessible :is_sticky, :is_locked, :is_deleted, :min_level, :as => [:admin, :moderator]
-  belongs_to :booru
-  belongs_to :creator, :class_name => "User"
-  belongs_to :updater, :class_name => "User"
+  #attr_accessible :title, :original_post_attributes, :category_id, :as => [:basic, :gold, :platinum, :moderator, :admin, :default]
+  #attr_accessible :is_sticky, :is_locked, :is_deleted, :min_level, :as => [:admin, :moderator]
+  belongs_to_booru
+  belongs_to_creator
+  belongs_to_updater
   has_many :posts, lambda {order("forum_posts.id asc")}, :class_name => "ForumPost", :foreign_key => "topic_id", :dependent => :destroy
   has_one :original_post, lambda {order("forum_posts.id asc")}, :class_name => "ForumPost", :foreign_key => "topic_id"
   has_many :subscriptions, :class_name => "ForumSubscription"
-  before_validation :initialize_creator, :on => :create
-  before_validation :initialize_updater
+  #before_validation :initialize_creator, :on => :create
+  #before_validation :initialize_updater
   before_validation :initialize_is_deleted, :on => :create
   validates_presence_of :title, :creator_id
   validates_associated :original_post
   validates_inclusion_of :category_id, :in => CATEGORIES.keys
-  validates_inclusion_of :min_level, :in => MIN_LEVELS.values
   validates :title, :length => {:maximum => 255}
   accepts_nested_attributes_for :original_post
   after_update :update_orignal_post
@@ -62,7 +55,11 @@ class ForumTopic < ApplicationRecord
     end
 
     def permitted
-      where("min_level <= ?", CurrentUser.level)
+      if CurrentUser.is_moderator?
+        where("true")
+      else
+        where(mods_only: false)
+      end
     end
 
     def sticky_first
@@ -77,7 +74,7 @@ class ForumTopic < ApplicationRecord
       end
 
       if params[:mod_only].present?
-        q = q.where("min_level >= ?", MIN_LEVELS[:Moderator])
+        q = q.where(mods_only: true)
       end
 
       if params[:title_matches].present?
@@ -129,7 +126,7 @@ class ForumTopic < ApplicationRecord
       .where("(forum_topic_visits.id is null or forum_topic_visits.last_read_at < forum_topics.updated_at)")
       .exists?
       unless has_unread_topics
-        user.update_attribute(:last_forum_read_at, Time.now)
+        user.update(last_forum_read_at: Time.now)
         ForumTopicVisit.prune!(user)
       end
     end
@@ -151,7 +148,11 @@ class ForumTopic < ApplicationRecord
   end
 
   def visible?(user)
-    user.level >= min_level
+    if user.is_moderator?
+      true
+    else
+      !mods_only?
+    end
   end
 
   def initialize_is_deleted
@@ -175,15 +176,7 @@ class ForumTopic < ApplicationRecord
   end
 
   def as_json(options = {})
-    if CurrentUser.user.level < min_level
-      options[:only] = [:id]
-    end
-
-    super(options)
-  end
-
-  def to_xml(options = {})
-    if CurrentUser.user.level < min_level
+    if !CurrentUser.is_moderator? && mods_only?
       options[:only] = [:id]
     end
 
@@ -191,7 +184,7 @@ class ForumTopic < ApplicationRecord
   end
 
   def hidden_attributes
-    super + [:text_index, :min_level]
+    super + [:text_index, :mods_only]
   end
 
   def merge(topic)

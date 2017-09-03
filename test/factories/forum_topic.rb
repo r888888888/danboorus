@@ -4,9 +4,10 @@ FactoryGirl.define do
     is_sticky false
     is_locked false
     category_id 0
+    mods_only false
 
     factory(:mod_up_forum_topic) do
-      min_level User::Levels::MODERATOR
+      mods_only true 
     end
   end
 end
