@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class NoteTest < ActiveSupport::TestCase
+  include DefaultHelper
+  
   context "In all cases" do
     setup do
       @user = FactoryGirl.create(:user)

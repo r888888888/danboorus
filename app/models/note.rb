@@ -2,20 +2,17 @@ class Note < ApplicationRecord
   class RevertError < Exception ; end
 
   attr_accessor :updater_id, :updater_ip_addr, :html_id
-  belongs_to :booru
+  belongs_to_booru
   belongs_to :post
-  belongs_to :creator, :class_name => "User"
-  belongs_to :updater, :class_name => "User"
+  belongs_to_creator
+  belongs_to_updater
   has_many :versions, lambda {order("note_versions.id ASC")}, :class_name => "NoteVersion", :dependent => :destroy
-  before_validation :initialize_creator, :on => :create
-  before_validation :initialize_updater
   validates_presence_of :post_id, :creator_id, :updater_id, :x, :y, :width, :height, :body
   validate :post_must_exist
   validate :note_within_image
   after_save :update_post
   after_save :create_version
   validate :post_must_not_be_note_locked
-  attr_accessible :x, :y, :width, :height, :body, :updater_id, :updater_ip_addr, :is_active, :post_id, :post, :html_id
 
   module SearchMethods
     def active
@@ -84,15 +81,6 @@ class Note < ApplicationRecord
 
   extend SearchMethods
   include ApiMethods
-
-  def initialize_creator
-    self.creator_id ||= CurrentUser.id
-  end
-
-  def initialize_updater
-    self.updater_id = CurrentUser.id
-    self.updater_ip_addr = CurrentUser.ip_addr
-  end
 
   def post_must_exist
     if !Post.exists?(post_id)

@@ -1,9 +1,7 @@
 class NoteVersion < ApplicationRecord
-  before_validation :initialize_updater
-  belongs_to :booru
-  belongs_to :updater, :class_name => "User"
+  belongs_to_booru
+  belongs_to_updater
   scope :for_user, lambda {|user_id| where("updater_id = ?", user_id)}
-  attr_accessible :note_id, :x, :y, :width, :height, :body, :updater_id, :updater_ip_addr, :is_active, :post_id, :html_id, :version
 
   def self.search(params)
     q = where("true")
@@ -22,11 +20,6 @@ class NoteVersion < ApplicationRecord
     end
 
     q
-  end
-
-  def initialize_updater
-    self.updater_id = CurrentUser.id
-    self.updater_ip_addr = CurrentUser.ip_addr
   end
 
   def previous
