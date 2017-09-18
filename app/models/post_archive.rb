@@ -2,7 +2,8 @@ class PostArchive < ApplicationRecord
   extend Memoist
 
   belongs_to :post
-  belongs_to :updater, class_name: "User"
+  belongs_to_booru
+  belongs_to_updater
 
   def self.enabled?
     Danbooru.config.aws_sqs_archives_url.present?
@@ -63,7 +64,7 @@ class PostArchive < ApplicationRecord
         raise NotImplementedError.new("Archive service is not configured") if !enabled?
 
         json = {
-          "booru_id" => 0,
+          "booru_id" => Booru.current.id,
           "post_id" => post.id,
           "rating" => post.rating,
           "parent_id" => post.parent_id,

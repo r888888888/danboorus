@@ -42,11 +42,10 @@ class SavedSearch < ApplicationRecord
 
   include ListbooruMethods
 
-  belongs_to :booru
+  belongs_to_booru
   belongs_to :user
   validates :query, :presence => true
   validate :validate_count
-  attr_accessible :query
   before_create :update_user_on_create
   after_destroy :update_user_on_destroy
   after_save {|rec| Cache.delete(SavedSearch.cache_key(rec.user_id))}

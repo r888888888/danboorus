@@ -9,13 +9,12 @@ class Pool < ApplicationRecord
   validate :updater_can_change_category
   validate :name_does_not_conflict_with_metatags
   validate :updater_can_remove_posts
-  belongs_to :booru
-  belongs_to :creator, :class_name => "User"
-  belongs_to :updater, :class_name => "User"
+  belongs_to_booru
+  belongs_to_creator
+  belongs_to_updater
   before_validation :normalize_post_ids
   before_validation :normalize_name
   before_validation :initialize_is_active, :on => :create
-  before_validation :initialize_creator, :on => :create
   before_validation :strip_name
   after_save :update_category_pseudo_tags_for_posts_async
   after_save :create_version
@@ -166,10 +165,6 @@ class Pool < ApplicationRecord
     self.is_active = true if is_active.nil?
   end
 
-  def initialize_creator
-    self.creator_id = CurrentUser.id
-  end
-
   def normalize_name
     self.name = Pool.normalize_name(name)
   end
@@ -180,10 +175,6 @@ class Pool < ApplicationRecord
 
   def pretty_category
     category.titleize
-  end
-
-  def creator_name
-    User.id_to_name(creator_id)
   end
 
   def normalize_post_ids

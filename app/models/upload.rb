@@ -7,7 +7,7 @@ class Upload < ApplicationRecord
   attr_accessor :file, :image_width, :image_height, :file_ext, :md5, 
     :file_size, :as_pending,
     :referer_url, :downloaded_source
-  belongs_to :booru
+  belongs_to_booru
   belongs_to :uploader, :class_name => "User"
   belongs_to :post
   before_validation :initialize_uploader, :on => :create
@@ -15,11 +15,6 @@ class Upload < ApplicationRecord
   validate :uploader_is_not_limited, :on => :create
   validate :file_or_source_is_present, :on => :create
   validate :rating_given
-  attr_accessible :file, :image_width, :image_height, :file_ext, :md5, 
-    :file_size, :as_pending, :source, :file_path, :content_type, :rating, 
-    :tag_string, :status, :backtrace, :post_id, :md5_confirmation, 
-    :parent_id, :server,
-    :referer_url
 
   module ValidationMethods
     def uploader_is_not_limited

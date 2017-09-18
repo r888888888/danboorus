@@ -5,6 +5,7 @@ require 'helpers/pool_archive_test_helper'
 
 class PoolTest < ActiveSupport::TestCase
   include PoolArchiveTestHelper
+  include DefaultHelper
 
   setup do
     Timecop.travel(1.month.ago) do

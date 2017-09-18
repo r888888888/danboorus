@@ -5,6 +5,7 @@ require 'helpers/saved_search_test_helper'
 class PostTest < ActiveSupport::TestCase
   include PoolArchiveTestHelper
   include SavedSearchTestHelper
+  include DefaultHelper
 
   def assert_tag_match(posts, query)
     assert_equal(posts.map(&:id), Post.tag_match(query).pluck(:id))
@@ -24,6 +25,7 @@ class PostTest < ActiveSupport::TestCase
   def teardown
     super
 
+    Cache.clear
     CurrentUser.user = nil
     CurrentUser.ip_addr = nil
   end
@@ -61,7 +63,7 @@ class PostTest < ActiveSupport::TestCase
 
       context "that is status locked" do
         setup do
-          @post.update_attributes({:is_status_locked => true}, :as => :admin)
+          @post.update(:is_status_locked => true)
         end
 
         should "not destroy the record" do
@@ -108,7 +110,7 @@ class PostTest < ActiveSupport::TestCase
       context "that is status locked" do
         setup do
           @post = FactoryGirl.create(:post)
-          @post.update_attributes({:is_status_locked => true}, :as => :admin)
+          @post.update(is_status_locked: true)
         end
 
         should "fail" do
@@ -335,7 +337,7 @@ class PostTest < ActiveSupport::TestCase
 
       context "that is status locked" do
         setup do
-          @post.update_attributes({:is_status_locked => true}, :as => :admin)
+          @post.update(is_status_locked: true)
         end
 
         should "not allow undeletion" do
@@ -361,7 +363,7 @@ class PostTest < ActiveSupport::TestCase
     context "A status locked post" do
       setup do
         @post = FactoryGirl.create(:post)
-        @post.update_attributes({:is_status_locked => true}, :as => :admin)
+        @post.update(is_status_locked: true)
       end
     end
   end
@@ -379,7 +381,7 @@ class PostTest < ActiveSupport::TestCase
         end
 
         should "allow you to remove request tags" do
-          @post.update_attributes(:tag_string => "aaa bbb ccc ddd")
+          @post.update(tag_string: "aaa bbb ccc ddd")
           @post.reload
           assert_equal("aaa bbb ccc ddd", @post.tag_string)
         end
@@ -396,8 +398,6 @@ class PostTest < ActiveSupport::TestCase
         should allow_value("touhou newpool:foo").for(:tag_string)
         should allow_value("touhou fav:self").for(:tag_string)
         should allow_value("touhou -fav:self").for(:tag_string)
-        should allow_value("touhou upvote:self").for(:tag_string)
-        should allow_value("touhou downvote:self").for(:tag_string)
         should allow_value("touhou parent:1").for(:tag_string)
         should allow_value("touhou child:1").for(:tag_string)
         should allow_value("touhou source:foo").for(:tag_string)
@@ -458,7 +458,7 @@ class PostTest < ActiveSupport::TestCase
           end
 
           should "update the parent relationships for both posts" do
-            @post.update_attributes(:tag_string => "aaa parent:#{@parent.id}")
+            @post.update(tag_string: "aaa parent:#{@parent.id}")
             @post.reload
             @parent.reload
             assert_equal(@parent.id, @post.parent_id)
@@ -531,7 +531,7 @@ class PostTest < ActiveSupport::TestCase
           context "id" do
             setup do
               @pool = FactoryGirl.create(:pool)
-              @post.update_attributes(:tag_string => "aaa pool:#{@pool.id}")
+              @post.update(tag_string: "aaa pool:#{@pool.id}")
             end
 
             should "add the post to the pool" do
@@ -546,7 +546,7 @@ class PostTest < ActiveSupport::TestCase
             context "that exists" do
               setup do
                 @pool = FactoryGirl.create(:pool, :name => "abc")
-                @post.update_attributes(:tag_string => "aaa pool:abc")
+                @post.update(tag_string: "aaa pool:abc")
               end
 
               should "add the post to the pool" do
@@ -559,7 +559,7 @@ class PostTest < ActiveSupport::TestCase
 
             context "that doesn't exist" do
               should "create a new pool and add the post to that pool" do
-                @post.update_attributes(:tag_string => "aaa newpool:abc")
+                @post.update(tag_string: "aaa newpool:abc")
                 @pool = Pool.find_by_name("abc")
                 @post.reload
                 assert_not_nil(@pool)
@@ -580,7 +580,7 @@ class PostTest < ActiveSupport::TestCase
         context "for a rating" do
           context "that is valid" do
             should "update the rating if the post is unlocked" do
-              @post.update_attributes(:tag_string => "aaa rating:e")
+              @post.update(tag_string: "aaa rating:e")
               @post.reload
               assert_equal("e", @post.rating)
             end
@@ -588,7 +588,7 @@ class PostTest < ActiveSupport::TestCase
 
           context "that is invalid" do
             should "not update the rating" do
-              @post.update_attributes(:tag_string => "aaa rating:z")
+              @post.update(tag_string: "aaa rating:z")
               @post.reload
               assert_equal("s", @post.rating)
             end
@@ -596,7 +596,7 @@ class PostTest < ActiveSupport::TestCase
 
           context "that is locked" do
             should "change the rating if locked in the same update" do
-              @post.update({ :tag_string => "rating:e", :is_rating_locked => true }, :as => :moderator)
+              @post.update(tag_string: "rating:e", is_rating_locked: true)
 
               assert(@post.valid?)
               assert_equal("e", @post.reload.rating)
@@ -616,10 +616,10 @@ class PostTest < ActiveSupport::TestCase
 
         context "for a fav" do
           should "add/remove the current user to the post's favorite listing" do
-            @post.update_attributes(:tag_string => "aaa fav:self")
+            @post.update(:tag_string => "aaa fav:self")
             assert_equal("fav:#{@user.id}", @post.fav_string)
 
-            @post.update_attributes(:tag_string => "aaa -fav:self")
+            @post.update(:tag_string => "aaa -fav:self")
             assert_equal("", @post.fav_string)
           end
         end
@@ -630,7 +630,7 @@ class PostTest < ActiveSupport::TestCase
           end
 
           should "update the parent relationships for both posts" do
-            @post.update_attributes(:tag_string => "aaa child:#{@child.id}")
+            @post.update(:tag_string => "aaa child:#{@child.id}")
             @post.reload
             @child.reload
             assert_equal(@post.id, @child.parent_id)
@@ -672,13 +672,6 @@ class PostTest < ActiveSupport::TestCase
           end
 
           context "locked:notes" do
-            context "by a member" do
-              should "not lock the notes" do
-                @post.update(:tag_string => "locked:notes")
-                assert_equal(false, @post.is_note_locked)
-              end
-            end
-
             context "by a moderator" do
               should "lock/unlock the notes" do
                 CurrentUser.scoped(@moderator) do
@@ -693,13 +686,6 @@ class PostTest < ActiveSupport::TestCase
           end
 
           context "locked:rating" do
-            context "by a member" do
-              should "not lock the rating" do
-                @post.update(:tag_string => "locked:rating")
-                assert_equal(false, @post.is_rating_locked)
-              end
-            end
-
             context "by a moderator" do
               should "lock/unlock the rating" do
                 CurrentUser.scoped(@moderator) do
@@ -714,13 +700,6 @@ class PostTest < ActiveSupport::TestCase
           end
 
           context "locked:status" do
-            context "by a member" do
-              should "not lock the status" do
-                @post.update(:tag_string => "locked:status")
-                assert_equal(false, @post.is_status_locked)
-              end
-            end
-
             context "by an admin" do
               should "lock/unlock the status" do
                 CurrentUser.scoped(FactoryGirl.create(:admin_user)) do
@@ -734,50 +713,12 @@ class PostTest < ActiveSupport::TestCase
             end
           end
         end
-
-        context "of" do
-          setup do
-            @gold = FactoryGirl.create(:gold_user)
-          end
-
-          context "upvote:self or downvote:self" do
-            context "by a member" do
-              should "upvote the post" do
-                @post.update(:tag_string => "upvote:self")
-                assert_equal(1, @post.score)
-              end
-
-              should "downvote the post" do
-                @post.update(:tag_string => "downvote:self")
-                assert_equal(-1, @post.score)
-              end
-            end
-
-            context "by a gold user" do
-              should "upvote the post" do
-                CurrentUser.scoped(FactoryGirl.create(:gold_user)) do
-                  @post.update(:tag_string => "tag1 tag2 upvote:self")
-                  assert_equal(false, @post.errors.any?)
-                  assert_equal(1, @post.score)
-                end
-              end
-
-              should "downvote the post" do
-                CurrentUser.scoped(FactoryGirl.create(:gold_user)) do
-                  @post.update(:tag_string => "tag1 tag2 downvote:self")
-                  assert_equal(false, @post.errors.any?)
-                  assert_equal(-1, @post.score)
-                end
-              end
-            end
-          end
-        end
       end
 
       context "tagged with a negated tag" do
         should "remove the tag if present" do
-          @post.update_attributes(:tag_string => "aaa bbb ccc")
-          @post.update_attributes(:tag_string => "aaa bbb ccc -bbb")
+          @post.update(:tag_string => "aaa bbb ccc")
+          @post.update(:tag_string => "aaa bbb ccc -bbb")
           @post.reload
           assert_equal("aaa ccc", @post.tag_string)
         end
@@ -864,7 +805,7 @@ class PostTest < ActiveSupport::TestCase
           post = FactoryGirl.create(:post)
           Timecop.travel(6.hours.from_now) do
             assert_difference("PostArchive.count", 1) do
-              post.update_attributes(:tag_string => "zzz")
+              post.update(:tag_string => "zzz")
             end
           end
         end
@@ -872,7 +813,7 @@ class PostTest < ActiveSupport::TestCase
         should "merge with the previous version if the updater is the same user and it's been less than an hour" do
           post = FactoryGirl.create(:post)
           assert_difference("PostArchive.count", 0) do
-            post.update_attributes(:tag_string => "zzz")
+            post.update(:tag_string => "zzz")
           end
           assert_equal("zzz", post.versions.last.tags)
         end
@@ -883,7 +824,7 @@ class PostTest < ActiveSupport::TestCase
           CurrentUser.reload
 
           assert_difference("CurrentUser.post_update_count", 1) do
-            post.update_attributes(:tag_string => "zzz")
+            post.update(:tag_string => "zzz")
             CurrentUser.reload
           end
         end
@@ -1546,7 +1487,7 @@ class PostTest < ActiveSupport::TestCase
     should "return posts for the commenter:<name> metatag" do
       users = FactoryGirl.create_list(:user, 2, created_at: 2.weeks.ago)
       posts = FactoryGirl.create_list(:post, 2)
-      comms = users.zip(posts).map { |u, p| FactoryGirl.create(:comment, creator: u, post: p) }
+      comms = users.zip(posts).map { |u, p| CurrentUser.scoped(u) {FactoryGirl.create(:comment, post: p)} }
 
       assert_tag_match([posts[0]], "commenter:#{users[0].name}")
       assert_tag_match([posts[1]], "commenter:#{users[1].name}")
@@ -1564,7 +1505,7 @@ class PostTest < ActiveSupport::TestCase
     should "return posts for the noter:<name> metatag" do
       users = FactoryGirl.create_list(:user, 2)
       posts = FactoryGirl.create_list(:post, 2)
-      notes = users.zip(posts).map { |u, p| FactoryGirl.create(:note, creator: u, post: p) }
+      notes = users.zip(posts).map { |u, p| CurrentUser.scoped(u) {FactoryGirl.create(:note, post: p)} }
 
       assert_tag_match([posts[0]], "noter:#{users[0].name}")
       assert_tag_match([posts[1]], "noter:#{users[1].name}")
@@ -1730,16 +1671,6 @@ class PostTest < ActiveSupport::TestCase
       assert_tag_match(all - [rating_locked], "-locked:rating")
       assert_tag_match(all - [note_locked], "-locked:note")
       assert_tag_match(all - [status_locked], "-locked:status")
-    end
-
-    should "return posts for a upvote:<user>, downvote:<user> metatag" do
-      CurrentUser.scoped(FactoryGirl.create(:mod_user)) do
-        upvoted   = FactoryGirl.create(:post, tag_string: "upvote:self")
-        downvoted = FactoryGirl.create(:post, tag_string: "downvote:self")
-
-        assert_tag_match([upvoted],   "upvote:#{CurrentUser.name}")
-        assert_tag_match([downvoted], "downvote:#{CurrentUser.name}")
-      end
     end
 
     should "return posts ordered by a particular attribute" do
@@ -1927,7 +1858,7 @@ class PostTest < ActiveSupport::TestCase
       setup do
         @post = FactoryGirl.create(:post, :rating => "s")
         Timecop.travel(2.hours.from_now) do
-          @post.update({ :rating => "e", :is_rating_locked => true }, :as => :moderator)
+          @post.update(:rating => "e", :is_rating_locked => true)
         end
       end
 
@@ -1941,7 +1872,7 @@ class PostTest < ActiveSupport::TestCase
       end
 
       should "revert the rating after unlocking" do
-        @post.update({ :rating => "e", :is_rating_locked => false }, :as => :moderator)
+        @post.update(:rating => "e", :is_rating_locked => false)
         assert_nothing_raised do
           @post.revert_to!(@post.versions.first)
         end
@@ -1955,9 +1886,9 @@ class PostTest < ActiveSupport::TestCase
       setup do
         PostArchive.sqs_service.stubs(:merge?).returns(false)
         @post = FactoryGirl.create(:post, :rating => "e", :tag_string => "aaa", :source => "")
-        @post.update_attributes(:tag_string => "aaa bbb ccc ddd")
-        @post.update_attributes(:tag_string => "bbb xxx yyy", :source => "xyz")
-        @post.update_attributes(:tag_string => "bbb mmm yyy", :source => "abc")
+        @post.update(:tag_string => "aaa bbb ccc ddd")
+        @post.update(:tag_string => "bbb xxx yyy", :source => "xyz")
+        @post.update(:tag_string => "bbb mmm yyy", :source => "abc")
       end
 
       context "and then reverted to an early version" do
@@ -1984,10 +1915,6 @@ class PostTest < ActiveSupport::TestCase
         end
       end
     end
-  end
-
-  context "Mass assignment: " do
-    should_not allow_mass_assignment_of(:last_noted_at).as(:member)
   end
 end
 

@@ -1,12 +1,10 @@
 class PostVote < ApplicationRecord
   class Error < Exception ; end
 
-  belongs_to :booru
+  belongs_to_booru
   belongs_to :post
   belongs_to :user
   attr_accessor :vote
-  attr_accessible :post, :post_id, :user, :user_id, :score, :vote
-
   after_initialize :initialize_attributes, if: :new_record?
   validates_presence_of :post_id, :user_id, :score
   validates_inclusion_of :score, :in => [1, -1]

@@ -29,7 +29,7 @@ class Post < ApplicationRecord
   after_commit :delete_files, :on => :destroy
 
   belongs_to_booru
-  belongs_to :updater, :class_name => "User"
+  belongs_to_updater
   belongs_to :uploader, :class_name => "User"
   belongs_to :parent, :class_name => "Post"
   has_one :upload, :dependent => :destroy
@@ -567,7 +567,7 @@ class Post < ApplicationRecord
 
     def filter_metatags(tags)
       @pre_metatags, tags = tags.partition {|x| x =~ /\A(?:rating|parent|-parent|source|-?locked):/i}
-      @post_metatags, tags = tags.partition {|x| x =~ /\A(?:-pool|pool|newpool|fav|-fav|child|upvote|downvote):/i}
+      @post_metatags, tags = tags.partition {|x| x =~ /\A(?:-pool|pool|newpool|fav|-fav|child):/i}
       apply_pre_metatags
       return tags
     end
@@ -649,13 +649,13 @@ class Post < ApplicationRecord
           self.rating = $1.downcase
 
         when /^(-?)locked:notes?$/i
-          assign_attributes({ is_note_locked: $1 != "-" }, as: CurrentUser.role)
+          self.is_note_locked = ($1 != "-")
 
         when /^(-?)locked:rating$/i
-          assign_attributes({ is_rating_locked: $1 != "-" }, as: CurrentUser.role)
+          self.is_rating_locked = ($1 != "-")
 
         when /^(-?)locked:status$/i
-          assign_attributes({ is_status_locked: $1 != "-" }, as: CurrentUser.role)
+          self.is_status_locked = ($1 != "-")
         end
       end
     end
@@ -945,7 +945,7 @@ class Post < ApplicationRecord
     # - Reparent all children to the first child.
 
     def update_has_children_flag
-      update({has_children: children.exists?, has_active_children: children.undeleted.exists?}, without_protection: true)
+      update(has_children: children.exists?, has_active_children: children.undeleted.exists?)
     end
 
     def blank_out_nonexistent_parents

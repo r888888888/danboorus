@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class PostArchiveTest < ActiveSupport::TestCase
+  include DefaultHelper
+  
   context "A post" do
     setup do
       Timecop.travel(1.month.ago) do

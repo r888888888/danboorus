@@ -1,6 +1,6 @@
 class PoolArchive < ApplicationRecord
-  belongs_to :booru
-  belongs_to :updater, :class_name => "User"
+  belongs_to_booru
+  belongs_to_updater
 
   def self.enabled?
     Danbooru.config.aws_sqs_archives_url.present?
