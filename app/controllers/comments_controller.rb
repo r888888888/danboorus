@@ -1,6 +1,6 @@
 class CommentsController < ApplicationController
   respond_to :html, :json
-  before_filter :member_only, except: %i(index show)
+  before_filter :basic_only, except: %i(index show)
   before_filter :load_comment, only: %i(update edit show)
   skip_before_filter :api_check
 
@@ -27,11 +27,15 @@ class CommentsController < ApplicationController
   end
 
   def create
-    @comment = Comment.create(create_params, :as => CurrentUser.role)
+    @comment = Comment.create(create_params)
     respond_with(@comment) do |format|
       format.html do
         if @comment.errors.any?
-          redirect_to post_path(@comment.post), :notice => @comment.errors.full_messages.join("; ")
+          if @comment.post
+            redirect_to post_path(@comment.post), :notice => @comment.errors.full_messages.join("; ")
+          else
+            redirect_to posts_path, :notice => @comment.errors.full_messages.join("; ")
+          end
         else
           redirect_to post_path(@comment.post), :notice => "Comment posted"
         end
@@ -86,22 +90,24 @@ private
   end
 
   def create_params
-    params.require(:comment).tap do |x|
-      if CurrentUser.is_moderator?
-        x.permit(:post_id, :body, :is_sticky)
-      else
-        x.permit(:post_id, :body)
-      end
+    x = params.fetch(:comment, {})
+
+    if CurrentUser.is_moderator?
+      x.permit(:post_id, :body, :is_sticky)
+    else
+      x.permit(:post_id, :body)
     end
   end
 
   def update_params(comment)
-    params.require(:comment).tap do |x|
-      if CurrentUser.is_moderator?
-        x.permit(:body, :is_deleted, :is_sticky)
-      elsif comment.editable_by?(CurrentUser.user)
-        x.permit(:body)
-      end
+    x = params.fetch(:comment, {})
+
+    if CurrentUser.is_moderator?
+      x.permit(:body, :is_deleted, :is_sticky)
+    elsif comment.editable_by?(CurrentUser.user)
+      x.permit(:body)
+    else
+      x.permit()
     end
   end
 end

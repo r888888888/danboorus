@@ -2,6 +2,8 @@ require 'test_helper'
 
 class BansControllerTest < ActionController::TestCase
   context "A bans controller" do
+    include DefaultHelper
+    
     setup do
       @mod = FactoryGirl.create(:moderator_user)
       CurrentUser.user = @mod

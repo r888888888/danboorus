@@ -1,7 +1,7 @@
 class CommentVotesController < ApplicationController
   respond_to :js, :json
   before_filter :load_comment
-  before_filter :member_only
+  before_filter :basic_only
   skip_before_filter :api_check
 
   def create

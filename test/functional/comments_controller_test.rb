@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class CommentsControllerTest < ActionController::TestCase
+  include DefaultHelper
+
   context "A comments controller" do
     setup do
       @mod = FactoryGirl.create(:moderator_user)
@@ -74,7 +76,7 @@ class CommentsControllerTest < ActionController::TestCase
         should "fail if updater is not a moderator" do
           post :update, {:id => @mod_comment.id, :comment => {:body => "abc"}}, {:user_id => @user.id}
           assert_not_equal("abc", @mod_comment.reload.body)
-          assert_response 403
+          assert_redirected_to post_path(@mod_comment.post)
         end
       end
 
@@ -109,11 +111,11 @@ class CommentsControllerTest < ActionController::TestCase
           }
         }
 
-        post :update, params, { :user_id => @comment.creator_id }
+        post :update, params, { :user_id => @mod.id }
         @comment.reload
 
         assert_equal("herp derp", @comment.body)
-        assert_equal(true, @comment.is_deleted)
+        assert_equal(true, @comment.is_deleted?)
         assert_equal(@post.id, @comment.post_id)
 
         assert_redirected_to post_path(@post)
@@ -138,25 +140,7 @@ class CommentsControllerTest < ActionController::TestCase
 
       should "not allow commenting on nonexistent posts" do
         post :create, {:comment => FactoryGirl.attributes_for(:comment, :post_id => -1)}, {:user_id => @user.id}
-        assert_response :error
-      end
-    end
-
-    context "destroy action" do
-      should "mark comment as deleted" do
-        delete :destroy, {:id => @comment.id}, {:user_id => @user.id}
-        assert_equal(true, @comment.reload.is_deleted)
-        assert_redirected_to @comment
-      end
-    end
-
-    context "undelete action" do
-      should "mark comment as undeleted" do
-        @comment.delete!
-        put :undelete, { id: @comment.id }, { user_id: @user.id }
-
-        assert_equal(false, @comment.reload.is_deleted)
-        assert_redirected_to(@comment)
+        assert_redirected_to posts_path
       end
     end
   end

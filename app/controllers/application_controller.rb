@@ -1,8 +1,8 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   helper :pagination
-  around_filter :load_booru
-  around_filter :load_user
+  prepend_around_filter :load_booru
+  prepend_around_filter :load_user
   before_filter :set_title
   before_filter :normalize_search
   before_filter :set_started_at_session
@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from Exception, :with => :rescue_exception
   rescue_from User::PrivilegeError, :with => :access_denied
+  rescue_from ActiveModel::ForbiddenAttributesError, :with => :access_denied
   rescue_from SessionLoader::AuthenticationFailure, :with => :authentication_failed
   rescue_from Danbooru::Paginator::PaginationError, :with => :render_pagination_limit
 

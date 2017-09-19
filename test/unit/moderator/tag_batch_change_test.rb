@@ -4,6 +4,7 @@ require 'helpers/saved_search_test_helper'
 module Moderator
   class TagBatchChangeTest < ActiveSupport::TestCase
     include SavedSearchTestHelper
+    include DefaultHelper
 
     def setup
       super

@@ -3,6 +3,8 @@ require "danbooru/paginator/pagination_error"
 
 module PostSets
   class PostTest < ActiveSupport::TestCase
+    include DefaultHelper
+    
     context "In all cases" do
       setup do
         @user = FactoryGirl.create(:user)

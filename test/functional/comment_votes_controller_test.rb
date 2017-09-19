@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class CommentVotesControllerTest < ActionController::TestCase
+  include DefaultHelper
+  
   context "A comment votes controller" do
     setup do
       CurrentUser.user = @user = FactoryGirl.create(:user)

@@ -1,4 +1,4 @@
-<% if CurrentUser.user.is_moderator? && @exception %>
+<% if CurrentUser.is_moderator? && @exception %>
   <h1><%= @exception.class.to_s %> exception raised</h1>
   <ul style="font-family: monospace; font-size: 1.2em; list-style-type: none;">
     <li><%= @exception.message %></li>

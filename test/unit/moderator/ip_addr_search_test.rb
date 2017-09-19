@@ -2,6 +2,8 @@ require "test_helper"
 
 module Moderator
   class IpAddrSearchTest < ActiveSupport::TestCase
+    include DefaultHelper
+    
     context "an ip addr search" do
       setup do
         @user = FactoryGirl.create(:user)

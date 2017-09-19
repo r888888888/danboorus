@@ -2,6 +2,8 @@ require 'test_helper'
 
 module PostSets
   class FavoriteTest < ActiveSupport::TestCase
+    include DefaultHelper
+    
     context "In all cases" do
       setup do
         @user = FactoryGirl.create(:user)

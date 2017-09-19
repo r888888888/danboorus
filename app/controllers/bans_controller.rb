@@ -47,7 +47,7 @@ class BansController < ApplicationController
 private
 
   def ban_params
-    params.require(:ban).permit(:reason, :duration, :user_id, :user_name)
+    params.fetch(:ban, {}).permit(:reason, :duration, :user_id, :user_name)
   end
   
   def load_ban

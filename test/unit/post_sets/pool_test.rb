@@ -4,6 +4,7 @@ require 'helpers/pool_archive_test_helper'
 module PostSets
   class PoolTest < ActiveSupport::TestCase
     include PoolArchiveTestHelper
+    include DefaultHelper
 
     context "In all cases" do
       setup do
