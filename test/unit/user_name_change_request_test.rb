@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class UserNameChangeRequestTest < ActiveSupport::TestCase
+  include DefaultHelper
+  
   context "in all cases" do
     setup do
       @admin = FactoryGirl.create(:admin_user)

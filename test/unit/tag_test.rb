@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class TagTest < ActiveSupport::TestCase
+  include DefaultHelper
+  
   setup do
     user = FactoryGirl.create(:moderator_user)
     CurrentUser.user = user

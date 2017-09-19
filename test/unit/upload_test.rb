@@ -3,6 +3,7 @@ require 'helpers/upload_test_helper'
 
 class UploadTest < ActiveSupport::TestCase
   include UploadTestHelper
+  include DefaultHelper
 
   context "In all cases" do
     setup do
@@ -22,7 +23,7 @@ class UploadTest < ActiveSupport::TestCase
       end
 
       context "image size calculator" do
-        should "zzz discover the dimensions for a compressed SWF" do
+        should "discover the dimensions for a compressed SWF" do
           @upload = FactoryGirl.create(:upload, :file_path => "#{Rails.root}/test/files/compressed.swf")
           @upload.calculate_dimensions(@upload.file_path)
           assert_equal(500, @upload.image_width)

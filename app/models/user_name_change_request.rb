@@ -5,7 +5,6 @@ class UserNameChangeRequest < ApplicationRecord
   belongs_to :approver, :class_name => "User"
   validate :not_limited, :on => :create
   validates :desired_name, user_name: true
-  attr_accessible :status, :user_id, :original_name, :desired_name, :change_reason, :rejection_reason, :approver_id
   
   def self.pending
     where(:status => "pending")

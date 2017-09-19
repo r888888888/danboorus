@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class WikiPageTest < ActiveSupport::TestCase
+  include DefaultHelper
+  
   setup do
     CurrentUser.ip_addr = "127.0.0.1"
   end

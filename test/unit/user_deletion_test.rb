@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class UserDeletionTest < ActiveSupport::TestCase
+  include DefaultHelper
+  
   context "an invalid user deletion" do
     context "for an invalid password" do
       setup do

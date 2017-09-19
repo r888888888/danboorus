@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class RelatedTagCalculatorTest < ActiveSupport::TestCase
+  include DefaultHelper
+  
   setup do
     user = FactoryGirl.create(:user)
     CurrentUser.user = user

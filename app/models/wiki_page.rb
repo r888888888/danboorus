@@ -3,19 +3,16 @@ class WikiPage < ApplicationRecord
 
   before_save :normalize_title
   before_save :normalize_other_names
-  before_validation :initialize_creator, :on => :create
-  before_validation :initialize_updater
   after_save :create_version
-  belongs_to :booru
-  belongs_to :creator, :class_name => "User"
-  belongs_to :updater, :class_name => "User"
+  belongs_to_booru
+  belongs_to_creator
+  belongs_to_updater
   validates_uniqueness_of :title, :case_sensitive => false
   validates_presence_of :title
   validate :validate_rename
   validate :validate_locker_is_moderator
   validate :validate_not_locked
   attr_accessor :skip_secondary_validations
-  attr_accessible :title, :body, :is_locked, :is_deleted, :other_names, :skip_secondary_validations
   has_one :tag, :foreign_key => "name", :primary_key => "title"
   has_many :versions, lambda {order("wiki_page_versions.id ASC")}, :class_name => "WikiPageVersion", :dependent => :destroy
 

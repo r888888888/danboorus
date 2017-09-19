@@ -3,6 +3,7 @@ require 'helpers/saved_search_test_helper'
 
 class SavedSearchTest < ActiveSupport::TestCase
   include SavedSearchTestHelper
+  include DefaultHelper
 
   def setup
     super
@@ -47,7 +48,7 @@ class SavedSearchTest < ActiveSupport::TestCase
   context "Destroying a saved search" do
     setup do
       @user = FactoryGirl.create(:gold_user)
-      @saved_search = @user.saved_searches.create(:tag_query => "xxx")
+      @saved_search = @user.saved_searches.create(:query => "xxx")
       @saved_search.destroy
     end
 

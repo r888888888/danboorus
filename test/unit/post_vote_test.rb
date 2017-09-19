@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class PostVoteTest < ActiveSupport::TestCase
+  include DefaultHelper
+  
   def setup
     super
     
