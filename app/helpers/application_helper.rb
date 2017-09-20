@@ -155,7 +155,6 @@ module ApplicationHelper
   def body_attributes(user = CurrentUser.user)
     attributes = [:id, :name, :level, :level_string]
     attributes += User::Roles.map { |role| :"is_#{role}?" }
-
     attributes.map do |attr|
       name = attr.to_s.dasherize.delete("?")
       value = user.send(attr)

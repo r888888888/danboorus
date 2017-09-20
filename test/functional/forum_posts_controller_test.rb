@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class ForumPostsControllerTest < ActionController::TestCase
+  include DefaultHelper
+
   context "The forum posts controller" do
     setup do
       @user = FactoryGirl.create(:user)
@@ -103,30 +105,6 @@ class ForumPostsControllerTest < ActionController::TestCase
 
         forum_post = ForumPost.last
         assert_redirected_to(forum_topic_path(@forum_topic))
-      end
-    end
-
-    context "destroy action" do
-      should "destroy the posts" do
-        CurrentUser.user = @mod
-        post :destroy, {:id => @forum_post.id}, {:user_id => @mod.id}
-        assert_redirected_to(forum_post_path(@forum_post))
-        @forum_post.reload
-        assert_equal(true, @forum_post.is_deleted?)
-      end
-    end
-
-    context "undelete action" do
-      setup do
-        @forum_post.update_attribute(:is_deleted, true)
-      end
-
-      should "restore the post" do
-        CurrentUser.user = @mod
-        post :undelete, {:id => @forum_post.id}, {:user_id => @mod.id}
-        assert_redirected_to(forum_post_path(@forum_post))
-        @forum_post.reload
-        assert_equal(false, @forum_post.is_deleted?)
       end
     end
   end

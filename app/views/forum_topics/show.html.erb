@@ -3,8 +3,8 @@
     <h1>
       Topic: <%= @forum_topic.title %>
 
-      <% if @forum_topic.min_level >= User::Levels::MODERATOR %>
-        <span class="level-topic">(<%= User.level_string(@forum_topic.min_level).downcase %>+ only)</span>
+      <% if @forum_topic.mods_only? %>
+        <span class="level-topic">(mod only)</span>
       <% end %>
 
       <% if @forum_topic.is_deleted? %>

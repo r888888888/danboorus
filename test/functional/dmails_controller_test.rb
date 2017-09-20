@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class DmailsControllerTest < ActionController::TestCase
+  include DefaultHelper
+  
   context "The dmails controller" do
     setup do
       @user = FactoryGirl.create(:user)
@@ -47,11 +49,13 @@ class DmailsControllerTest < ActionController::TestCase
     end
 
     context "index action" do
-      should "show dmails owned by the current user" do
+      should "show sent dmails owned by the current user" do
         get :index, {:search => {:owner_id => @dmail.owner_id, :folder => "sent"}}, {:user_id => @dmail.owner_id}
         assert_response :success
         assert_equal(1, assigns[:dmails].size)
+      end
 
+      should "show received dmails owned by the current user" do
         get :index, {:search => {:owner_id => @dmail.owner_id, :folder => "received"}}, {:user_id => @dmail.owner_id}
         assert_response :success
         assert_equal(1, assigns[:dmails].size)

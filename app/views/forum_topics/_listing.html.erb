@@ -9,7 +9,7 @@
   </thead>
   <tbody>
     <% forum_topics.each do |topic| %>
-      <% if CurrentUser.user.level >= topic.min_level %>
+      <% if topic.visible?(CurrentUser.user) %>
         <tr class="forum-topic-row forum-topic-category-<%= topic.category_id %>">
           <td>
             <% if topic.is_sticky? %>
@@ -30,8 +30,8 @@
               <span class="locked-topic">(locked)</span>
             <% end %>
 
-            <% if topic.min_level > 0 %>
-              <span class="level-topic">(<%= User.level_string(topic.min_level).downcase %> only)</span>
+            <% if topic.mods_only? %>
+              <span class="level-topic">(mod only)</span>
             <% end %>
           </td>
           <td><%= link_to_user topic.creator %></td>

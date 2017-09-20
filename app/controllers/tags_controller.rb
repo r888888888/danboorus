@@ -1,5 +1,5 @@
 class TagsController < ApplicationController
-  before_filter :member_only, :only => [:edit, :update]
+  before_filter :basic_only, :only => [:edit, :update]
   respond_to :html, :xml, :json
 
   def edit

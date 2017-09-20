@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class ForumTopicsControllerTest < ActionController::TestCase
+  include DefaultHelper
+
   context "The forum topics controller" do
     setup do
       @user = FactoryGirl.create(:user)
@@ -19,13 +21,13 @@ class ForumTopicsControllerTest < ActionController::TestCase
     context "for a level restricted topic" do
       setup do
         CurrentUser.user = @mod
-        @forum_topic.update_attribute(:min_level, User::Levels::MODERATOR)
+        @forum_topic.update(mods_only: true)
         CurrentUser.user = @user
       end
 
       should "not allow users to see the topic" do
         get :show, {:id => @forum_topic.id}  
-        assert_redirected_to forum_topics_path
+        assert_response :forbidden
       end
 
       should "not bump the forum for users without access" do
@@ -37,9 +39,11 @@ class ForumTopicsControllerTest < ActionController::TestCase
         assert_equal(true, @gold_user.has_forum_been_updated?)
 
         # Marking it as read should clear it...
+        booru = Booru.current
         CurrentUser.scoped(@gold_user) do
           post :mark_all_as_read, {}, {:user_id => @gold_user.id}
         end
+        Booru.current = booru
         assert_redirected_to(forum_topics_path)
         assert_equal(false, @gold_user.reload.has_forum_been_updated?)
 
@@ -143,34 +147,6 @@ class ForumTopicsControllerTest < ActionController::TestCase
 
         forum_topic = ForumTopic.last
         assert_redirected_to(forum_topic_path(forum_topic))
-      end
-    end
-
-    context "destroy action" do
-      setup do
-        @post = FactoryGirl.create(:forum_post, :topic_id => @forum_topic.id)
-      end
-
-      should "destroy the topic and any associated posts" do
-        CurrentUser.user = @mod
-        post :destroy, {:id => @forum_topic.id}, {:user_id => @mod.id}
-        assert_redirected_to(forum_topic_path(@forum_topic))
-        @forum_topic.reload
-        assert_equal(true, @forum_topic.is_deleted?)
-      end
-    end
-
-    context "undelete action" do
-      setup do
-        @forum_topic.update_attribute(:is_deleted, true)
-      end
-
-      should "restore the topic" do
-        CurrentUser.user = @mod
-        post :undelete, {:id => @forum_topic.id}, {:user_id => @mod.id}
-        assert_redirected_to(forum_topic_path(@forum_topic))
-        @forum_topic.reload
-        assert_equal(false, @forum_topic.is_deleted?)
       end
     end
   end

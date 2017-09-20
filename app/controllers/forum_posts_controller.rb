@@ -1,8 +1,9 @@
 class ForumPostsController < ApplicationController
   respond_to :html, :json, :js
-  before_filter :member_only, except: %i(index show search)
-  before_filter :load_post, only: %i(edit show update destroy undelete)
-  before_filter :check_min_level, only: %i(edit show update destroy undelete)
+  before_filter :basic_only, except: %i(index show search)
+  before_filter :load_post, only: %i(edit show update)
+  before_filter :check_mod_access, only: %i(show edit update)
+  before_filter :check_user_access, only: %i(edit update)
   skip_before_filter :api_check
   
   def new
@@ -57,40 +58,33 @@ private
     @forum_topic = @forum_post.topic
   end
 
-  def check_min_level
-    if CurrentUser.user.level < @forum_topic.min_level
-      respond_with(@forum_topic) do |fmt|
-        fmt.html do
-          flash[:notice] = "Access denied"
-          redirect_to forum_topics_path
-        end
+  def check_mod_access
+    if @forum_topic.mods_only? && !CurrentUser.is_moderator?
+      raise User::PrivilegeError.new
+    end
+  end
 
-        fmt.json do
-          render nothing: true, status: 403
-        end
-      end
-
-      return false
+  def check_user_access
+    if !@forum_post.editable_by?(CurrentUser.user)
+      raise User::PrivilegeError.new      
     end
   end
 
   def update_params(post)
-    params.require(:forum_post).tap do |x|
-      if CurrentUser.is_moderator?
-        x.permit(:body, :topic_id, :is_locked, :is_sticky, :is_deleted)
-      elsif(post.editable_by?(CurrentUser.user))
-        x.permit(:body, :is_deleted)
-      end
+    x = params.fetch(:forum_post, {})
+    if CurrentUser.is_moderator?
+      x.permit(:body, :topic_id, :is_locked, :is_sticky, :is_deleted)
+    elsif(post.editable_by?(CurrentUser.user))
+      x.permit(:body, :is_deleted)
     end
   end
 
   def create_params
-    params.require(:forum_post).tap do |x|
-      if CurrentUser.is_moderator?
-        x.permit(:body, :topic_id, :is_locked, :is_sticky, :is_deleted)
-      else
-        x.permit(:body, :topic_id)
-      end
+    x = params.fetch(:forum_post, {})
+    if CurrentUser.is_moderator?
+      x.permit(:body, :topic_id, :is_locked, :is_sticky, :is_deleted)
+    else
+      x.permit(:body, :topic_id)
     end
   end
 end

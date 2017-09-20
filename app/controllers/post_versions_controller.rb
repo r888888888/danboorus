@@ -1,5 +1,5 @@
 class PostVersionsController < ApplicationController
-  before_filter :member_only
+  before_filter :basic_only
   before_filter :check_availabililty
   respond_to :html, :xml, :json
 

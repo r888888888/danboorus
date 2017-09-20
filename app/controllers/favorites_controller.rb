@@ -1,5 +1,5 @@
 class FavoritesController < ApplicationController
-  before_filter :member_only, except: [:index]
+  before_filter :basic_only, except: [:index]
   respond_to :html, :json
   skip_before_filter :api_check
 

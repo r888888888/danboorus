@@ -22,9 +22,6 @@ Rails.application.routes.draw do
   resource  :dtext_preview, :only => [:create]
   resources :favorites
   resources :forum_posts do
-    member do
-      post :undelete
-    end
     collection do
       get :search
     end

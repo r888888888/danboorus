@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class FavoritesControllerTest < ActionController::TestCase
+  include DefaultHelper
+  
   context "The favorites controller" do
     setup do
       @user = FactoryGirl.create(:user)

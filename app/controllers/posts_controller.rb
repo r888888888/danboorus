@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_filter :member_only, :except => [:show, :show_seq, :index, :home, :random, :copy_notes]
+  before_filter :basic_only, :except => [:show, :show_seq, :index, :home, :random, :copy_notes]
   before_filter :enable_cors, :only => [:index, :show]
   respond_to :html, :xml, :json
 

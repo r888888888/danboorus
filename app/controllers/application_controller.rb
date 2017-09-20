@@ -1,8 +1,10 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   helper :pagination
-  prepend_around_filter :load_booru
-  prepend_around_filter :load_user
+  before_filter :load_booru
+  after_filter :reset_booru
+  before_filter :load_user
+  after_filter :reset_user
   before_filter :set_title
   before_filter :normalize_search
   before_filter :set_started_at_session
@@ -25,10 +27,9 @@ class ApplicationController < ActionController::Base
     elsif request.subdomain.present?
       Booru.current = Booru.find_by_slug(request.subdomain)
     end
+  end
 
-    yield
-
-  ensure
+  def reset_booru
     Booru.current = nil
   end
 
@@ -162,10 +163,9 @@ class ApplicationController < ActionController::Base
   def load_user
     session_loader = SessionLoader.new(session, cookies, request, params)
     session_loader.load
+  end
 
-    yield
-
-  ensure
+  def reset_user
     CurrentUser.user = nil
     CurrentUser.ip_addr = nil
   end
