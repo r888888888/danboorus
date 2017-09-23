@@ -35,39 +35,17 @@ class PoolsController < ApplicationController
   end
 
   def create
-    @pool = Pool.create(params.require(:pool).permit(:name, :description, :post_ids, :category))
+    @pool = Pool.create(create_params)
     flash[:notice] = "Pool created"
     respond_with(@pool)
   end
 
   def update
     @pool = Pool.find(params[:id])
-    @pool.update(params.require(:pool).permit(:name, :description, :post_ids, :post_count, :is_active, :category, :is_deleted))
+    @pool.update(update_params)
     unless @pool.errors.any?
       flash[:notice] = "Pool updated"
     end
-    respond_with(@pool)
-  end
-
-  def destroy
-    @pool = Pool.find(params[:id])
-    if !@pool.deletable_by?(CurrentUser.user)
-      raise User::PrivilegeError
-    end
-    @pool.update_attribute(:is_deleted, true)
-    @pool.create_mod_action_for_delete
-    flash[:notice] = "Pool deleted"
-    respond_with(@pool)
-  end
-
-  def undelete
-    @pool = Pool.find(params[:id])
-    if !@pool.deletable_by?(CurrentUser.user)
-      raise User::PrivilegeError
-    end
-    @pool.update_attribute(:is_deleted, false)
-    @pool.create_mod_action_for_undelete
-    flash[:notice] = "Pool undeleted"
     respond_with(@pool)
   end
 
@@ -78,6 +56,26 @@ class PoolsController < ApplicationController
     flash[:notice] = "Pool reverted"
     respond_with(@pool) do |format|
       format.js
+    end
+  end
+
+private
+  
+  def create_params
+    x = params.require(:pool)
+    if CurrentUser.is_moderator?
+      x.permit(:name, :description, :post_ids, :category, :is_active, :is_deleted)
+    else
+      x.permit(:name, :description, :post_ids, :category, :is_active)
+    end
+  end
+
+  def update_params
+    x = params.require(:pool)
+    if CurrentUser.is_moderator?
+      x.permit(:name, :description, :post_ids, :category, :is_active, :is_deleted)
+    else
+      x.permit(:name, :description, :post_ids, :category, :is_active)
     end
   end
 end

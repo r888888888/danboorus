@@ -81,7 +81,6 @@ Rails.application.routes.draw do
   resources :pools do
     member do
       put :revert
-      post :undelete
     end
     collection do
       get :gallery

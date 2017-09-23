@@ -12,16 +12,13 @@ class Pool < ApplicationRecord
   belongs_to_booru
   belongs_to_creator
   belongs_to_updater
-  before_validation :normalize_post_ids
+  before_validation :synchronize
   before_validation :normalize_name
   before_validation :initialize_is_active, :on => :create
   before_validation :strip_name
-  before_save :synchronize
   after_save :update_category_pseudo_tags_for_posts_async
   after_save :create_version
   before_destroy :create_mod_action_for_destroy
-  # attr_accessible :name, :description, :post_ids, :post_id_array, :post_count, :is_active, :category, :as => [:member, :gold, :platinum, :moderator, :admin, :default]
-  # attr_accessible :is_deleted, :as => [:moderator, :admin]
 
   module SearchMethods
     def deleted
@@ -222,8 +219,7 @@ class Pool < ApplicationRecord
     return if is_deleted?
 
     with_lock do
-      update_attributes(:post_ids => add_number_to_string(post.id, post_ids), :post_count => post_count + 1)
-      post.add_pool!(self, true)
+      update(post_ids: add_number_to_string(post.id, post_ids), post_count: post_count + 1)
       clear_post_id_array
     end
   end
@@ -233,8 +229,7 @@ class Pool < ApplicationRecord
     return unless CurrentUser.user.can_remove_from_pools?
 
     with_lock do
-      update_attributes(:post_ids => remove_number_from_string(post.id, post_ids), :post_count => post_count - 1)
-      post.remove_pool!(self)
+      update(post_ids: remove_number_from_string(post.id, post_ids), post_count: post_count - 1)
       clear_post_id_array
     end
   end

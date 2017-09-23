@@ -116,6 +116,7 @@ class PoolTest < ActiveSupport::TestCase
     context "by adding a new post" do
       setup do
         @pool.add!(@p1)
+        @p1.reload
       end
 
       should "add the post to the pool" do
@@ -174,11 +175,13 @@ class PoolTest < ActiveSupport::TestCase
     context "by removing a post" do
       setup do
         @pool.add!(@p1)
+        @p1.reload
       end
 
       context "that is in the pool" do
         setup do
           @pool.remove!(@p1)
+          @p1.reload
         end
 
         should "remove the post from the pool" do
@@ -197,6 +200,7 @@ class PoolTest < ActiveSupport::TestCase
       context "that is not in the pool" do
         setup do
           @pool.remove!(@p2)
+          @p2.reload
         end
 
         should "not affect the pool" do

@@ -11,8 +11,7 @@ class PoolsControllerTest < ActionController::TestCase
         @user = FactoryGirl.create(:user)
         @mod = FactoryGirl.create(:moderator_user)
       end
-      CurrentUser.user = @user
-      CurrentUser.ip_addr = "127.0.0.1"
+      CurrentUser.test!(@user)
       @post = FactoryGirl.create(:post)
       mock_pool_archive_service!
       PoolArchive.sqs_service.stubs(:merge?).returns(false)
@@ -95,32 +94,6 @@ class PoolsControllerTest < ActionController::TestCase
       end
     end
 
-    context "destroy action" do
-      setup do
-        @pool = FactoryGirl.create(:pool)
-      end
-
-      should "destroy a pool" do
-        post :destroy, {:id => @pool.id}, {:user_id => @mod.id}
-        @pool.reload
-        assert_equal(true, @pool.is_deleted?)
-      end
-    end
-
-    context "undelete action" do
-      setup do
-        @pool = FactoryGirl.create(:pool)
-        @pool.is_deleted = true
-        @pool.save
-      end
-
-      should "restore a pool" do
-        post :undelete, {:id => @pool.id}, {:user_id => @mod.id}
-        @pool.reload
-        assert_equal(false, @pool.is_deleted?)
-      end
-    end
-
     context "revert action" do
       setup do
         @post_2 = FactoryGirl.create(:post)
@@ -128,6 +101,8 @@ class PoolsControllerTest < ActionController::TestCase
         CurrentUser.scoped(@user, "127.0.0.2") do
           @pool.update(post_ids: "#{@post.id} #{@post_2.id}")
         end
+        @post_2.reload
+        @pool.reload
       end
 
       should "revert to a previous version" do
@@ -142,6 +117,7 @@ class PoolsControllerTest < ActionController::TestCase
         @pool2 = FactoryGirl.create(:pool)
 
         post :revert, { :id => @pool.id, :version_id => @pool2.versions.first.id }, {:user_id => @user.id}
+        @pool2.reload
         @pool.reload
 
         assert_not_equal(@pool.name, @pool2.name)
