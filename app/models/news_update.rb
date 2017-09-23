@@ -1,11 +1,7 @@
 class NewsUpdate < ApplicationRecord
-  belongs_to :booru
-  belongs_to :creator, :class_name => "User"
-  belongs_to :updater, :class_name => "User"
+  belongs_to_creator
+  belongs_to_updater
   scope :recent, lambda {where("created_at >= ?", 2.weeks.ago).order("created_at desc").limit(5)}
-  before_validation :initialize_creator, :on => :create
-  before_validation :initialize_updater
-  # attr_accessible :message
 
   def initialize_creator
     self.creator_id = CurrentUser.id

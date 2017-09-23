@@ -14,7 +14,7 @@ class NewsUpdatesController < ApplicationController
 
   def update
     @news_update = NewsUpdate.find(params[:id])
-    @news_update.update_attributes(params[:news_update])
+    @news_update.update_attributes(params.require(:news_update).permit(:message))
     respond_with(@news_update, :location => news_updates_path)
   end
 
@@ -24,7 +24,7 @@ class NewsUpdatesController < ApplicationController
   end
 
   def create
-    @news_update = NewsUpdate.create(params[:news_update])
+    @news_update = NewsUpdate.create(params.require(:news_update).permit(:message))
     respond_with(@news_update, :location => news_updates_path)
   end
 

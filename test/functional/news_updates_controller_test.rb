@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class NewsUpdatesControllerTest < ActionController::TestCase
+  include DefaultHelper
+  
   context "the news updates controller" do
     setup do
       @admin = FactoryGirl.create(:admin_user)

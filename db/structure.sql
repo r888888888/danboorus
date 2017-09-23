@@ -2042,6 +2042,7 @@ ALTER SEQUENCE note_versions_id_seq OWNED BY note_versions.id;
 CREATE TABLE notes (
     id integer NOT NULL,
     booru_id integer NOT NULL,
+    updater_id integer NOT NULL,
     creator_id integer NOT NULL,
     post_id integer NOT NULL,
     x integer NOT NULL,

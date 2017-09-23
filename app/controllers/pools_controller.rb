@@ -35,17 +35,14 @@ class PoolsController < ApplicationController
   end
 
   def create
-    @pool = Pool.create(params[:pool])
+    @pool = Pool.create(params.require(:pool).permit(:name, :description, :post_ids, :category))
     flash[:notice] = "Pool created"
     respond_with(@pool)
   end
 
   def update
-    # need to do this in order for synchronize! to work correctly
     @pool = Pool.find(params[:id])
-    @pool.attributes = params[:pool]
-    @pool.synchronize
-    @pool.save
+    @pool.update(params.require(:pool).permit(:name, :description, :post_ids, :post_count, :is_active, :category, :is_deleted))
     unless @pool.errors.any?
       flash[:notice] = "Pool updated"
     end

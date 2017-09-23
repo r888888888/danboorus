@@ -3,6 +3,7 @@ require 'helpers/pool_archive_test_helper'
 
 class PoolVersionsControllerTest < ActionController::TestCase
   include PoolArchiveTestHelper
+  include DefaultHelper
 
   context "The pool versions controller" do
     setup do

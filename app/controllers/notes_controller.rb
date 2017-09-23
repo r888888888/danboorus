@@ -37,7 +37,7 @@ class NotesController < ApplicationController
 
   def update
     @note = Note.find(params[:id])
-    @note.update_attributes(update_params)
+    @note.update(update_params)
     respond_with(@note) do |format|
       format.json do
         if @note.errors.any?
@@ -51,7 +51,7 @@ class NotesController < ApplicationController
 
   def destroy
     @note = Note.find(params[:id])
-    @note.update_attributes(:is_active => false)
+    @note.update(:is_active => false)
     respond_with(@note)
   end
 

@@ -152,7 +152,6 @@ class PoolTest < ActiveSupport::TestCase
         setup do
           @pool.update_attribute(:is_deleted, true)
           @pool.post_ids = "#{@pool.post_ids} #{@p2.id}"
-          @pool.synchronize!
           @pool.save
           @pool.reload
           @p2.reload
@@ -280,7 +279,7 @@ class PoolTest < ActiveSupport::TestCase
       setup do
         @pool.reload
         @pool.post_ids = "#{@p2.id}"
-        @pool.synchronize!
+        @pool.save
       end
 
       should "update the pool" do

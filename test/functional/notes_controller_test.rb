@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class NotesControllerTest < ActionController::TestCase
+  include DefaultHelper
+
   context "The notes controller" do
     setup do
       @user = FactoryGirl.create(:user)
@@ -77,22 +79,23 @@ class NotesControllerTest < ActionController::TestCase
     context "revert action" do
       setup do
         Timecop.travel(1.day.from_now) do
-          @note.update_attributes(:body => "111")
+          @note.update(:body => "111")
         end
         Timecop.travel(2.days.from_now) do
-          @note.update_attributes(:body => "222")
+          @note.update(:body => "222")
         end
+        @note.reload
       end
 
       should "revert to a previous version" do
-        post :revert, {:id => @note.id, :version_id => @note.versions(true).first.id}, {:user_id => @user.id}
+        post :revert, {:id => @note.id, :version_id => @note.versions.first.id}, {:user_id => @user.id}
         assert_equal("000", @note.reload.body)
       end
 
       should "not allow reverting to a previous version of another note" do
         @note2 = FactoryGirl.create(:note, :body => "note 2")
 
-        post :revert, { :id => @note.id, :version_id => @note2.versions(true).first.id }, {:user_id => @user.id}
+        post :revert, { :id => @note.id, :version_id => @note2.versions.first.id }, {:user_id => @user.id}
 
         assert_not_equal(@note.reload.body, @note2.body)
         assert_response :missing

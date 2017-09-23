@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveModel::ForbiddenAttributesError, :with => :access_denied
   rescue_from SessionLoader::AuthenticationFailure, :with => :authentication_failed
   rescue_from Danbooru::Paginator::PaginationError, :with => :render_pagination_limit
-
+  rescue_from ActiveRecord::RecordNotFound, :with => :not_found
   protected
 
   def load_booru
@@ -129,6 +129,23 @@ class ApplicationController < ActionController::Base
 
       fmt.json do
         render :json => {:success => false, :reason => "authentication failed"}.to_json, :status => 401
+      end
+    end
+  end
+
+  def not_found(exception = nil)
+    respond_to do |fmt|
+      fmt.html do
+        render template: "static/404", status: 404
+      end
+      fmt.xml do
+        render :xml => {:success => false, :reason => "not found"}.to_xml(:root => "response"), :status => 404
+      end
+      fmt.json do
+        render :json => {:success => false, :reason => "not found"}.to_json, :status => 404
+      end
+      fmt.js do
+        render :nothing => true, :status => 404
       end
     end
   end

@@ -3,7 +3,10 @@ module DefaultHelper
     super
     CurrentUser.test!(FactoryGirl.create(:admin_user))
     Booru.current = FactoryGirl.create(:booru)    
-    request.stubs(:subdomain).returns(Booru.current.slug)
+
+    if defined?(request)
+      request.stubs(:subdomain).returns(Booru.current.slug)
+    end
   end
 
   def teardown

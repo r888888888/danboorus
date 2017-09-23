@@ -3,6 +3,7 @@ require 'helpers/pool_archive_test_helper'
 
 class PoolElementsControllerTest < ActionController::TestCase
   include PoolArchiveTestHelper
+  include DefaultHelper
 
   context "The pools posts controller" do
     setup do
@@ -23,14 +24,14 @@ class PoolElementsControllerTest < ActionController::TestCase
 
     context "create action" do
       should "add a post to a pool" do
-        post :create, {:pool_id => @pool.id, :post_id => @post.id, :format => "json"}, {:user_id => @user.id}
+        post :create, {:pool_id => @pool.id, :post_id => @post.id, :format => "js"}, {:user_id => @user.id}
         @pool.reload
         assert_equal([@post.id], @pool.post_id_array)
       end
 
       should "add a post to a pool once and only once" do
         @pool.add!(@post)
-        post :create, {:pool_id => @pool.id, :post_id => @post.id, :format => "json"}, {:user_id => @user.id}
+        post :create, {:pool_id => @pool.id, :post_id => @post.id, :format => "js"}, {:user_id => @user.id}
         @pool.reload
         assert_equal([@post.id], @pool.post_id_array)
       end
@@ -42,14 +43,14 @@ class PoolElementsControllerTest < ActionController::TestCase
       end
 
       should "remove a post from a pool" do
-        post :destroy, {:pool_id => @pool.id, :post_id => @post.id, :format => "json"}, {:user_id => @user.id}
+        post :destroy, {:pool_id => @pool.id, :post_id => @post.id, :format => "js"}, {:user_id => @user.id}
         @pool.reload
         assert_equal([], @pool.post_id_array)
       end
 
       should "do nothing if the post is not a member of the pool" do
         @pool.remove!(@post)
-        post :destroy, {:pool_id => @pool.id, :post_id => @post.id, :format => "json"}, {:user_id => @user.id}
+        post :destroy, {:pool_id => @pool.id, :post_id => @post.id, :format => "js"}, {:user_id => @user.id}
         @pool.reload
         assert_equal([], @pool.post_id_array)
       end

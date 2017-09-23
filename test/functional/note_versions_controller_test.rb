@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class NoteVersionsControllerTest < ActionController::TestCase
+  include DefaultHelper
+  
   context "The note versions controller" do
     setup do
       @user = FactoryGirl.create(:user)

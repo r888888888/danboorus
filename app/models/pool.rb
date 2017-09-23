@@ -16,9 +16,9 @@ class Pool < ApplicationRecord
   before_validation :normalize_name
   before_validation :initialize_is_active, :on => :create
   before_validation :strip_name
+  before_save :synchronize
   after_save :update_category_pseudo_tags_for_posts_async
   after_save :create_version
-  after_create :synchronize!
   before_destroy :create_mod_action_for_destroy
   # attr_accessible :name, :description, :post_ids, :post_id_array, :post_count, :is_active, :category, :as => [:member, :gold, :platinum, :moderator, :admin, :default]
   # attr_accessible :is_deleted, :as => [:moderator, :admin]

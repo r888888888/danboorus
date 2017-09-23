@@ -1,7 +1,7 @@
 class Note < ApplicationRecord
   class RevertError < Exception ; end
 
-  attr_accessor :updater_id, :updater_ip_addr, :html_id
+  attr_accessor :html_id, :updater_ip_addr
   belongs_to_booru
   belongs_to :post
   belongs_to_creator
@@ -146,7 +146,7 @@ class Note < ApplicationRecord
   def create_new_version
     versions.create(
       :updater_id => updater_id,
-      :updater_ip_addr => updater_ip_addr,
+      :updater_ip_addr => CurrentUser.ip_addr,
       :post_id => post_id,
       :x => x,
       :y => y,

@@ -3,6 +3,7 @@ require 'helpers/pool_archive_test_helper'
 
 class PoolsControllerTest < ActionController::TestCase
   include PoolArchiveTestHelper
+  include DefaultHelper
 
   context "The pools controller" do
     setup do
@@ -124,14 +125,12 @@ class PoolsControllerTest < ActionController::TestCase
       setup do
         @post_2 = FactoryGirl.create(:post)
         @pool = FactoryGirl.create(:pool, :post_ids => "#{@post.id}")
-        CurrentUser.ip_addr = "1.2.3.4" # this is to get around the version collation
-        @pool.update_attributes(:post_ids => "#{@post.id} #{@post_2.id}")
-        CurrentUser.ip_addr = "127.0.0.1"
+        CurrentUser.scoped(@user, "127.0.0.2") do
+          @pool.update(post_ids: "#{@post.id} #{@post_2.id}")
+        end
       end
 
       should "revert to a previous version" do
-        assert_equal(3, PoolArchive.where(pool_id: @pool.id).count)
-        @pool.reload
         version = @pool.versions.first
         assert_equal([@post.id], version.post_ids)
         post :revert, {:id => @pool.id, :version_id => version.id}, {:user_id => @mod.id}
