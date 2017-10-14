@@ -3,6 +3,7 @@ require 'helpers/post_archive_test_helper'
 
 class PostVersionsControllerTest < ActionController::TestCase
   include PostArchiveTestHelper
+  include DefaultHelper
 
   def setup
     super

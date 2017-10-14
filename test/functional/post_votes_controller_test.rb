@@ -1,11 +1,11 @@
 require 'test_helper'
 
 class PostVotesControllerTest < ActionController::TestCase
+  include DefaultHelper
+
   context "The post vote controller" do
     setup do
       @user = FactoryGirl.create(:gold_user)
-      CurrentUser.user = @user
-      CurrentUser.ip_addr = "127.0.0.1"
       @post = FactoryGirl.create(:post)
     end
 

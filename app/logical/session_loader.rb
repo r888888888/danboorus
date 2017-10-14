@@ -11,6 +11,8 @@ class SessionLoader
   end
 
   def load
+    CurrentUser.clear!
+
     if session[:user_id]
       load_session_user
     elsif cookies.signed[:user_id]
