@@ -38,14 +38,8 @@ class Post < ApplicationRecord
   has_many :comments, lambda {includes(:creator, :updater).order("comments.id")}, :dependent => :destroy
   has_many :children, lambda {order("posts.id")}, :class_name => "Post", :foreign_key => "parent_id"
   has_many :favorites
+  has_many :versions, lambda {order("post_versions.updated_at ASC")}, :class_name => "PostArchive", :dependent => :destroy
 
-  if PostArchive.enabled?
-    has_many :versions, lambda {order("post_versions.updated_at ASC")}, :class_name => "PostArchive", :dependent => :destroy
-  end
-
-  # attr_accessible :source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes, :as => [:member, :gold, :platinum, :moderator, :admin, :default]
-  # attr_accessible :is_rating_locked, :is_note_locked, :as => [:moderator, :admin]
-  # attr_accessible :is_status_locked, :as => [:admin]
   attr_accessor :old_tag_string, :old_parent_id, :old_source, :old_rating, :has_constraints, :disable_versioning, :view_count
 
   module FileMethods

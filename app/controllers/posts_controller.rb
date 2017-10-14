@@ -43,7 +43,7 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
 
     if @post.visible?
-      @post.update_attributes(params[:post], :as => CurrentUser.role)
+      @post.update(update_params)
     end
 
     save_recent_tags
@@ -91,6 +91,17 @@ class PostsController < ApplicationController
   end
 
 private
+  def update_params
+    x = params.require(:post)
+
+    if CurrentUser.is_moderator?
+      x.permit(:source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes, :is_rating_locked, :is_note_locked, :is_status_locked)
+    elsif CurrentUser.is_basic?
+      x.permit(:source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes)
+    end
+
+    x
+  end
 
   def tag_query
     params[:tags] || (params[:post] && params[:post][:tags])

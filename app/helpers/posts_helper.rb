@@ -48,7 +48,7 @@ module PostsHelper
       source_link = truncate(post.source, :length => 100)
     end
 
-    if CurrentUser.is_member? && !source_search.blank?
+    if CurrentUser.is_basic? && !source_search.blank?
       source_link + "&nbsp;".html_safe + link_to("&raquo;".html_safe, posts_path(:tags => source_search), :rel => "nofollow")
     else
       source_link

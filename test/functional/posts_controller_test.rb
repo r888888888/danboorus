@@ -1,6 +1,8 @@
 require "test_helper"
 
 class PostsControllerTest < ActionController::TestCase
+  include DefaultHelper
+
   context "The posts controller" do
     setup do
       @user = Timecop.travel(1.month.ago) {FactoryGirl.create(:user)}
@@ -81,8 +83,9 @@ class PostsControllerTest < ActionController::TestCase
 
     context "revert action" do
       setup do
+        PostArchive.stubs(:enabled?).returns(true)
         PostArchive.sqs_service.stubs(:merge?).returns(false)
-        @post.update_attributes(:tag_string => "zzz")
+        @post.update(tag_string: "zzz")
       end
 
       should "work" do

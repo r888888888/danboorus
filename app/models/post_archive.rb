@@ -9,7 +9,7 @@ class PostArchive < ApplicationRecord
     Danbooru.config.aws_sqs_archives_url.present?
   end
 
-  establish_connection (ENV["ARCHIVE_DATABASE_URL"] || "archive_#{Rails.env}".to_sym) if enabled?
+  establish_connection (ENV["ARCHIVE_DATABASE_URL"] || "archive_#{Rails.env}".to_sym)
   self.table_name = "post_versions"
 
   module SearchMethods

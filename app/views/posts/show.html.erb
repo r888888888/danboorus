@@ -14,7 +14,7 @@
         <%= render "posts/partials/show/information", :post => @post %>
       </section>
 
-      <% if CurrentUser.is_member? %>
+      <% if CurrentUser.is_basic? %>
         <section id="post-options">
           <h1>Options</h1>
           <%= render "posts/partials/show/options", :post => @post %>
@@ -74,7 +74,7 @@
 
       <menu id="post-sections">
         <li><a href="#comments">Comments</a></li>
-        <% if CurrentUser.is_member? && @post.visible? %>
+        <% if CurrentUser.is_basic? && @post.visible? %>
           <li><a href="#edit" id="post-edit-link">Edit</a></li>
         <% end %>
         <li><a href="#share">Share</a></li>
@@ -90,7 +90,7 @@
         <% end %>
       </section>
 
-      <% if CurrentUser.is_member? && @post.visible? %>
+      <% if CurrentUser.is_basic? && @post.visible? %>
         <section id="edit" style="display: none;">
           <%= render "posts/partials/show/edit", :post => @post %>
         </section>
