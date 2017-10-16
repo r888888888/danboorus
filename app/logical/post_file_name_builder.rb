@@ -43,7 +43,7 @@ module PostFileNameBuilder
   end
 
   def file_url
-    "data/original/#{file_path_prefix}#{md5}.#{file_ext}"
+    "/data/original/#{file_path_prefix}#{md5}.#{file_ext}"
   end
 
   def large_file_url
@@ -59,7 +59,7 @@ module PostFileNameBuilder
       return "images/download-preview.png"
     end
 
-    "data/preview/#{file_path_prefix}#{md5}.jpg"
+    "/data/preview/#{file_path_prefix}#{md5}.jpg"
   end
 
   def large_file_ext

@@ -5,13 +5,13 @@ module Danbooru
 
     if width == Danbooru.config.small_image_width
       # wider than it is tall
-      geometry = "#{Danbooru.config.small_image_width}x#{Danbooru.config.small_image_width}>"
-    end
-
-    image.change_geometry(geometry) do |new_width, new_height, img|
-      img.resize!(new_width, new_height)
-      width = new_width
-      height = new_height
+      image.resize_to_fill!(Danbooru.config.small_image_width, Danbooru.config.small_image_width, Magick::NorthWestGravity)
+    else
+      image.change_geometry(geometry) do |new_width, new_height, img|
+        img.resize!(new_width, new_height)
+        width = new_width
+        height = new_height
+      end
     end
 
     image = flatten(image, width, height)
