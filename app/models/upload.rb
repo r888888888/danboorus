@@ -12,6 +12,7 @@ class Upload < ApplicationRecord
   belongs_to :post
   before_validation :initialize_uploader, :on => :create
   before_validation :initialize_status, :on => :create
+  before_validation :initialize_server, :on => :create
   validate :uploader_is_not_limited, :on => :create
   validate :file_or_source_is_present, :on => :create
   validate :rating_given
@@ -380,6 +381,10 @@ class Upload < ApplicationRecord
   module StatusMethods
     def initialize_status
       self.status = "pending"
+    end
+
+    def initialize_server
+      self.server = Socket.gethostname
     end
 
     def is_pending?

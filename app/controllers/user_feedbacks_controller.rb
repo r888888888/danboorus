@@ -3,7 +3,7 @@ class UserFeedbacksController < ApplicationController
   respond_to :html, :xml, :json
 
   def new
-    @user_feedback = UserFeedback.new(params[:user_feedback])
+    @user_feedback = UserFeedback.new(create_params)
     respond_with(@user_feedback)
   end
 
@@ -29,14 +29,14 @@ class UserFeedbacksController < ApplicationController
   end
 
   def create
-    @user_feedback = UserFeedback.create(params[:user_feedback])
+    @user_feedback = UserFeedback.create(create_params)
     respond_with(@user_feedback)
   end
 
   def update
     @user_feedback = UserFeedback.visible.find(params[:id])
     check_privilege(@user_feedback)
-    @user_feedback.update_attributes(params[:user_feedback])
+    @user_feedback.update_attributes(create_params)
     respond_with(@user_feedback)
   end
 
@@ -48,6 +48,10 @@ class UserFeedbacksController < ApplicationController
   end
 
 private
+  def create_params
+    params.fetch(:user_feedback, {}).permit(:body, :user, :user_id, :user_name, :disable_dmail_notification)
+  end
+
   def check_privilege(user_feedback)
     raise User::PrivilegeError unless user_feedback.editable_by?(CurrentUser.user)
   end

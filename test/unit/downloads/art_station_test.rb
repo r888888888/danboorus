@@ -37,7 +37,7 @@ module Downloads
       end
 
       should "download the original image instead" do
-        assert_equal("https://cdn.artstation.com/p/assets/images/images/006/066/534/original/yinan-cui-reika.jpg?1495781565", @download.source)
+        assert_equal("https://cdna.artstation.com/p/assets/images/images/006/066/534/original/yinan-cui-reika.jpg?1495781565", @download.source)
       end
     end
   end

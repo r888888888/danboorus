@@ -6,7 +6,9 @@ class PostVotesControllerTest < ActionController::TestCase
   context "The post vote controller" do
     setup do
       @user = FactoryGirl.create(:gold_user)
-      @post = FactoryGirl.create(:post)
+      CurrentUser.scoped(@user) do
+        @post = FactoryGirl.create(:post)
+      end
     end
 
     teardown do
@@ -17,7 +19,9 @@ class PostVotesControllerTest < ActionController::TestCase
     context "create action" do
       should "not allow anonymous users to vote" do
         p1 = FactoryGirl.create(:post)
-        post :create, {:post_id => p1.id, :score => "up", :format => "js"}
+        CurrentUser.scoped(AnonymousUser.new) do
+          post :create, {:post_id => p1.id, :score => "up", :format => "js"}
+        end
 
         assert_response 403
         assert_equal(0, p1.reload.score)

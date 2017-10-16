@@ -13,7 +13,7 @@ module Sources
       end
 
       should "get the profile" do
-        assert_equal("https://www.artstation.com/artist/jeyrain", @site.profile_url)
+        assert_equal("https://www.artstation.com/jeyrain", @site.profile_url)
       end
 
       should "get the artist name" do
@@ -37,7 +37,7 @@ module Sources
       end
 
       should "get the profile" do
-        assert_equal("https://www.artstation.com/artist/dantewontdie", @site.profile_url)
+        assert_equal("https://www.artstation.com/dantewontdie", @site.profile_url)
       end
 
       should "get the artist name" do

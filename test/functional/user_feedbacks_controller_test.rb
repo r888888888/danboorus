@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class UserFeedbacksControllerTest < ActionController::TestCase
+  include DefaultHelper
+  
   context "The user feedbacks controller" do
     setup do
       @user = FactoryGirl.create(:user)

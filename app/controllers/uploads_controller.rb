@@ -52,7 +52,7 @@ class UploadsController < ApplicationController
   end
 
   def create
-    @upload = Upload.create(params[:upload].merge(:server => Socket.gethostname))
+    @upload = Upload.create(create_params)
     @upload.process! if @upload.errors.empty?
     save_recent_tags
     respond_with(@upload)
@@ -65,6 +65,10 @@ class UploadsController < ApplicationController
   end
 
 protected
+  def create_params
+    params.require(:upload).permit(:file, :source, :rating, :tag_string, :md5_confirmation, :parent_id)
+  end
+
   def find_post_by_url(normalized_url)
     if normalized_url.nil?
       Post.where(source: params[:url]).first

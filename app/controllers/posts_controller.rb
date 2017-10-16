@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_filter :basic_only, :except => [:show, :show_seq, :index, :home, :random, :copy_notes]
+  before_filter :basic_only, :except => [:show, :show_seq, :index, :home, :random]
   before_filter :enable_cors, :only => [:index, :show]
   respond_to :html, :xml, :json
 
@@ -92,12 +92,12 @@ class PostsController < ApplicationController
 
 private
   def update_params
-    x = params.require(:post)
+    x = params.fetch(:post, {})
 
     if CurrentUser.is_moderator?
-      x.permit(:source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes, :is_rating_locked, :is_note_locked, :is_status_locked)
+      x = x.permit(:source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes, :is_rating_locked, :is_note_locked, :is_status_locked)
     elsif CurrentUser.is_basic?
-      x.permit(:source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes)
+      x = x.permit(:source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes)
     end
 
     x

@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   layout "default"
   force_ssl :if => lambda {Rails.env.production?}
 
-  # rescue_from Exception, :with => :rescue_exception
+  rescue_from Exception, :with => :rescue_exception
   rescue_from User::PrivilegeError, :with => :access_denied
   rescue_from ActiveModel::ForbiddenAttributesError, :with => :access_denied
   rescue_from SessionLoader::AuthenticationFailure, :with => :authentication_failed

@@ -1,9 +1,7 @@
 require 'test_helper'
 
 class UploadsControllerTest < ActionController::TestCase
-  def setup
-    super
-  end
+  include DefaultHelper
 
   context "The uploads controller" do
     setup do

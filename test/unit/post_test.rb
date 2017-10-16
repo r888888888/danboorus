@@ -82,6 +82,7 @@ class PostTest < ActiveSupport::TestCase
           @deleted_pool.add!(@post)
           @deleted_pool.update_columns(is_deleted: true)
 
+          @post.reload
           @post.expunge!
           @pool.reload
           @deleted_pool.reload

@@ -3,6 +3,7 @@ require 'helpers/saved_search_test_helper'
 
 class SavedSearchesControllerTest < ActionController::TestCase
   include SavedSearchTestHelper
+  include DefaultHelper
 
   context "The saved searches controller" do
     setup do

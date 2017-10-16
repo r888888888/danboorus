@@ -29,6 +29,7 @@ class Post < ApplicationRecord
   after_commit :delete_files, :on => :destroy
 
   belongs_to_booru
+  belongs_to_updater
   belongs_to :uploader, :class_name => "User"
   belongs_to :parent, :class_name => "Post"
   has_one :upload, :dependent => :destroy
