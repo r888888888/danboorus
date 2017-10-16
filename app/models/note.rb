@@ -36,7 +36,7 @@ class Note < ApplicationRecord
     end
 
     def search(params)
-      q = where("true")
+      q = where(booru_id: Booru.current.id)
       return q if params.blank?
 
       if params[:body_matches].present?

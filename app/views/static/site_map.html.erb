@@ -9,10 +9,6 @@
         <li><%= link_to("Changes", post_versions_path) %></li>
         <li><%= link_to("Upload", new_upload_path) %></li>
         <li><%= link_to("Upload Listing", uploads_path) %></li>
-        <% if CurrentUser.is_moderator? %>
-          <li><%= link_to("Moderate", moderator_post_queue_path) %></li>
-          <li><%= link_to("Mass Edit", edit_moderator_tag_path) %></li>
-        <% end %>
       </ul>
       <ul>
         <li><h1>Tools</h1></li>
@@ -44,16 +40,6 @@
           <li><%= link_to("Changes", pool_versions_path) %></li>
         <% end %>
       </ul>
-      <ul>
-        <li><h1>Reports</h1></li>
-        <li><%= link_to("Uploads", reports_uploads_path) %></li>
-        <li><%= link_to("Performance Reports", "https://isshiki.donmai.us/user-reports") %></li>
-        <% if Danbooru.config.reportbooru_server %>
-          <li><%= link_to("Top Searches", searches_explore_posts_path) %></li>
-          <li><%= link_to("Missed Searches", missed_searches_explore_posts_path) %></li>
-          <li><%= link_to("Post Changes", reports_post_versions_path) %></li>
-        <% end %>
-      </ul>
     </section>
     <section>
       <ul>
@@ -78,9 +64,6 @@
     <section>
       <ul>
         <li><h1>Users</h1></li>
-        <% if CurrentUser.is_moderator? %>
-          <li><%= link_to("Dashboard", moderator_dashboard_path) %></li>
-        <% end %>
         <li><%= link_to("Help", wiki_pages_path(:title => "help:users")) %></li>
         <li><%= link_to("Bans", bans_path) %></li>
         <li><%= link_to("Listing", users_path) %></li>
@@ -104,7 +87,6 @@
 
         <% if CurrentUser.is_admin? %>
           <li><%= link_to("News Updates", news_updates_path) %></li>
-          <li><%= link_to("Admin Dashboard", admin_dashboard_path) %></li>
         <% end %>
       </ul>
     </section>

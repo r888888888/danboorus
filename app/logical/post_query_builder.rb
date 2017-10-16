@@ -90,7 +90,7 @@ class PostQueryBuilder
     end
 
     if relation.nil?
-      relation = Post.where("true")
+      relation = Booru.current.posts
     end
 
     if q[:tag_count].to_i > Danbooru.config.tag_query_limit
@@ -98,7 +98,6 @@ class PostQueryBuilder
     end
 
     relation = add_range_relation(q[:post_id], "posts.id", relation)
-    relation = add_range_relation(q[:ratio], "ROUND(1.0 * posts.image_width / GREATEST(1, posts.image_height), 2)", relation)
     relation = add_range_relation(q[:width], "posts.image_width", relation)
     relation = add_range_relation(q[:height], "posts.image_height", relation)
     relation = add_range_relation(q[:score], "posts.score", relation)

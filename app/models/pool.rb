@@ -48,7 +48,7 @@ class Pool < ApplicationRecord
     end
 
     def search(params)
-      q = where("true")
+      q = where(booru_id: Booru.current.id)
       params = {} if params.blank?
 
       if params[:name_matches].present?

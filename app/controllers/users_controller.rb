@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   respond_to :html, :xml, :json
   skip_before_filter :api_check
+  before_filter :member_only, only: [:index, :update]
 
   def new
     @user = User.new
@@ -41,20 +42,20 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(params[:user], :as => CurrentUser.role)
-    @user.last_ip_addr = request.remote_ip
-    @user.save
+    @user = User.create(create_params)
     if @user.errors.empty?
       session[:user_id] = @user.id
     end
-    set_current_user
+    @user.update(last_ip_addr: request.remote_ip)
+    CurrentUser.user = @user
+    CurrentUser.ip_addr = request.remote_ip
     respond_with(@user)
   end
 
   def update
     @user = User.find(params[:id])
     check_privilege(@user)
-    @user.update_attributes(params[:user].except(:name), :as => CurrentUser.role)
+    @user.update(update_params)
     if @user.errors.any?
       flash[:notice] = @user.errors.full_messages.join("; ")
     else
@@ -70,6 +71,14 @@ class UsersController < ApplicationController
   end
 
 private
+
+  def create_params
+    params.require(:user).permit(:name, :password, :password_confirmation, :email)
+  end
+
+  def update_params
+    params.require(:user).permit(:password, :password_confirmation, :email)
+  end
 
   def check_privilege(user)
     raise User::PrivilegeError unless (user.id == CurrentUser.id || CurrentUser.is_admin?)

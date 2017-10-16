@@ -1,0 +1,17 @@
+<div id="c-boorus">
+  <div id="a-index">
+    <h1>Booru Listing</h1>
+
+    <ul>
+      <% @boorus.each do |booru| %>
+        <li><strong><%= link_to booru.name, posts_path(subdomain: booru.slug) %></strong>: <%= booru.desc %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
+<%= render "secondary_links" %>
+
+<% content_for(:page_title) do %>
+  Booru Listing - <%= Danbooru.config.app_name %>
+<% end %>

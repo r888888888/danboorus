@@ -56,9 +56,9 @@ class ForumTopic < ApplicationRecord
 
     def permitted
       if CurrentUser.is_moderator?
-        where("true")
+        where(booru_id: Booru.current.id)
       else
-        where(mods_only: false)
+        where(booru_id: Booru.current.id, mods_only: false)
       end
     end
 

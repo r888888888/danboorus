@@ -10,9 +10,6 @@
       <% end %>
     <% end %>
     <li id="secondary-links-posts-changes" class="nonessential"><%= link_to "Changes", post_versions_path %></li>
-    <% if CurrentUser.is_moderator? %>
-      <li id="secondary-links-posts-moderate" class="nonessential"><%= link_to "Moderate", moderator_post_queue_path %></li>
-    <% end %>
     <li id="secondary-links-posts-help" class="nonessential"><%= link_to "Help", wiki_pages_path(:title => "help:posts") %></li>
   </menu>
 <% end %>

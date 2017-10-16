@@ -21,7 +21,7 @@ class ForumTopicsController < ApplicationController
     params[:search] ||= {}
     params[:search][:order] ||= "sticky" if request.format == Mime::HTML
 
-    @query = ForumTopic.active.search(params[:search])
+    @query = Booru.current.forum_topics.active.search(params[:search])
     @forum_topics = @query.paginate(params[:page], :limit => per_page, :search_count => params[:search])
 
     respond_with(@forum_topics) do |format|

@@ -6,7 +6,7 @@ class Membership < ActiveRecord::Base
   before_validation :initialize_user
 
   def initialize_booru
-    self.booru_id = Booru.current.id
+    self.booru_id = Booru.current.id if Booru.current
   end
 
   def initialize_user

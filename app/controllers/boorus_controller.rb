@@ -1,6 +1,7 @@
 class BoorusController < ApplicationController
   before_filter :basic_only
   before_filter :find_booru, only: [:edit, :update, :show, :destroy]
+  respond_to :html
 
   def new
     @booru = Booru.new
@@ -22,6 +23,10 @@ class BoorusController < ApplicationController
   end
 
   def destroy
+  end
+
+  def index
+    @boorus = Booru.paginate(params[:page])
   end
 
 private

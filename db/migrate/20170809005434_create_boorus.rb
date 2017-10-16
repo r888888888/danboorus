@@ -5,7 +5,6 @@ class CreateBoorus < ActiveRecord::Migration
       t.string :slug, null: false
     	t.string :desc, null: false, default: ""
     	t.integer :creator_id, null: false
-    	t.string :host, null: false
       t.timestamps null: false
       t.string :status, null: false
     end

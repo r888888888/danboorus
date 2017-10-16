@@ -10,6 +10,8 @@ class Booru < ApplicationRecord
 	before_validation :initialize_slug
 	before_validation :initialize_creator
 	before_validation :initialize_status
+	before_validation :initialize_host
+	after_create :initialize_moderator
 	has_many :bans
 	has_many :comments
 	has_many :comment_votes
@@ -48,8 +50,16 @@ class Booru < ApplicationRecord
 		where(slug: slug).first
 	end
 
+	def initialize_moderator
+		memberships.create(booru_id: self.id, is_moderator: true)
+	end
+
 	def initialize_status
 		self.status ||= "active"
+	end
+
+	def initialize_host
+		self.host = "localhost"
 	end
 
 	def initialize_creator
