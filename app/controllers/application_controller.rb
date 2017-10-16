@@ -205,7 +205,11 @@ class ApplicationController < ActionController::Base
   end
 
   def set_title
-    @page_title = Danbooru.config.app_name
+    if Booru.current
+      @page_title = Booru.current.name
+    else
+      @page_title = Danbooru.config.app_name
+    end
   end
 
   def normalize_search

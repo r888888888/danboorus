@@ -20,5 +20,4 @@ RUN echo 'gem: --no-document' > ~/.gemrc
 RUN gem install bundler
 WORKDIR /app
 RUN bundle install
-#CMD ["bundle", "exec", "unicorn", "-p", "3000", "-c", "config/unicorn/unicorn.rb"]
-CMD /bin/bash
+CMD ["bundle", "exec", "unicorn", "-p", "3000", "-c", "config/unicorn/unicorn.rb"]

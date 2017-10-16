@@ -65,7 +65,13 @@
   <header id="top">
     <%= render "news_updates/listing" %>
 
-    <h1><%= link_to Danbooru.config.app_name, "/" %></h1>
+    <h1>
+      <% if Booru.current %>
+        <%= link_to Booru.current.name, posts_path %>
+      <% else %>
+        <%= link_to Danbooru.config.app_name, boorus_path %>
+      <% end %>
+    </h1>
     <span id="maintoggle"> ☰ </span> <!-- Maybe icon would be better, I'm not sure -->
     <nav id="nav">
       <%= render "layouts/main_links" %>
