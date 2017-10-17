@@ -49,6 +49,6 @@ Users are global. That means you have one identity across different Boorus (much
 
 Gold accounts are $10/year. Platinum accounts are $20/year. The major difference is how many tags you can search at once.
 
-Building a new Booru is free. However, free Boorus are initially limited to 10,000 posts. If you want to upload more, you (or anyone else) can pay $10 to increase the limit another 10,000. There are ways to gain free credits, however.
+Building a new Booru is free.
 
 All income generated from Danboorus will go into a common Danbooru fund and will only be used for servers, services, and marketing.
