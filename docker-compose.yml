@@ -1,0 +1,41 @@
+# this is for development work only
+
+version: '3.3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - ./public/data:/var/www/danbooru/shared/data
+    depends_on:
+      - memcached
+      - postgres
+    secrets:
+      - danboorus_env
+    environment:
+      - RAILS_ENV=development
+    entrypoint: 
+      - sleep
+      - 1d
+  memcached:
+    image: memcached:1.5-alpine
+    ports:
+      - "11212:11211"
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    restart: always
+    environment:
+      - PGDATA=/var/lib/postgresql-danboorus
+    volumes:
+      - /private/var/lib/postgresql-danboorus:/var/lib/postgresql-danboorus
+    ports:
+      - "5433:5432"
+secrets:
+  danboorus_env:
+    file: ".env.development"

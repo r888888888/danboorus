@@ -2,13 +2,13 @@ require "dotenv"
 
 rails_env = ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
 
-addr = ENV["UNICORN_LISTEN"] || "127.0.0.1:9000"
+addr = ENV["UNICORN_LISTEN"] || "127.0.0.1:3000"
 app_path = ENV["UNICORN_ROOT"] || Dir.pwd
 instance = "unicorn-#{addr}"
 
 listen addr
-worker_processes ENV["UNICORN_PROCESSES"].to_i || 1
-timeout ENV["UNICORN_TIMEOUT"].to_i || 90
+worker_processes (ENV["UNICORN_PROCESSES"] || 1).to_i
+timeout (ENV["UNICORN_TIMEOUT"] || 90).to_i
 
 user = ENV["UNICORN_USER"] || "danbooru"
 group = ENV["UNICORN_GROUP"] || "danbooru"

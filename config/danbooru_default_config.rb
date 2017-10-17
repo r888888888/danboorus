@@ -113,7 +113,7 @@ module Danbooru
 
     # List of memcached servers
     def memcached_servers
-      "127.0.0.1:11211"
+      "memcached:11211"
     end
 
     # Users cannot search for more than X regular tags at a time.

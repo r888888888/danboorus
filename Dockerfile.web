@@ -1,4 +1,4 @@
-FROM ruby:2.3.1
+FROM ruby:2.4.2-slim-stretch
 
 # this builds the danbooru docker container. note that this is only
 # for the web process; you will need to run a docker image for postgres,

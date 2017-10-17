@@ -1,4 +1,5 @@
 .env.*
+.env
 .bundle
 config/deploy/*.rb
 config/application.yml
