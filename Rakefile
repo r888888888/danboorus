@@ -4,4 +4,6 @@
 require File.expand_path('../config/application', __FILE__)
 require 'rake'
 
+Dotenv.load(".env.local", ".env.development", ".env.production", ".env", "/run/secrets/danboorus_env")
+
 Rails.application.load_tasks
