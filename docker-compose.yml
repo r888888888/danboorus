@@ -18,9 +18,21 @@ services:
       - danboorus_env
     environment:
       - RAILS_ENV=development
-    entrypoint: 
-      - sleep
-      - 1d
+  delayed_job_worker:
+    build: .
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+    secrets:
+      - danboorus_env
+    environment:
+      - RAILS_ENV=development
+    entrypoint:
+      - bundle 
+      - exec 
+      - rake 
+      - jobs:work
   memcached:
     image: memcached:1.5-alpine
     ports:
