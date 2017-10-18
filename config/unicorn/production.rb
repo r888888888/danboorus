@@ -22,7 +22,7 @@ stderr_path "/var/log/web/unicorn.err.log"
 stdout_path "/var/log/web/unicorn.out.log"
 
 # Set master PID location
-pid "#{app_path}/tmp/pids/unicorn.pid"
+pid "/var/run/danboorus/unicorn.pid"
 
 # combine Ruby 2.0.0+ with "preload_app true" for memory savings
 preload_app true

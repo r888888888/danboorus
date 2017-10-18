@@ -13,6 +13,8 @@ RUN mkdir -p /var/www/danbooru/shared/data
 COPY . /app
 RUN chown -R danbooru:danbooru /app
 RUN chown -R danbooru:danbooru /var/www/danbooru
+RUN mkdir /var/run/danboorus
+RUN chown danbooru:danbooru /var/run/danboorus
 EXPOSE 3000
 USER danbooru
 ENV RAILS_ENV production
