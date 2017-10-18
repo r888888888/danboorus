@@ -16,10 +16,10 @@ test:
 
 production:
   adapter: postgresql
-  database: db_instance_development
+  database: db_instance_production
   host: postgres
   username: postgres
-  password: 
+  password: <%= ENV["DB_INSTANCE_PRODUCTION_PASSWORD"] %>
   port: 5432
 
 core_development:
@@ -40,10 +40,10 @@ core_test:
 
 core_production:
   adapter: postgresql
-  database: db_core_development
+  database: db_core_production
   host: postgres
   username: postgres
-  password: 
+  password: <%= ENV["DB_CORE_PRODUCTION_PASSWORD"] %>
   port: 5432
 
 archive_development:
@@ -64,8 +64,8 @@ archive_test:
 
 archive_production:
   adapter: postgresql
-  database: db_archive_development
+  database: db_archive_production
   host: postgres
   username: postgres
-  password: 
+  password: <%= ENV["DB_ARCHIVE_PRODUCTION_PASSWORD"] %>
   port: 5432
