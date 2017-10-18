@@ -53,7 +53,6 @@ end
 group :production do
   gem 'unicorn-worker-killer'
   gem 'newrelic_rpm'
-  gem 'gctools', :platforms => :ruby
 end
 
 group :development, :test do
