@@ -87,27 +87,9 @@ GEM
     buftok (0.2.0)
     builder (3.2.3)
     byebug (9.0.6)
-    capistrano (3.4.0)
-      i18n
-      rake (>= 10.0.0)
-      sshkit (~> 1.3)
-    capistrano-bundler (1.1.4)
-      capistrano (~> 3.1)
-      sshkit (~> 1.2)
-    capistrano-deploytags (1.0.4)
-      capistrano (>= 3.2.0)
-    capistrano-rails (1.1.3)
-      capistrano (~> 3.1)
-      capistrano-bundler (~> 1.1)
-    capistrano-rbenv (2.0.3)
-      capistrano (~> 3.1)
-      sshkit (~> 1.3)
-    capistrano3-unicorn (0.2.1)
-      capistrano (~> 3.1, >= 3.1.0)
     chronic (0.10.2)
     cityhash (0.8.1)
     coderay (1.1.1)
-    colorize (0.7.7)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     crass (1.0.2)
@@ -134,7 +116,6 @@ GEM
       multipart-post (>= 1.2, < 3)
     ffaker (2.5.0)
     ffi (1.9.10-x64-mingw32)
-    gctools (0.2.4)
     get_process_mem (0.2.1)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
@@ -214,8 +195,6 @@ GEM
     naught (1.1.0)
     net-http-digest_auth (1.4.1)
     net-http-persistent (2.9.4)
-    net-scp (1.2.1)
-      net-ssh (>= 2.6.5)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.2)
@@ -332,10 +311,6 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
-    sshkit (1.7.1)
-      colorize (>= 0.7.0)
-      net-scp (>= 1.1.2)
-      net-ssh (>= 2.8.0)
     statistics2 (0.54)
     streamio-ffmpeg (1.0.0)
     stripe (1.25.0)
@@ -398,11 +373,6 @@ DEPENDENCIES
   bcrypt-ruby
   bigquery!
   bootsnap
-  capistrano (~> 3.4.0)
-  capistrano-deploytags (~> 1.0.0)
-  capistrano-rails
-  capistrano-rbenv
-  capistrano3-unicorn
   cityhash
   daemons
   dalli
@@ -413,7 +383,6 @@ DEPENDENCIES
   dtext_rb!
   factory_girl
   ffaker
-  gctools
   google-api-client
   highline
   httparty
