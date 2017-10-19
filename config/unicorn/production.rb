@@ -2,7 +2,7 @@
 app_path = "/app"
 
 # Set unicorn options
-worker_processes 22
+worker_processes 1
 
 timeout 180
 listen "127.0.0.1:3000", :tcp_nopush => true

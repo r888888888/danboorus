@@ -9,3 +9,5 @@ chown -R danbooru:danbooru /var/www/danbooru
 cd ~
 apt-get install git
 git clone https://github.com/r888888888/danboorus.git
+mkdir -p /var/log/web
+chown -R danbooru:danbooru /var/log/web
