@@ -5,7 +5,7 @@ app_path = "/app"
 worker_processes 1
 
 timeout 180
-listen "127.0.0.1:3000", :tcp_nopush => true
+listen 3000, :tcp_nopush => true
 # listen "/tmp/.unicorn.sock", :backlog => 512
 
 # Spawn unicorn master worker for user apps (group: apps)
