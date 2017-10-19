@@ -1,0 +1,17 @@
+upstream webservice {
+  server http://web:3000 fail_timeout=0;
+}
+
+server {
+  server_name ~^.+\.danboor\.us$;
+  root /var/www/html/public;
+
+  location / {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    proxy_pass http://webservice;
+  }
+
+  listen 80;
+}
