@@ -4,7 +4,7 @@ require "tmpdir"
 class Upload < ApplicationRecord
   class Error < Exception ; end
 
-  attr_accessor :file, :image_width, :image_height, :file_ext, :md5, 
+  attr_accessor :file, :image_width, :image_height, :file_ext, :sha256, 
     :file_size, :as_pending,
     :referer_url, :downloaded_source
   belongs_to_booru
@@ -37,10 +37,10 @@ class Upload < ApplicationRecord
     end
 
     # Because uploads are processed serially, there's no race condition here.
-    def validate_md5_uniqueness
-      md5_post = Post.find_by_md5(md5)
-      if md5_post
-        raise "duplicate: #{md5_post.id}"
+    def validate_sha256_uniqueness
+      sha256_post = Post.find_by_sha256(sha256)
+      if sha256_post
+        raise "duplicate: #{sha256_post.id}"
       end
     end
 
@@ -60,15 +60,15 @@ class Upload < ApplicationRecord
       end
     end
 
-    def validate_md5_confirmation
-      if !md5_confirmation.blank? && md5_confirmation != md5
-        raise "md5 mismatch"
+    def validate_sha256_confirmation
+      if !sha256_confirmation.blank? && sha256_confirmation != sha256
+        raise "sha256 mismatch"
       end
     end
 
-    def validate_md5_confirmation_after_move(path)
-      if !md5_confirmation.blank? && md5_confirmation != Digest::MD5.file(path).hexdigest
-        raise "md5 mismatch"
+    def validate_sha256_confirmation_after_move(path)
+      if !sha256_confirmation.blank? && sha256_confirmation != Base64.urlsafe_encode64(Digest::SHA256.file(path).digest)
+        raise "sha256 mismatch"
       end
     end
 
@@ -113,8 +113,8 @@ class Upload < ApplicationRecord
           self.file_ext = content_type_to_file_ext(content_type)
           validate_file_content_type
           calculate_hash(temp_path)
-          validate_md5_uniqueness
-          validate_md5_confirmation
+          validate_sha256_uniqueness
+          validate_sha256_confirmation
           tag_audio
           validate_video_duration
           calculate_file_size(temp_path)
@@ -123,7 +123,7 @@ class Upload < ApplicationRecord
           end
           generate_resizes(temp_path)
           move_file(temp_path)
-          validate_md5_confirmation_after_move(file_path)
+          validate_sha256_confirmation_after_move(file_path)
         end
         save
       end
@@ -171,7 +171,7 @@ class Upload < ApplicationRecord
     def convert_to_post
       Post.new.tap do |p|
         p.tag_string = tag_string
-        p.md5 = md5
+        p.sha256 = sha256
         p.file_ext = file_ext
         p.image_width = image_width
         p.image_height = image_height
@@ -195,9 +195,9 @@ class Upload < ApplicationRecord
       self.file_size = File.size(path)
     end
 
-    # Calculates the MD5 based on whatever is in
+    # Calculates the SHA256 based on whatever is in
     def calculate_hash(path)
-      self.md5 = Digest::MD5.file(path).hexdigest
+      self.sha256 = Base64.urlsafe_encode64(Digest::SHA256.file(path).digest)
     end
 
     def is_image?

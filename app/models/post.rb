@@ -13,7 +13,7 @@ class Post < ApplicationRecord
   before_validation :parse_pixiv_id
   before_validation :blank_out_nonexistent_parents
   before_validation :remove_parent_loops
-  validates_uniqueness_of :md5, :on => :create
+  validates_uniqueness_of :sha256, :on => :create
   validates_inclusion_of :rating, in: %w(s e), message: "rating must be s or e"
   validate :tag_names_are_valid
   validate :post_is_not_its_own_parent
@@ -21,7 +21,7 @@ class Post < ApplicationRecord
   before_save :update_tag_post_counts
   before_save :set_tag_counts
   before_save :set_pool_category_pseudo_tags
-  after_save :queue_backup, if: :md5_changed?
+  after_save :queue_backup, if: :sha256_changed?
   after_save :create_version
   after_save :update_parent_on_save
   after_save :apply_post_metatags
@@ -1134,7 +1134,7 @@ class Post < ApplicationRecord
     def hidden_attributes
       list = super + [:tag_index]
       if !visible?
-        list += [:md5, :file_ext]
+        list += [:sha256, :file_ext]
       end
       super + list
     end
@@ -1181,7 +1181,7 @@ class Post < ApplicationRecord
       if visible?
         hash["file_url"] = file_url
         hash["preview_url"] = preview_file_url
-        hash["md5"] = md5
+        hash["sha256"] = sha256
       end
 
       hash.to_json
@@ -1199,20 +1199,20 @@ class Post < ApplicationRecord
   module SearchMethods
     # returns one single post
     def random
-      key = Digest::MD5.hexdigest(Time.now.to_f.to_s)
+      key = Base64.urlsafe_encode64(Digest::SHA256.digest(Time.now.to_f.to_s))
       random_up(key) || random_down(key)
     end
 
     def random_up(key)
-      where("md5 < ?", key).reorder("md5 desc").first
+      where("sha256 < ?", key).reorder("sha256 desc").first
     end
 
     def random_down(key)
-      where("md5 >= ?", key).reorder("md5 asc").first
+      where("sha256 >= ?", key).reorder("sha256 asc").first
     end
 
     def sample(query, sample_size)
-      tag_match(query).reorder(:md5).limit(sample_size)
+      tag_match(query).reorder(:sha256).limit(sample_size)
     end
 
     # unflattens the tag_string into one tag per row.

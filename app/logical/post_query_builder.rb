@@ -108,8 +108,8 @@ class PostQueryBuilder
     relation = add_range_relation(q[:post_tag_count], "posts.tag_count", relation)
     relation = add_range_relation(q[:pixiv_id], "posts.pixiv_id", relation)
 
-    if q[:md5]
-      relation = relation.where(["posts.md5 IN (?)", q[:md5]])
+    if q[:sha256]
+      relation = relation.where(["posts.sha256 IN (?)", q[:sha256]])
     end
 
     if q[:status] == "deleted"

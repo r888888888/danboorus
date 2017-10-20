@@ -81,7 +81,7 @@ namespace :images do
       upload.file_ext = post.file_ext
       upload.image_width = post.image_width
       upload.image_height = post.image_height
-      upload.md5 = post.md5
+      upload.sha256 = post.sha256
       upload.download_from_source(post.file_path)
       post.distribute_files
     end
@@ -100,7 +100,7 @@ namespace :images do
     upload.file_ext = post.file_ext
     upload.image_width = post.image_width
     upload.image_height = post.image_height
-    upload.md5 = post.md5
+    upload.sha256 = post.sha256
     upload.generate_resizes(post.file_path)
     post.distribute_files
   end

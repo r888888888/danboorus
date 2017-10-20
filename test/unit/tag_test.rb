@@ -55,7 +55,7 @@ class TagTest < ActiveSupport::TestCase
       tag1 = FactoryGirl.create(:tag, :name => "abc")
       tag2 = FactoryGirl.create(:tag, :name => "acb")
 
-      assert_equal(["abc"], Tag.parse_query("md5:abc")[:md5])
+      assert_equal(["abc"], Tag.parse_query("sha256:abc")[:sha256])
       assert_equal([:between, 1, 2], Tag.parse_query("id:1..2")[:post_id])
       assert_equal([:gte, 1], Tag.parse_query("id:1..")[:post_id])
       assert_equal([:lte, 2], Tag.parse_query("id:..2")[:post_id])

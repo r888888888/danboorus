@@ -1,6 +1,6 @@
 class Tag < ApplicationRecord
   COSINE_SIMILARITY_RELATED_TAG_THRESHOLD = 1000
-  METATAGS = "-user|user|commenter|comm|noter|noteupdater|artcomm|-pool|pool|ordpool|-fav|fav|ordfav|md5|-rating|rating|-locked|locked|width|height|mpixels|ratio|score|favcount|filesize|source|-source|id|-id|date|age|order|limit|-status|status|tagcount|copytags|parent|-parent|child|pixiv_id|pixiv|search|filetype|-filetype|flagger|-flagger"
+  METATAGS = "-user|user|commenter|comm|noter|noteupdater|artcomm|-pool|pool|ordpool|-fav|fav|ordfav|sha256|-rating|rating|-locked|locked|width|height|mpixels|ratio|score|favcount|filesize|source|-source|id|-id|date|age|order|limit|-status|status|tagcount|copytags|parent|-parent|child|pixiv_id|pixiv|search|filetype|-filetype|flagger|-flagger"
   SUBQUERY_METATAGS = "commenter|comm|noter|noteupdater|artcomm|flagger|-flagger"
   has_one :wiki_page, :foreign_key => "title", :primary_key => "name"
 
@@ -423,8 +423,8 @@ class Tag < ApplicationRecord
             q[:saved_searches] ||= []
             q[:saved_searches] << $2
 
-          when "md5"
-            q[:md5] = $2.downcase.split(/,/)
+          when "sha256"
+            q[:sha256] = $2.downcase.split(/,/)
 
           when "-rating"
             q[:rating_negated] = $2.downcase

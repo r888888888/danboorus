@@ -24,10 +24,11 @@ class UploadTest < ActiveSupport::TestCase
 
       context "image size calculator" do
         should "discover the dimensions for a compressed SWF" do
-          @upload = FactoryGirl.create(:upload, :file_path => "#{Rails.root}/test/files/compressed.swf")
+          @upload = FactoryGirl.create(:swf_upload)
+          assert_operator(File.size(@upload.file_path), :>, 0)
           @upload.calculate_dimensions(@upload.file_path)
-          assert_equal(500, @upload.image_width)
-          assert_equal(335, @upload.image_height)
+          assert_equal(607, @upload.image_width)
+          assert_equal(756, @upload.image_height)
         end
 
         should "discover the dimensions for a JPG with JFIF data" do
@@ -144,12 +145,10 @@ class UploadTest < ActiveSupport::TestCase
       context "file processor" do
         should "parse and process a cgi file representation" do
           FileUtils.cp("#{Rails.root}/test/files/test.jpg", "#{Rails.root}/tmp")
-          @upload = Upload.new(:file => upload_jpeg("#{Rails.root}/tmp/test.jpg"))
-          Tempfile.create("test") do |file|
-            assert_nothing_raised {@upload.convert_cgi_file(file.path)}
-            assert(File.exists?(@upload.file_path))
-            assert_equal(28086, File.size(@upload.file_path))
-          end
+          @upload = Upload.new(:file => upload_jpeg("#{Rails.root}/tmp/test.jpg"), :sha256 => "testing", :file_ext => "jpg")
+          assert_nothing_raised {@upload.convert_cgi_file(@upload.file_path)}
+          assert(File.exists?(@upload.file_path))
+          assert_equal(28086, File.size(@upload.file_path))
         end
 
         should "process a transparent png" do
@@ -166,7 +165,7 @@ class UploadTest < ActiveSupport::TestCase
         should "caculate the hash" do
           @upload = FactoryGirl.create(:blank_jpg_upload)
           @upload.calculate_hash(@upload.file_path)
-          assert_equal("674c66d7b7b901cfa6dd87d9bd01a17a", @upload.md5)
+          assert_equal("Ev3eKQO4F7yVYbdpStAagAP4TV5567QppwqqVH3EIZo=", @upload.sha256)
         end
       end
 
@@ -212,7 +211,7 @@ class UploadTest < ActiveSupport::TestCase
         assert_equal("s", post.rating)
         assert_equal(@upload.uploader_id, post.uploader_id)
         assert_equal("127.0.0.1", post.uploader_ip_addr.to_s)
-        assert_equal(@upload.md5, post.md5)
+        assert_equal(@upload.sha256, post.sha256)
         assert_equal("gif", post.file_ext)
         assert_equal(276, post.image_width)
         assert_equal(110, post.image_height)
@@ -235,7 +234,7 @@ class UploadTest < ActiveSupport::TestCase
       end
       post = Post.last
       assert_not_nil(post.pixiv_ugoira_frame_data)
-      assert_equal("0d94800c4b520bf3d8adda08f95d31e2", post.md5)
+      assert_equal("RO7Rdn04eZdUIGT8ZAA15xcJgh4_LhRkNd2dx9fUH0k=", post.sha256)
       assert_equal(60, post.image_width)
       assert_equal(60, post.image_height)
       assert_equal("https://i.pximg.net/img-zip-ugoira/img/2014/10/05/23/42/23/46378654_ugoira1920x1080.zip", post.source)
@@ -259,7 +258,7 @@ class UploadTest < ActiveSupport::TestCase
       assert_equal("s", post.rating)
       assert_equal(@upload.uploader_id, post.uploader_id)
       assert_equal("127.0.0.1", post.uploader_ip_addr.to_s)
-      assert_equal(@upload.md5, post.md5)
+      assert_equal(@upload.sha256, post.sha256)
       assert_equal("jpg", post.file_ext)
       assert(File.exists?(post.file_path))
       assert_equal(28086, File.size(post.file_path))

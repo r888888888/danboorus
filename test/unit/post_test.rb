@@ -1568,11 +1568,11 @@ class PostTest < ActiveSupport::TestCase
       assert_tag_match([jpg], "-filetype:png")
     end
 
-    should "return posts for the md5:<md5> metatag" do
-      post1 = FactoryGirl.create(:post, :md5 => "abcd")
+    should "return posts for the sha256:<sha256> metatag" do
+      post1 = FactoryGirl.create(:post, :sha256 => "abcd")
       post2 = FactoryGirl.create(:post)
 
-      assert_tag_match([post1], "md5:abcd")
+      assert_tag_match([post1], "sha256:abcd")
     end
 
     should "return posts for a source search" do

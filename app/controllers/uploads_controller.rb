@@ -66,7 +66,7 @@ class UploadsController < ApplicationController
 
 protected
   def create_params
-    params.require(:upload).permit(:file, :source, :rating, :tag_string, :md5_confirmation, :parent_id)
+    params.require(:upload).permit(:file, :source, :rating, :tag_string, :sha256_confirmation, :parent_id)
   end
 
   def find_post_by_url(normalized_url)

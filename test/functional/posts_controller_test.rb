@@ -29,9 +29,9 @@ class PostsControllerTest < ActionController::TestCase
         end
       end
 
-      context "with an md5 param" do
+      context "with an sha256 param" do
         should "render" do
-          get :index, { md5: @post.md5 }
+          get :index, { sha256: @post.sha256 }
           assert_redirected_to(@post)
         end
       end

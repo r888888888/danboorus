@@ -12,16 +12,16 @@ module PostFileNameBuilder
   end
 
   def file_name
-    "#{file_path_prefix}#{md5}.#{file_ext}"
+    "#{file_path_prefix}#{sha256}.#{file_ext}"
   end
 
   def resized_file_path_for(width)
     case width
     when Danbooru.config.small_image_width
-      "#{data_home_dir}/preview/#{file_path_prefix}#{md5}.jpg"
+      "#{data_home_dir}/preview/#{file_path_prefix}#{sha256}.jpg"
 
     when Danbooru.config.large_image_width
-      "#{data_home_dir}/sample/#{file_path_prefix}#{md5}.#{large_file_ext}"
+      "#{data_home_dir}/sample/#{file_path_prefix}#{sha256}.#{large_file_ext}"
     end
   end
 
@@ -32,23 +32,23 @@ module PostFileNameBuilder
 
   def large_file_path
     if has_large?
-      "#{data_home_dir}/sample/#{file_path_prefix}#{md5}.#{large_file_ext}"
+      "#{data_home_dir}/sample/#{file_path_prefix}#{sha256}.#{large_file_ext}"
     else
       file_path
     end
   end
 
   def preview_file_path
-    "#{data_home_dir}/preview/#{file_path_prefix}#{md5}.jpg"
+    "#{data_home_dir}/preview/#{file_path_prefix}#{sha256}.jpg"
   end
 
   def file_url
-    "/data/original/#{file_path_prefix}#{md5}.#{file_ext}"
+    "/data/original/#{file_path_prefix}#{sha256}.#{file_ext}"
   end
 
   def large_file_url
     if has_large?
-      "data/sample/#{file_path_prefix}#{md5}.#{large_file_ext}"
+      "data/sample/#{file_path_prefix}#{sha256}.#{large_file_ext}"
     else
       file_url
     end
@@ -59,7 +59,7 @@ module PostFileNameBuilder
       return "images/download-preview.png"
     end
 
-    "/data/preview/#{file_path_prefix}#{md5}.jpg"
+    "/data/preview/#{file_path_prefix}#{sha256}.jpg"
   end
 
   def large_file_ext

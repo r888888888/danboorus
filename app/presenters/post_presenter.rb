@@ -77,7 +77,7 @@ class PostPresenter < Presenter
       data-views="#{post.view_count}"
       data-fav-count="#{post.fav_count}"
       data-pixiv-id="#{post.pixiv_id}"
-      data-md5="#{post.md5}"
+      data-sha256="#{post.sha256}"
       data-file-ext="#{post.file_ext}"
       data-file-url="#{post.file_url}"
       data-large-file-url="#{post.large_file_url}"

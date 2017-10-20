@@ -4,8 +4,8 @@ class PostsController < ApplicationController
   respond_to :html, :xml, :json
 
   def index
-    if params[:md5].present?
-      @post = Post.find_by_md5(params[:md5])
+    if params[:sha256].present?
+      @post = Post.find_by_sha256(params[:sha256])
       redirect_to post_path(@post)
     else
       limit = params[:limit] || (params[:tags] =~ /(?:^|\s)limit:(\d+)(?:$|\s)/ && $1) || CurrentUser.user.per_page

@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory(:post) do
-    sequence :md5 do |n|
+    sequence :sha256 do |n|
       n.to_s
     end
     uploader :factory => :user

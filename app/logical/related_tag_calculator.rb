@@ -25,7 +25,7 @@ class RelatedTagCalculator
     counts = Hash.new {|h, k| h[k] = 0}
 
     Post.with_timeout(5_000, [], {:tags => tag}) do
-      Post.tag_match(tag).limit(400).reorder("posts.md5").pluck(:tag_string).each do |tag_string|
+      Post.tag_match(tag).limit(400).reorder("posts.sha256").pluck(:tag_string).each do |tag_string|
         tag_string.scan(/\S+/).each do |tag|
           counts[tag] += 1
         end
