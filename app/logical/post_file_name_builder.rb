@@ -46,6 +46,10 @@ module PostFileNameBuilder
     "/data/original/#{file_path_prefix}#{sha256}.#{file_ext}"
   end
 
+  def s3_file_url
+    "https://s3.amazonaws.com/#{Danbooru.config.bucket_name}/original/#{file_path_prefix}#{sha256}.#{file_ext}"
+  end
+
   def large_file_url
     if has_large?
       "data/sample/#{file_path_prefix}#{sha256}.#{large_file_ext}"
@@ -54,12 +58,24 @@ module PostFileNameBuilder
     end
   end
 
+  def s3_large_file_url
+    "https://s3.amazonaws.com/#{Danbooru.config.bucket_name}/sample/#{file_path_prefix}#{sha256}.#{large_file_ext}"
+  end
+
   def preview_file_url
     if !has_preview?
       return "images/download-preview.png"
     end
 
     "/data/preview/#{file_path_prefix}#{sha256}.jpg"
+  end
+
+  def s3_preview_file_url
+    if !has_preview?
+      return "https://s3.amazonaws.com/#{Danbooru.config.bucket_name}/preview/download-preview.png"
+    end
+
+    "https://s3.amazonaws.com/#{Danbooru.config.bucket_name}/preview/#{file_path_prefix}#{sha256}.jpg"
   end
 
   def large_file_ext

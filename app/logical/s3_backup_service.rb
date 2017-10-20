@@ -21,7 +21,7 @@ protected
   def s3_key(file_path, type)
     case type
     when :original
-      "#{File.basename(file_path)}"
+      "original/#{File.basename(file_path)}"
     when :preview
       "preview/#{File.basename(file_path)}"
     when :large
@@ -39,7 +39,7 @@ protected
 
   def upload_to_s3(key, file_path)
     File.open(file_path, "rb") do |body|
-      base64_md5 = Digest::MD5.base64digest(File.read(file_path))
+      base64_md5 = Digest::SHA256.file(path).base64digest
       client.put_object(acl: "public-read", bucket: bucket, key: key, body: body, content_md5: base64_md5)
     end
   end

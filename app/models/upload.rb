@@ -131,7 +131,7 @@ class Upload < ApplicationRecord
 
     def create_post_from_upload
       post = convert_to_post
-      post.distribute_files
+      post.force_backup
       if post.save
         User.where(id: CurrentUser.id).update_all("post_upload_count = post_upload_count + 1")
         ugoira_service.save_frame_data(post) if is_ugoira?

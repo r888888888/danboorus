@@ -30,7 +30,7 @@ class PostPresenter < Presenter
       tag_param = nil
     end
     html << %{<a href="#{path}/#{post.id}#{tag_param}">}
-    html << %{<img itemprop="thumbnailUrl" src="#{post.preview_file_url}" alt="#{h(post.tag_string)}">}
+    html << %{<img itemprop="thumbnailUrl" src="#{post.s3_preview_file_url}" alt="#{h(post.tag_string)}">}
     html << %{</a>}
 
     if options[:pool]
@@ -79,9 +79,9 @@ class PostPresenter < Presenter
       data-pixiv-id="#{post.pixiv_id}"
       data-sha256="#{post.sha256}"
       data-file-ext="#{post.file_ext}"
-      data-file-url="#{post.file_url}"
-      data-large-file-url="#{post.large_file_url}"
-      data-preview-file-url="#{post.preview_file_url}"
+      data-file-url="#{post.s3_file_url}"
+      data-large-file-url="#{post.s3_large_file_url}"
+      data-preview-file-url="#{post.s3_preview_file_url}"
       data-source="#{h(post.source)}"
       data-normalized-source="#{h(post.normalized_source)}"
       data-is-favorited="#{post.favorited_by?(CurrentUser.user.id)}"
