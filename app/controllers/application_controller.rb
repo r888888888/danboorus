@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   before_filter :api_check
   before_filter :secure_cookies_check
   layout "default"
-  force_ssl :if => lambda {Rails.env.production?}
+  # force_ssl :if => lambda {Rails.env.production?}
 
   rescue_from Exception, :with => :rescue_exception
   rescue_from User::PrivilegeError, :with => :access_denied
