@@ -2,7 +2,7 @@
   <div id="a-search">
     <h1>Search Comments</h1>
 
-    <%= simple_form_for(:search, :method => :get, url: comments_path, defaults: { required: false }, html: { class: "inline-form" }) do |f| %>
+    <%= simple_form_for(:search, :method => :get, url: booru_comments_path(Booru.current), defaults: { required: false }, html: { class: "inline-form" }) do |f| %>
       <%= hidden_field_tag "group_by", "comment", :id => "group_by_full" %>
       <%= f.input :creator_name, label: "Commenter" %>
       <%= f.input :body_matches, label: "Body" %>

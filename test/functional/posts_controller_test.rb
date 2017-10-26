@@ -52,7 +52,7 @@ class PostsControllerTest < ActionController::TestCase
     context "random action" do
       should "render" do
         get :random, { tags: "aaaa" }
-        assert_redirected_to(post_path(@post, tags: "aaaa"))
+        assert_redirected_to(booru_post_path(Booru.current, (@post, tags: "aaaa"))
       end
     end
 
@@ -66,7 +66,7 @@ class PostsControllerTest < ActionController::TestCase
     context "update action" do
       should "work" do
         post :update, {:id => @post.id, :post => {:tag_string => "bbb"}}, {:user_id => @user.id}
-        assert_redirected_to post_path(@post)
+        assert_redirected_to booru_post_path(Booru.current, (@post)
 
         @post.reload
         assert_equal("bbb", @post.tag_string)
@@ -74,7 +74,7 @@ class PostsControllerTest < ActionController::TestCase
 
       should "ignore restricted params" do
         post :update, {:id => @post.id, :post => {:last_noted_at => 1.minute.ago}}, {:user_id => @user.id}
-        assert_redirected_to post_path(@post)
+        assert_redirected_to booru_post_path(Booru.current, (@post)
 
         @post.reload
         assert_nil(@post.last_noted_at)
@@ -92,7 +92,7 @@ class PostsControllerTest < ActionController::TestCase
         @version = @post.versions.first
         assert_equal("aaaa", @version.tags)
         post :revert, {:id => @post.id, :version_id => @version.id}, {:user_id => @user.id}
-        assert_redirected_to post_path(@post)
+        assert_redirected_to booru_post_path(Booru.current, (@post)
         @post.reload
         assert_equal("aaaa", @post.tag_string)
       end

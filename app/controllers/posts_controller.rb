@@ -6,7 +6,7 @@ class PostsController < ApplicationController
   def index
     if params[:sha256].present?
       @post = Post.find_by_sha256(params[:sha256])
-      redirect_to post_path(@post)
+      redirect_to booru_post_path(Booru.current, (@post)
     else
       limit = params[:limit] || (params[:tags] =~ /(?:^|\s)limit:(\d+)(?:$|\s)/ && $1) || CurrentUser.user.per_page
       @random = params[:random] || params[:tags] =~ /(?:^|\s)order:random(?:$|\s)/
@@ -33,9 +33,9 @@ class PostsController < ApplicationController
   def show_seq
     context = PostSearchContext.new(params)
     if context.post_id
-      redirect_to(post_path(context.post_id, :tags => params[:tags]))
+      redirect_to(booru_post_path(Booru.current, (context.post_id, :tags => params[:tags]))
     else
-      redirect_to(post_path(params[:id], :tags => params[:tags]))
+      redirect_to(booru_post_path(Booru.current, (params[:id], :tags => params[:tags]))
     end
   end
 
@@ -80,7 +80,7 @@ class PostsController < ApplicationController
     @post = Post.tag_match(params[:tags]).random
     raise ActiveRecord::RecordNotFound if @post.nil?
     respond_with(@post) do |format|
-      format.html { redirect_to post_path(@post, :tags => params[:tags]) }
+      format.html { redirect_to booru_post_path(Booru.current, (@post, :tags => params[:tags]) }
     end
   end
 
@@ -125,7 +125,7 @@ private
         else
           response_params = {:tags => params[:tags_query], :pool_id => params[:pool_id]}
           response_params.reject!{|key, value| value.blank?}
-          redirect_to post_path(post, response_params)
+          redirect_to booru_post_path(Booru.current, (post, response_params)
         end
       end
 

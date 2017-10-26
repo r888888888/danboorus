@@ -10,7 +10,7 @@
     <% @dashboard.posts.each do |activity| %>
       <tr>
         <td><%= mod_link_to_user(activity.user) %></td>
-        <td><%= link_to activity.count, posts_path(:tags => "user:#{activity.user.name}") %></td>
+        <td><%= link_to activity.count, booru_posts_path(Booru.current, :tags => "user:#{activity.user.name}") %></td>
       </tr>
     <% end %>
   </tbody>

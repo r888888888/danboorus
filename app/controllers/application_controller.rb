@@ -34,6 +34,14 @@ class ApplicationController < ActionController::Base
     Booru.current = nil
   end
 
+  def default_url_options
+    if Booru.current
+      {booru_id: Booru.current.slug}
+    else
+      nil
+    end
+  end
+
   def enable_cors
     response.headers["Access-Control-Allow-Origin"] = "*"
   end

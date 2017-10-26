@@ -86,11 +86,19 @@ class UserPresenter
   end
 
   def upload_count(template)
-    template.link_to(user.post_upload_count, template.posts_path(:tags => "user:#{user.name}"))
+    if Booru.current
+      template.link_to(user.post_upload_count, template.booru_posts_path(Booru.current, :tags => "user:#{user.name}"))
+    else
+      user.post_upload_count
+    end
   end
 
   def deleted_upload_count(template)
-    template.link_to(Post.for_user(user.id).deleted.count, template.posts_path(:tags => "status:deleted user:#{user.name}"))
+    if Booru.current
+      template.link_to(Post.for_user(user.id).deleted.count, template.booru_posts_path(Booru.current, :tags => "status:deleted user:#{user.name}"))
+    else
+      Post.for_user(user.id).deleted.count
+    end
   end
 
   def favorite_count(template)
@@ -98,38 +106,70 @@ class UserPresenter
   end
 
   def comment_count(template)
-    template.link_to(user.comment_count, template.comments_path(:search => {:creator_id => user.id}, :group_by => "comment"))
+    if Booru.current
+      template.link_to(user.comment_count, template.booru_comments_path(Booru.current, :search => {:creator_id => user.id}, :group_by => "comment"))
+    else
+      user.comment_count
+    end
   end
 
   def commented_posts_count(template)
     count = Post.fast_count("commenter:#{user.name}")
-    template.link_to(count, template.posts_path(:tags => "commenter:#{user.name} order:comment"))
+    if Booru.current
+      template.link_to(count, template.booru_posts_path(Booru.current, :tags => "commenter:#{user.name} order:comment"))
+    else
+      count
+    end
   end
 
   def post_version_count(template)
-    template.link_to(user.post_update_count, template.post_versions_path(:lr => user.id, :search => {:updater_id => user.id}))
+    if Booru.current
+      template.link_to(user.post_update_count, template.booru_post_versions_path(Booru.current, :lr => user.id, :search => {:updater_id => user.id}))
+    else
+      user.post_update_count
+    end
   end
 
   def note_version_count(template)
-    template.link_to(user.note_update_count, template.note_versions_path(:search => {:updater_id => user.id}))
+    if Booru.current
+      template.link_to(user.note_update_count, template.booru_note_versions_path(Booru.current, :search => {:updater_id => user.id}))
+    else
+      user.note_update_count
+    end
   end
 
   def noted_posts_count(template)
     count = Post.fast_count("noteupdater:#{user.name}")
-    template.link_to(count, template.posts_path(:tags => "noteupdater:#{user.name} order:note"))
+    if Booru.current
+      template.link_to(count, template.booru_posts_path(Booru.current, :tags => "noteupdater:#{user.name} order:note"))
+    else
+      count
+    end
   end
 
   def wiki_page_version_count(template)
-    template.link_to(user.wiki_page_version_count, template.wiki_page_versions_path(:search => {:updater_id => user.id}))
+    if Booru.current
+      template.link_to(user.wiki_page_version_count, template.booru_wiki_page_versions_path(Booru.current, :search => {:updater_id => user.id}))
+    else
+      user.wiki_page_version_count
+    end
   end
 
   def forum_post_count(template)
-    template.link_to(user.forum_post_count, template.forum_posts_path(:search => {:creator_id => user.id}))
+    if Booru.current
+      template.link_to(user.forum_post_count, template.booru_forum_posts_path(Booru.current, :search => {:creator_id => user.id}))
+    else
+      user.forum_post_count
+    end
   end
 
   def pool_version_count(template)
     if PoolArchive.enabled?
-      template.link_to(user.pool_version_count, template.pool_versions_path(:search => {:updater_id => user.id}))
+      if Booru.current
+        template.link_to(user.pool_version_count, template.pool_versions_path(:search => {:updater_id => user.id}))
+      else
+        user.pool_version_count
+      end
     else
       "N/A"
     end

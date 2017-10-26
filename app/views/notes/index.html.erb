@@ -15,10 +15,10 @@
       <tbody>
         <% @notes.each do |note| %>
           <tr>
-            <td><%= link_to note.post_id, post_path(note.post_id) %></td>
+            <td><%= link_to note.post_id, booru_post_path(Booru.current, note.post_id) %></td>
             <td>
-              <%= link_to "#{note.id}.#{note.version}", post_path(note.post_id, anchor: "note-#{note.id}") %>
-              <%= link_to "»", note_versions_path(search: {note_id: note.id}) %>
+              <%= link_to "#{note.id}.#{note.version}", booru_post_path(Booru.current, note.post_id, anchor: "note-#{note.id}") %>
+              <%= link_to "»", booru_note_versions_path(Booru.current, search: {note_id: note.id}) %>
             </td>
             <td><%= link_to_user note.creator %></td>
             <td><%= compact_time(note.created_at) %></td>

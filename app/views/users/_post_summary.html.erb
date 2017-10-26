@@ -1,7 +1,7 @@
 <% if presenter.has_uploads? %>
   <div class="box user-uploads">
     <h2>
-      <%= link_to "Uploads", posts_path(:tags => "user:#{user.name}") %>
+      <%= link_to "Uploads", booru_posts_path(Booru.current, :tags => "user:#{user.name}") %>
     </h2>
     <div>
       <% presenter.uploads.each do |post| %>
@@ -27,7 +27,7 @@
 <% if CurrentUser.user.id == @user.id && @user.has_saved_searches? && @user.is_gold? %>
   <div class="box user-saved-search">
     <h2>
-      <%= link_to "Saved Searches", posts_path(:tags => "search:all") %>
+      <%= link_to "Saved Searches", booru_posts_path(Booru.current, :tags => "search:all") %>
       (<%= link_to "manage", saved_searches_path() %>)
     </h2>
 

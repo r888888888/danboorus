@@ -46,6 +46,10 @@ class Booru < ApplicationRecord
 		Thread.current[:booru] = booru
 	end
 
+	def self.main
+		find_by_slug("sagiri")
+	end
+
 	def self.find_by_slug(slug)
 		where(slug: slug).first
 	end

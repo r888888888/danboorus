@@ -7,13 +7,13 @@
 </ul>
 
 <% if @upload.is_completed? %>
-  <p>This upload has finished processing. <%= link_to "View the post", post_path(@upload.post_id) %>.</p>
+  <p>This upload has finished processing. <%= link_to "View the post", booru_post_path(Booru.current, (@upload.post_id) %>.</p>
 <% elsif @upload.is_pending? %>
   <p>This upload is waiting to be processed. Please wait a few seconds.</p>
 <% elsif @upload.is_processing? %>
   <p>This upload is being processed. Please wait a few seconds.</p>
 <% elsif @upload.is_duplicate? %>
-  <p>This upload is a duplicate: <%= link_to "post ##{@upload.duplicate_post_id}", post_path(@upload.duplicate_post_id) %></p>
+  <p>This upload is a duplicate: <%= link_to "post ##{@upload.duplicate_post_id}", booru_post_path(Booru.current, (@upload.duplicate_post_id) %></p>
 <% else %>
   <p>An error occurred: <%= @upload.status %></p>
   <% if CurrentUser.user.is_moderator? %>
@@ -24,16 +24,16 @@
     </ul>
   <% end %>
   <% if @upload.is_downloadable? %>
-    <%= form_tag(upload_path(@upload), :method => :put) do %>
+    <%= form_tag(booru_upload_path(Booru.current, @upload), :method => :put) do %>
       <% submit_tag "Retry" %>
     <% end %>
   <% end %>
 <% end %>
 
 <p>
-  You can <%= link_to "upload another file", new_upload_path %> or <%= link_to "view your current uploads", uploads_path(:search => {:uploader_id => CurrentUser.id}) %>.
+  You can <%= link_to "upload another file", new_booru_upload_path(Booru.current) %> or <%= link_to "view your current uploads", booru_uploads_path(Booru.current, :search => {:uploader_id => CurrentUser.id}) %>.
   <% if CurrentUser.user.is_moderator? && @upload.is_pending? %>
-    <%= link_to "Force update", upload_path(@upload, :format => "js"), :remote => true, :method => :put %>.
+    <%= link_to "Force update", booru_upload_path(Booru.current, @upload, :format => "js"), :remote => true, :method => :put %>.
   <% end %>
 </p>
 

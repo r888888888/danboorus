@@ -4,7 +4,7 @@
 
     <ul>
       <% @boorus.each do |booru| %>
-        <li><strong><%= link_to booru.name, posts_path(subdomain: booru.slug) %></strong>: <%= booru.desc %></li>
+        <li><strong><%= link_to booru.name, booru_posts_path(Booru.current, subdomain: booru.slug) %></strong>: <%= booru.desc %></li>
       <% end %>
     </ul>
   </div>

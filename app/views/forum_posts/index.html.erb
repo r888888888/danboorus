@@ -13,9 +13,9 @@
         <% @forum_posts.each do |forum_post| %>
           <% if CurrentUser.is_moderator? || !forum_post.is_deleted? %>
             <tr>
-              <td><%= link_to forum_post.topic.title, forum_topic_path(forum_post.topic) %></td>
+              <td><%= link_to forum_post.topic.title, booru_forum_topic_path(Booru.current, forum_post.topic) %></td>
               <td>
-                <%= link_to truncate(forum_post.body, :length => 50), forum_post_path(forum_post) %>
+                <%= link_to truncate(forum_post.body, :length => 50), booru_forum_post_path(Booru.current, forum_post) %>
                 <% if forum_post.is_deleted? %>
                   (deleted)
                 <% end %>

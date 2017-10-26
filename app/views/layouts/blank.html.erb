@@ -5,7 +5,7 @@
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   <link rel="top" title="<%= Danbooru.config.app_name %>" href="/">
   <%= csrf_meta_tag %>
-  <%= auto_discovery_link_tag :atom, posts_path(:format => "atom", :tags => params[:tags]) %>
+  <%= auto_discovery_link_tag :atom, booru_posts_path(Booru.current, :format => "atom", :tags => params[:tags]) %>
   <%= stylesheet_link_tag "application", :media => "screen" %>
   <%= javascript_include_tag "application" %>
   <%= Danbooru.config.custom_html_header_content %>

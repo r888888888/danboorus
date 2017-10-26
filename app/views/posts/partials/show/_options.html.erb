@@ -19,12 +19,12 @@
   <% else %>
     <% if CurrentUser.is_moderator? %>
       <% if post.is_deleted? %>
-        <li><%= link_to "Undelete", undelete_moderator_post_post_path(:post_id => post.id), :remote => true, :method => :post, :id => "undelete", :data => { :confirm => "Are you sure you want to undelete this post?" } %></li>
+        <li><%= link_to "Undelete", undelete_booru_moderator_post_post_path(Booru.current, :post_id => post.id), :remote => true, :method => :post, :id => "undelete", :data => { :confirm => "Are you sure you want to undelete this post?" } %></li>
         <% if post.fav_count > 0 && post.parent_id %>
-          <li><%= link_to "Move favorites", confirm_move_favorites_moderator_post_post_path(:post_id => post.id) %></li>
+          <li><%= link_to "Move favorites", confirm_move_favorites_booru_moderator_post_post_path(Booru.current, :post_id => post.id) %></li>
         <% end %>
       <% else %>
-        <li><%= link_to "Delete", confirm_delete_moderator_post_post_path(:post_id => post.id) %></li>
+        <li><%= link_to "Delete", confirm_delete_booru_moderator_post_post_path(Booru.current, :post_id => post.id) %></li>
       <% end %>
     <% end %>
   <% end %>

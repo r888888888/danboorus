@@ -35,14 +35,14 @@
             <td>
               <%= link_to_user user %>
             </td>
-            <td><%= link_to user.posts.count, posts_path(:tags => "user:#{user.name}") %></td>
+            <td><%= link_to user.posts.count, booru_posts_path(Booru.current, :tags => "user:#{user.name}") %></td>
             <td><%= user.posts.deleted.count %></td>
             <% if CurrentUser.is_moderator? %>
               <td><%= number_to_percentage Reports::UserPromotions.confidence_interval_for(user, 3), :precision => 0 %></td>
               <td><%= number_to_percentage Reports::UserPromotions.confidence_interval_for(user, 6), :precision => 0 %></td>
             <% end %>
-            <td><%= link_to user.note_versions.count, note_versions_path(:search => {:updater_id => user.id}) %></td>
-            <td><%= link_to user.post_update_count, post_versions_path(:search => {:updater_id => user.id}) %></td>
+            <td><%= link_to user.note_versions.count, booru_note_versions_path(Booru.current, :search => {:updater_id => user.id}) %></td>
+            <td><%= link_to user.post_update_count, booru_post_versions_path(Booru.current, :search => {:updater_id => user.id}) %></td>
             <td><%= user.level_string %></td>
             <td><%= compact_time user.created_at %></td>
           </tr>

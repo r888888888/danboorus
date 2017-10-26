@@ -20,7 +20,7 @@ module Maintenance
         context "#destroy" do
           should "render" do
             post :destroy, {:password => "password"}, {:user_id => @user.id}
-            assert_redirected_to(posts_path)
+            assert_redirected_to(booru_posts_path(Booru.current))
           end
         end
       end

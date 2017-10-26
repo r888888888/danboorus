@@ -1,10 +1,6 @@
 <% if post.is_deleted? %>
   <div class="ui-corner-all ui-state-highlight notice notice-deleted">
     <p>This post was deleted</p>
-
-    <% if CurrentUser.id == post.uploader_id && Danbooru.config.upload_feedback_topic.present? %>
-      <p>If you don't understand why your uploads keep getting deleted, you should ask on the <%= link_to "forum", forum_topic_path(Danbooru.config.upload_feedback_topic) %> for advice.</p>
-    <% end %>
   </div>
 <% end %>
 

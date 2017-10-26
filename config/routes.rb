@@ -25,7 +25,6 @@ Rails.application.routes.draw do
     resource :membership, only: [:new, :create, :show, :destroy]
     resources :mod_actions
     namespace :moderator do
-      resources :promotions, only: [:index, :new, :create, :destroy]
       namespace :post do
         resources :posts, :only => [:delete, :undelete, :expunge, :confirm_delete] do
           member do
@@ -93,8 +92,6 @@ Rails.application.routes.draw do
         get :search
       end
     end
-    resource :related_tag, :only => [:show, :update]
-    resources :saved_searches, :except => [:show]
     resources :uploads do
       collection do
         get :batch
@@ -147,6 +144,8 @@ Rails.application.routes.draw do
       get :sign_out
     end
   end
+  resource :related_tag, :only => [:show, :update]
+  resources :saved_searches, :except => [:show]
   resource :source, :only => [:show]
   resources :tags do
     collection do

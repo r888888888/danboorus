@@ -19,9 +19,9 @@ class WikiPagesController < ApplicationController
       format.html do
         if params[:page].nil? || params[:page].to_i == 1
           if @wiki_pages.length == 1
-            redirect_to(wiki_page_path(@wiki_pages.first))
+            redirect_to(booru_wiki_page_path(Booru.current, @wiki_pages.first))
           elsif @wiki_pages.length == 0 && params[:search][:title].present? && params[:search][:title] !~ /\*/
-            redirect_to(wiki_pages_path(:search => {:title => "*#{params[:search][:title]}*"}))
+            redirect_to(booru_wiki_pages_path(Booru.current, (:search => {:title => "*#{params[:search][:title]}*"}))
           end
         end
       end
@@ -40,7 +40,7 @@ class WikiPagesController < ApplicationController
     else
       @wiki_page = WikiPage.find_by_title(params[:id])
       if @wiki_page.nil? && request.format.symbol == :html
-        redirect_to show_or_new_wiki_pages_path(:title => params[:id])
+        redirect_to show_or_new_booru_wiki_pages_path(Booru.current, (:title => params[:id])
         return
       end
     end
@@ -76,7 +76,7 @@ class WikiPagesController < ApplicationController
   def show_or_new
     @wiki_page = WikiPage.find_by_title(params[:title])
     if @wiki_page
-      redirect_to wiki_page_path(@wiki_page)
+      redirect_to booru_wiki_page_path(Booru.current, @wiki_page)
     else
       @wiki_page = WikiPage.new(:title => params[:title])
       respond_with(@wiki_page)

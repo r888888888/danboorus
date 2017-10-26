@@ -45,7 +45,7 @@ class UploadsController < ApplicationController
     respond_with(@upload) do |format|
       format.html do
         if @upload.is_completed? && @upload.post_id
-          redirect_to(post_path(@upload.post_id))
+          redirect_to(booru_post_path(Booru.current, (@upload.post_id))
         end
       end
     end

@@ -12,7 +12,7 @@ class MembershipsController < ApplicationController
 
   def destroy
     @membership.destroy
-    respond_with(@membership, location: new_membership_path)
+    respond_with(@membership, location: new_booru_membership_path(Booru.current))
   end
 
 private

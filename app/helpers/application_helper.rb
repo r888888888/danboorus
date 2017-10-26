@@ -102,7 +102,7 @@ module ApplicationHelper
   end
 
   def link_to_ip(ip)
-    link_to ip, moderator_ip_addrs_path(:search => {:ip_addr => ip})
+    link_to ip, booru_moderator_ip_addrs_path(Booru.current, :search => {:ip_addr => ip})
   end
 
   def link_to_user(user, options = {})

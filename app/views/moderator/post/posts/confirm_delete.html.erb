@@ -4,7 +4,7 @@
   <%= PostPresenter.preview(@post, :tags => "status:any") %>
 </div>
 
-<%= form_tag(delete_moderator_post_post_path, :style => "clear: both;", :class => "simple_form") do %>
+<%= form_tag(delete_booru_moderator_post_post_path(Booru.current), :style => "clear: both;", :class => "simple_form") do %>
   <% if @post.parent_id %>
     <div class="input">
       <label for="move_favorites">

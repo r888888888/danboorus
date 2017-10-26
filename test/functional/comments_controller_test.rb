@@ -70,13 +70,13 @@ class CommentsControllerTest < ActionController::TestCase
         should "succeed if updater is a moderator" do
           post :update, {:id => @comment.id, :comment => {:body => "abc"}}, {:user_id => @mod.id}
           assert_equal("abc", @comment.reload.body)
-          assert_redirected_to post_path(@comment.post)
+          assert_redirected_to booru_post_path(Booru.current, (@comment.post)
         end
 
         should "fail if updater is not a moderator" do
           post :update, {:id => @mod_comment.id, :comment => {:body => "abc"}}, {:user_id => @user.id}
           assert_not_equal("abc", @mod_comment.reload.body)
-          assert_redirected_to post_path(@mod_comment.post)
+          assert_redirected_to booru_post_path(Booru.current, (@mod_comment.post)
         end
       end
 
@@ -98,7 +98,7 @@ class CommentsControllerTest < ActionController::TestCase
       should "update the body" do
         post :update, {:id => @comment.id, :comment => {:body => "abc"}}, {:user_id => @comment.creator_id}
         assert_equal("abc", @comment.reload.body)
-        assert_redirected_to post_path(@comment.post)
+        assert_redirected_to booru_post_path(Booru.current, (@comment.post)
       end
 
       should "allow changing the body and is_deleted" do
@@ -118,14 +118,14 @@ class CommentsControllerTest < ActionController::TestCase
         assert_equal(true, @comment.is_deleted?)
         assert_equal(@post.id, @comment.post_id)
 
-        assert_redirected_to post_path(@post)
+        assert_redirected_to booru_post_path(Booru.current, (@post)
       end
     end
 
     context "new action" do
       should "redirect" do
         get :new, {}, {:user_id => @user.id}
-        assert_redirected_to comments_path
+        assert_redirected_to booru_comments_path(Booru.current)
       end
     end
 
@@ -135,12 +135,12 @@ class CommentsControllerTest < ActionController::TestCase
           post :create, {:comment => FactoryGirl.attributes_for(:comment, :post_id => @post.id)}, {:user_id => @user.id}
         end
         comment = Comment.last
-        assert_redirected_to post_path(comment.post)
+        assert_redirected_to booru_post_path(Booru.current, (comment.post)
       end
 
       should "not allow commenting on nonexistent posts" do
         post :create, {:comment => FactoryGirl.attributes_for(:comment, :post_id => -1)}, {:user_id => @user.id}
-        assert_redirected_to posts_path
+        assert_redirected_to booru_posts_path(Booru.current)
       end
     end
   end

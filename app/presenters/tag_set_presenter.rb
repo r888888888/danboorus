@@ -27,7 +27,7 @@ class TagSetPresenter < Presenter
     @tags.map do |tag_name|
       <<-EOS
         <span>
-          #{template.link_to(tag_name.tr("_", " "), template.posts_path(tags: tag_name))}
+          #{template.link_to(tag_name.tr("_", " "), template.booru_posts_path(Booru.current, tags: tag_name))}
         </span>
       EOS
     end.join.html_safe

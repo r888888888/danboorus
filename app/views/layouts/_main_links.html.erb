@@ -6,13 +6,12 @@
     <%= nav_link_to("My Account #{CurrentUser.dmail_count}", user_path(CurrentUser.user)) %>
   <% end %>
   <% if Booru.current %>
-    <%= nav_link_to("Posts", posts_path) %>
-    <%= nav_link_to("Comments", comments_path(:group_by => "post")) %>
-    <%= nav_link_to("Notes", notes_path) %>
-    <%= nav_link_to("Tags", tags_path) %>
-    <%= nav_link_to("Pools", pools_path) %>
-    <%= nav_link_to("Wiki", wiki_pages_path(:title => "help:home")) %>
-    <%= nav_link_to("Forum", forum_topics_path, :class => (CurrentUser.has_forum_been_updated? ? "forum-updated" : nil)) %>
+    <%= nav_link_to("Posts", booru_posts_path(Booru.current)) %>
+    <%= nav_link_to("Comments", booru_comments_path(Booru.current, :group_by => "post")) %>
+    <%= nav_link_to("Notes", booru_notes_path(Booru.current)) %>
+    <%= nav_link_to("Pools", booru_pools_path(Boru.current)) %>
+    <%= nav_link_to("Wiki", booru_wiki_pages_path(Booru.current, :title => "help:home")) %>
+    <%= nav_link_to("Forum", booru_forum_topics_path(Booru.current, :class => (CurrentUser.has_forum_been_updated? ? "forum-updated" : nil)) %>
   <% end %>
   <%= nav_link_to("More&nbsp;&raquo;".html_safe, site_map_path, :id => "site-map-link") %>
 </menu>

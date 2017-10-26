@@ -6,12 +6,12 @@
       <% @urls.each.with_index do |url, i| %>
         <div class="upload-preview">
           <p class="caption-top">
-            <%= link_to "Image ##{i}", new_upload_path(url: url, ref: params[:url]), target: "_blank" %>
+            <%= link_to "Image ##{i}", new_booru_upload_path(Booru.current, url: url, ref: params[:url]), target: "_blank" %>
           </p>
 
-          <%= link_to new_upload_path(url: url, ref: params[:url]), target: "_blank" do %>
+          <%= link_to new_booru_upload_path(Booru.current, url: url, ref: params[:url]), target: "_blank" do %>
             <% if ImageProxy.needs_proxy?(url) %>
-              <%= image_tag(image_proxy_uploads_path(url: url)) %>
+              <%= image_tag(image_proxy_booru_uploads_path(Booru.current, url: url)) %>
             <% else %>
               <%= image_tag url %>
             <% end %>

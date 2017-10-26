@@ -29,7 +29,7 @@ class MembershipsControllerTest < ActionController::TestCase
         post :create
       end
       @membership = Membership.last
-      assert_redirected_to membership_path(@membership)
+      assert_redirected_to booru_membership_path(@membership.booru, @membership)
     end
   end
 
@@ -52,7 +52,7 @@ class MembershipsControllerTest < ActionController::TestCase
     should "succeed" do
       assert_difference("Membership.count", -1) do
         delete :destroy
-        assert_redirected_to(new_membership_path)
+        assert_redirected_to(new_booru_membership_path(@membership.booru))
       end
     end
   end
