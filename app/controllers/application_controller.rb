@@ -19,13 +19,14 @@ class ApplicationController < ActionController::Base
   rescue_from SessionLoader::AuthenticationFailure, :with => :authentication_failed
   rescue_from Danbooru::Paginator::PaginationError, :with => :render_pagination_limit
   rescue_from ActiveRecord::RecordNotFound, :with => :not_found
+
   protected
 
   def load_booru
-    if params[:b]
-      Booru.current = Booru.find_by_slug(params[:b])
-    elsif request.subdomain.present?
-      Booru.current = Booru.find_by_slug(request.subdomain)
+    if params[:boru_id]
+      Booru.current = Booru.find_by_slug(params[:booru_id])
+    else
+      Booru.current = nil
     end
   end
 
