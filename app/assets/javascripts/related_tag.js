@@ -157,7 +157,7 @@
 
     var match = query.match(/^wiki:(.+)/);
     if (match) {
-      header.html($("<a/>").attr("href", "/wiki_pages?title=" + encodeURIComponent(match[1])).attr("target", "_blank").text(query));
+      header.html($("<a/>").attr("href", "/b/" + Danbooru.meta("booru") + "/wiki_pages?title=" + encodeURIComponent(match[1])).attr("target", "_blank").text(query));
     } else {
       header.text(query);
     }
@@ -180,7 +180,7 @@
         var $link = $("<a/>");
         $link.text(tag[0].replace(/_/g, " "));
         $link.addClass("tag-type-" + tag[1]);
-        $link.attr("href", "/posts?tags=" + encodeURIComponent(tag[0]));
+        $link.attr("href", "/b/" + Danbooru.meta("booru") + "/posts?tags=" + encodeURIComponent(tag[0]));
         $link.click(Danbooru.RelatedTag.toggle_tag);
         if (Danbooru.RelatedTag.tags_include(tag[0])) {
           $link.addClass("selected");

@@ -16,6 +16,7 @@
   <% if flash[:notice] =~ /error/i %>
     <meta name="errors" content="true">
   <% end %>
+  <meta name="booru" content="<%= Booru.current.slug %>">
   <meta name="default-image-size" content="<%= CurrentUser.user.default_image_size %>">
   <meta name="enable-auto-complete" content="<%= CurrentUser.user.enable_auto_complete %>">
   <meta name="last-forum-read-at" content="<%= CurrentUser.user.last_forum_read_at %>">

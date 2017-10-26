@@ -175,7 +175,7 @@
       var other_post_id = parseInt(prompt("Enter the ID of the post to copy all notes to:"), 10);
 
       if (other_post_id !== null) {
-        $.ajax("/posts/" + current_post_id + "/copy_notes", {
+        $.ajax("/b/" + Danbooru.meta("booru") + "/posts/" + current_post_id + "/copy_notes", {
           type: "PUT",
           data: {
             other_post_id: other_post_id
@@ -447,7 +447,7 @@
   Danbooru.Post.vote = function(score, id) {
     Danbooru.notice("Voting...");
 
-    $.post("/posts/" + id + "/votes.js", {
+    $.post("/b/" + Danbooru.meta("booru") + "/posts/" + id + "/votes.js", {
        score: score
     });
   }
@@ -457,7 +457,7 @@
 
     $.ajax({
       type: "PUT",
-      url: "/posts/" + post_id + ".json",
+      url: "/b/" + Danbooru.meta("booru") + "/posts/" + post_id + ".json",
       data: params,
       success: function(data) {
         Danbooru.Post.notice_update("dec");
@@ -465,7 +465,7 @@
       },
       error: function(data) {
         Danbooru.Post.notice_update("dec");
-        Danbooru.error('There was an error updating <a href="/posts/' + post_id + '">post #' + post_id + '</a>');
+        Danbooru.error('There was an error updating <a href="/b/' + Danbooru.meta("booru") + '/posts/' + post_id + '">post #' + post_id + '</a>');
       }
     });
   }
@@ -515,7 +515,7 @@
     });
 
     $("#search-dropdown #wiki-search").click(function(e) {
-      window.location.href = "/wiki_pages?search%5Btitle%5D=" + encodeURIComponent($("#tags").val());
+      window.location.href = "/b/" + Danbooru.meta("booru") + "/wiki_pages?search%5Btitle%5D=" + encodeURIComponent($("#tags").val());
       e.preventDefault();
     });
   }

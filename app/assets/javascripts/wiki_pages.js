@@ -18,7 +18,7 @@
       minLength: 1,
       source: function(req, resp) {
         $.ajax({
-          url: "/wiki_pages.json",
+          url: "/b/" + Danbooru.meta("booru") + "/wiki_pages.json",
           data: {
             "search[title]": req.term + "*",
             "search[hide_deleted]": "Yes",

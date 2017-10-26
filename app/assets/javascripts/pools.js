@@ -25,7 +25,7 @@
       minLength: 1,
       source: function(req, resp) {
         $.ajax({
-          url: "/pools.json",
+          url: "/b/" + Danbooru.meta("booru") + "/pools.json",
           data: {
             "search[name_matches]": req.term,
             "limit": 10

@@ -260,7 +260,7 @@
     }
 
     $link.append(document.createTextNode(item.label));
-    $link.attr("href", "/posts?tags=" + encodeURIComponent(item.value));
+    $link.attr("href", "/b/" + Danbooru.meta("booru") + "/posts?tags=" + encodeURIComponent(item.value));
     $link.click(function(e) {
       e.preventDefault();
     });
@@ -367,7 +367,7 @@
 
   Danbooru.Autocomplete.pool_source = function(term, resp, metatag) {
     $.ajax({
-      url: "/pools.json",
+      url: "/b/" + Danbooru.meta("booru") + "/pools.json",
       data: {
         "search[order]": "post_count",
         "search[name_matches]": term,

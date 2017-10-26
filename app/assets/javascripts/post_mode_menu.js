@@ -137,7 +137,7 @@
   Danbooru.PostModeMenu.open_edit = function(post_id) {
     var $post = $("#post_" + post_id);
     $("#quick-edit-div").slideDown("fast");
-    $("#quick-edit-form").attr("action", "/posts/" + post_id + ".json");
+    $("#quick-edit-form").attr("action", "/b/" + Danbooru.meta("booru") + "/posts/" + post_id + ".json");
     $("#post_tag_string").val($post.data("tags") + " ").focus().selectEnd();
 
     /* Set height of tag edit box to fit content. */

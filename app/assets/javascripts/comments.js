@@ -20,7 +20,7 @@
 
   Danbooru.Comment.quote = function(e) {
     $.get(
-      "/comments/" + $(e.target).data('comment-id') + ".json",
+      "/b/" + Danbooru.meta("booru") + "/comments/" + $(e.target).data('comment-id') + ".json",
       function(data) {
         var $link = $(e.target);
         var $div = $link.closest("div.comments-for-post").find(".new-comment");

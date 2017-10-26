@@ -483,7 +483,7 @@ Danbooru.Note = {
       var text = $textarea.val();
       $note_body.data("original-body", text);
       Danbooru.Note.Body.set_text($note_body, $note_box, "Loading...");
-      $.get("/note_previews.json", {body: text}).success(function(data) {
+      $.get("/b/" + Danbooru.meta("booru") + "/note_previews.json", {body: text}).success(function(data) {
         Danbooru.Note.Body.set_text($note_body, $note_box, data.body);
         Danbooru.Note.Box.resize_inner_border($note_box);
         $note_body.show();
@@ -491,14 +491,14 @@ Danbooru.Note = {
       $this.dialog("close");
 
       if (id.match(/\d/)) {
-        $.ajax("/notes/" + id + ".json", {
+        $.ajax("/b/" + Danbooru.meta("booru") + "/notes/" + id + ".json", {
           type: "PUT",
           data: Danbooru.Note.Edit.parameterize_note($note_box, $note_body),
           error: Danbooru.Note.Edit.error_handler,
           success: Danbooru.Note.Edit.success_handler
         });
       } else {
-        $.ajax("/notes.json", {
+        $.ajax("/b/" + Danbooru.meta("booru") + "/notes.json", {
           type: "POST",
           data: Danbooru.Note.Edit.parameterize_note($note_box, $note_body),
           error: Danbooru.Note.Edit.error_handler,
@@ -516,7 +516,7 @@ Danbooru.Note = {
       var $note_box = Danbooru.Note.Box.find(id);
       $note_box.find(".note-box-inner-border").addClass("unsaved");
       Danbooru.Note.Body.set_text($note_body, $note_box, "Loading...");
-      $.get("/note_previews.json", {body: text}).success(function(data) {
+      $.get("/b/" + Danbooru.meta("booru") + "/note_previews.json", {body: text}).success(function(data) {
         Danbooru.Note.Body.set_text($note_body, $note_box, data.body);
         $note_body.show();
       });
@@ -535,7 +535,7 @@ Danbooru.Note = {
       var id = $this.data("id");
 
       if (id.match(/\d/)) {
-        $.ajax("/notes/" + id + ".json", {
+        $.ajax("/b/" + Danbooru.meta("booru") + "/notes/" + id + ".json", {
           type: "DELETE",
           success: function() {
             Danbooru.Note.Box.find(id).remove();
@@ -550,7 +550,7 @@ Danbooru.Note = {
       var $this = $(this);
       var id = $this.data("id");
       if (id.match(/\d/)) {
-        window.location.href = "/note_versions?search[note_id]=" + id;
+        window.location.href = "/b/" + Danbooru.meta("booru") + "/note_versions?search[note_id]=" + id;
       }
       $(this).dialog("close");
     }
