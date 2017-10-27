@@ -47,7 +47,7 @@ module PostFileNameBuilder
   end
 
   def s3_file_url
-    "https://s3.amazonaws.com/#{Danbooru.config.bucket_name}/original/#{file_path_prefix}#{sha256}.#{file_ext}"
+    "https://#{s3_domain}/#{Danbooru.config.aws_s3_bucket_name}/original/#{file_path_prefix}#{sha256}.#{file_ext}"
   end
 
   def large_file_url
@@ -58,8 +58,12 @@ module PostFileNameBuilder
     end
   end
 
+  def s3_domain
+    "s3-us-west-1.amazonaws.com"
+  end
+
   def s3_large_file_url
-    "https://s3.amazonaws.com/#{Danbooru.config.bucket_name}/sample/#{file_path_prefix}#{sha256}.#{large_file_ext}"
+    "https://#{s3_domain}/#{Danbooru.config.aws_s3_bucket_name}/large/#{file_path_prefix}#{sha256}.#{large_file_ext}"
   end
 
   def preview_file_url
@@ -72,10 +76,10 @@ module PostFileNameBuilder
 
   def s3_preview_file_url
     if !has_preview?
-      return "https://s3.amazonaws.com/#{Danbooru.config.bucket_name}/preview/download-preview.png"
+      return "https://#{s3_domain}/#{Danbooru.config.aws_s3_bucket_name}/preview/download-preview.png"
     end
 
-    "https://s3.amazonaws.com/#{Danbooru.config.bucket_name}/preview/#{file_path_prefix}#{sha256}.jpg"
+    "https://#{s3_domain}/#{Danbooru.config.aws_s3_bucket_name}/preview/#{file_path_prefix}#{sha256}.jpg"
   end
 
   def large_file_ext

@@ -7,13 +7,13 @@
 </ul>
 
 <% if @upload.is_completed? %>
-  <p>This upload has finished processing. <%= link_to "View the post", booru_post_path(Booru.current.slug, (@upload.post_id) %>.</p>
+  <p>This upload has finished processing. <%= link_to "View the post", booru_post_path(Booru.current.slug, @upload.post_id) %>.</p>
 <% elsif @upload.is_pending? %>
   <p>This upload is waiting to be processed. Please wait a few seconds.</p>
 <% elsif @upload.is_processing? %>
   <p>This upload is being processed. Please wait a few seconds.</p>
 <% elsif @upload.is_duplicate? %>
-  <p>This upload is a duplicate: <%= link_to "post ##{@upload.duplicate_post_id}", booru_post_path(Booru.current.slug, (@upload.duplicate_post_id) %></p>
+  <p>This upload is a duplicate: <%= link_to "post ##{@upload.duplicate_post_id}", booru_post_path(Booru.current.slug, @upload.duplicate_post_id) %></p>
 <% else %>
   <p>An error occurred: <%= @upload.status %></p>
   <% if CurrentUser.user.is_moderator? %>

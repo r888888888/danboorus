@@ -154,15 +154,15 @@ class Post < ApplicationRecord
     extend ActiveSupport::Concern
 
     def force_backup
-      Post.backup_file(file_path, id: id, key: file_url)
-      Post.backup_file(large_file_path, id: id, key: large_file_url) if has_large?
-      Post.backup_file(preview_file_path, id: id, key: preview_file_url) if has_preview?
+      Post.backup_file(file_path, id: id, key: file_url, type: :original)
+      Post.backup_file(large_file_path, id: id, key: large_file_url, type: :large) if has_large?
+      Post.backup_file(preview_file_path, id: id, key: preview_file_url, type: :preview) if has_preview?
     end
 
     def queue_backup
-      Post.delay(queue: "default", priority: -1).backup_file(file_path, id: id, key: file_url)
-      Post.delay(queue: "default", priority: -1).backup_file(large_file_path, id: id, key: large_file_url) if has_large?
-      Post.delay(queue: "default", priority: -1).backup_file(preview_file_path, id: id, key: preview_file_url) if has_preview?
+      Post.delay(queue: "default", priority: -1).backup_file(file_path, id: id, key: file_url, type: :original)
+      Post.delay(queue: "default", priority: -1).backup_file(large_file_path, id: id, key: large_file_url, type: :large) if has_large?
+      Post.delay(queue: "default", priority: -1).backup_file(preview_file_path, id: id, key: preview_file_url, type: :preview) if has_preview?
     end
 
     module ClassMethods

@@ -397,7 +397,6 @@ module Danbooru
 
     # Used for backing up images to S3. Must be changed to your own S3 bucket.
     def aws_s3_bucket_name
-      "danbooru_multi"
     end
 
     def aws_sqs_enabled?
