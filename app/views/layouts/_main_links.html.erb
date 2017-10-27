@@ -4,6 +4,7 @@
   <% else %>
     <%= nav_link_to("My Account #{CurrentUser.dmail_count}", user_path(CurrentUser.user)) %>
   <% end %>
+  <%= nav_link_to("Boorus", boorus_path) %>
   <% if Booru.current %>
     <%= nav_link_to("Posts", booru_posts_path(Booru.current.slug)) %>
     <%= nav_link_to("Comments", booru_comments_path(Booru.current.slug, :group_by => "post")) %>
