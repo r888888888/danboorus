@@ -76,14 +76,14 @@ class Post < ApplicationRecord
     end
 
     def complete_preview_file_url
-      "http://#{Danbooru.config.hostname}/#{s3_preview_file_url}"
+      "http://#{Danbooru.config.hostname}/#{preview_file_url}"
     end
 
     def file_url_for(user)
       if user.default_image_size == "large" && image_width > Danbooru.config.large_image_width
-        s3_large_file_url
+        large_file_url
       else
-        s3_file_url
+        file_url
       end
     end
 
@@ -1148,7 +1148,7 @@ class Post < ApplicationRecord
     def method_attributes
       list = super + [:uploader_name, :has_large, :has_visible_children, :children_ids]
       if visible?
-        list += [:s3_file_url, :s3_large_file_url, :s3_preview_file_url]
+        list += [:file_url, :large_file_url, :preview_file_url]
       end
       list
     end
@@ -1185,8 +1185,8 @@ class Post < ApplicationRecord
       }
 
       if visible?
-        hash["file_url"] = s3_file_url
-        hash["preview_url"] = s3_preview_file_url
+        hash["file_url"] = file_url
+        hash["preview_url"] = preview_file_url
         hash["sha256"] = sha256
       end
 
