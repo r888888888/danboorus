@@ -16,7 +16,7 @@ class UploadsController < ApplicationController
       rescue Exception
       end
     end
-    respond_with(@upload)
+    respond_with(@upload, location: new_booru_upload_path(Booru.current.slug, @upload))
   end
 
   def batch
@@ -55,13 +55,13 @@ class UploadsController < ApplicationController
     @upload = Upload.create(create_params)
     @upload.process! if @upload.errors.empty?
     save_recent_tags
-    respond_with(@upload)
+    respond_with(@upload, location: booru_upload_path(Booru.current.slug, @upload))
   end
 
   def update
     @upload = Upload.find(params[:id])
     @upload.process!
-    respond_with(@upload)
+    respond_with(@upload, location: booru_upload_path(Booru.current.slug, @upload))
   end
 
 protected

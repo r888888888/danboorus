@@ -143,7 +143,7 @@
     <meta name="twitter:image" content="http://<%= Danbooru.config.hostname %><%= @post.large_file_url %>">
   <% end %>
 
-  <%= auto_discovery_link_tag(:atom, comments_url(:atom, search: { post_id: @post.id }), title: "Comments for post ##{@post.id}") %>
+  <%= auto_discovery_link_tag(:atom, booru_comments_url(Booru.current.slug, :atom, search: { post_id: @post.id }), title: "Comments for post ##{@post.id}") %>
 <% end %>
 
 <%= render "posts/partials/common/secondary_links" %>

@@ -13,7 +13,7 @@
   </li>
   <li>Source: <%= post_source_tag(post) %></li>
   <li>Rating: <%= post.pretty_rating %></li>
-  <li>Score: <span id="score-for-post-<%= post.id %>"><%= post.score %></span> (<span id="vote-links-for-post-<%= post.id %>">vote <%= link_to "up", post_votes_path(:post_id => post.id, :score => "up"), :remote => true, :method => :post %>/<%= link_to "down", post_votes_path(:post_id => post.id, :score => "down"), :remote => true, :method => :post %></span><%= link_to "undo vote", post_votes_path(post), :remote => true, :method => :delete, :id => "unvote-link-for-post-#{post.id}", :class => "unvote-post-link" %>)</li>
+  <li>Score: <span id="score-for-post-<%= post.id %>"><%= post.score %></span> (<span id="vote-links-for-post-<%= post.id %>">vote <%= link_to "up", booru_post_votes_path(Booru.current.slug, :post_id => post.id, :score => "up"), :remote => true, :method => :post %>/<%= link_to "down", booru_post_votes_path(Booru.current.slug, :post_id => post.id, :score => "down"), :remote => true, :method => :post %></span><%= link_to "undo vote", booru_post_votes_path(Booru.current.slug, post), :remote => true, :method => :delete, :id => "unvote-link-for-post-#{post.id}", :class => "unvote-post-link" %>)</li>
   <li>Favorites: <span id="favcount-for-post-<%= post.id %>"><%= post.fav_count %></span>
   <% if CurrentUser.is_gold? %>
     <%= link_to "Show &raquo;".html_safe, "#", :id => "show-favlist-link" %>

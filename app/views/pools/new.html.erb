@@ -4,7 +4,7 @@
 
     <p style="font-weight: bold;">Before creating a pool, read the <%= link_to "pool guidelines", booru_wiki_page_path(Booru.current.slug, :id => "howto:pools") %>.</p>
 
-    <%= simple_form_for(@pool) do |f| %>
+    <%= simple_form_for(@pool, url: booru_pool_path(Booru.currnet.slug, @pool)) do |f| %>
       <%= f.input :name, :as => :string, :required => true %>
       <%= dtext_field "pool", "description" %>
       <%= f.input :post_ids, :label => "Posts" %>

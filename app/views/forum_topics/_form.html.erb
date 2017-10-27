@@ -1,7 +1,7 @@
 <%= error_messages_for("forum_topic") %>
 
 <div id="form-content">
-  <%= simple_form_for(forum_topic) do |f| %>
+  <%= simple_form_for(forum_topic, booru_forum_topic_path(Booru.current.slug, forum_toppic)) do |f| %>
     <%= f.input :title %>
 
     <div class="input">

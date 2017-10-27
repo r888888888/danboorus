@@ -13,7 +13,7 @@
       <% end %>
     </ul>
 
-    <%= simple_form_for(@pool, :format => :js, :html => {:id => "ordering-form"}) do |f| %>
+    <%= simple_form_for(@pool, format: :js, html: {id: "ordering-form"}, url: booru_pool_path(Booru.current.slug, @pool)) do |f| %>
       <%= submit_tag "Save" %>
     <% end %>
   </div>

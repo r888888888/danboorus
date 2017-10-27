@@ -1,6 +1,6 @@
 <div id="c-pools">
   <div id="a-edit">
-    <%= simple_form_for(@pool) do |f| %>
+    <%= simple_form_for(@pool, url: booru_pool_path(Booru.current.slug, @pool)) do |f| %>
       <h1>Edit Pool: <%= @pool.pretty_name %></h1>
 
       <%= error_messages_for "pool" %>

@@ -16,7 +16,7 @@
       <strong>Score</strong>
       <span>
         <span id="score-for-post-<%= post.id %>"><%= post.score %></span>
-          (vote <%= link_to("up", post_votes_path(:score => "up", :post_id => post.id), :remote => true, :method => :post) %>/<%= link_to("down", post_votes_path(:score => "down", :post_id => post.id), :remote => true, :method => :post) %>)
+          (vote <%= link_to("up", booru_post_votes_path(Booru.current.slug, :score => "up", :post_id => post.id), :remote => true, :method => :post) %>/<%= link_to("down", post_votes_path(:score => "down", :post_id => post.id), :remote => true, :method => :post) %>)
       </span>
     </span>
   </div>
