@@ -44,7 +44,7 @@ class ForumTopicsControllerTest < ActionController::TestCase
           post :mark_all_as_read, {}, {:user_id => @gold_user.id}
         end
         Booru.current = booru
-        assert_redirected_to(booru_forum_topics_path(Booru.current))
+        assert_redirected_to(booru_forum_topics_path(Booru.current.slug))
         assert_equal(false, @gold_user.reload.has_forum_been_updated?)
 
         # Then adding an unread private topic should not bump.

@@ -6,7 +6,7 @@
 
 <p style="clear: both;">This will move all the post's favorites to its parent post. Are you sure?</p>
 
-<%= form_tag(move_favorites_booru_moderator_post_post_path(Booru.current), :style => "clear: both;", :class => "simple_form") do %>
+<%= form_tag(move_favorites_booru_moderator_post_post_path(Booru.current.slug), :style => "clear: both;", :class => "simple_form") do %>
   <%= submit_tag "Submit" %>
   <%= submit_tag "Cancel" %>
 <% end %>

@@ -18,12 +18,12 @@ class CommentsController < ApplicationController
   end
 
   def new
-    redirect_to booru_comments_path(Booru.current)
+    redirect_to booru_comments_path(Booru.current.slug)
   end
 
   def update
     @comment.update(update_params(@comment))
-    respond_with(@comment, :location => booru_post_path(Booru.current, @comment.post_id))
+    respond_with(@comment, :location => booru_post_path(Booru.current.slug, @comment.post_id))
   end
 
   def create
@@ -32,12 +32,12 @@ class CommentsController < ApplicationController
       format.html do
         if @comment.errors.any?
           if @comment.post
-            redirect_to booru_post_path(Booru.current, @comment.post), :notice => @comment.errors.full_messages.join("; ")
+            redirect_to booru_post_path(Booru.current.slug, @comment.post), :notice => @comment.errors.full_messages.join("; ")
           else
-            redirect_to booru_posts_path(Booru.current, :notice => @comment.errors.full_messages.join("; ")
+            redirect_to booru_posts_path(Booru.current.slug, :notice => @comment.errors.full_messages.join("; ")
           end
         else
-          redirect_to booru_post_path(Booru.current, @comment.post), :notice => "Comment posted"
+          redirect_to booru_post_path(Booru.current.slug, @comment.post), :notice => "Comment posted"
         end
       end
     end

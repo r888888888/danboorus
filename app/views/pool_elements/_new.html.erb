@@ -1,10 +1,10 @@
-<%= form_tag(booru_pool_element_path(Booru.current, , :class => "simple_form", :remote => true, :format => :js) do %>
+<%= form_tag(booru_pool_element_path(Booru.current.slug, , :class => "simple_form", :remote => true, :format => :js) do %>
   <%= hidden_field_tag "post_id", @post.id %>
 
   <div class="input">
     <label>Pool Name</label>
     <span id="pool-name-container"><%= text_field_tag "pool_name", "", :size => 20 %></span>
-    <span id="pool-name-hint" class="hint">Search for a pool containing (<%= link_to "see full list", all_select_booru_pool_element_path(Booru.current, , :remote => true %>)</span>
+    <span id="pool-name-hint" class="hint">Search for a pool containing (<%= link_to "see full list", all_select_booru_pool_element_path(Booru.current.slug, , :remote => true %>)</span>
   </div>
 
   <div class="input">

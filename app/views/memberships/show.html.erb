@@ -1,13 +1,13 @@
 <% if @membership %>
   <p>You are subscribed to this Booru.</p>
 
-  <%= form_tag(booru_membership_path(Booru.current), method: :delete) do %>
+  <%= form_tag(booru_membership_path(Booru.current.slug), method: :delete) do %>
     <%= submit_tag "Leave" %>
   <% end %>
 <% else %>
   <p>You are not subscribed to this Booru.</p>
 
-  <%= form_tag(booru_membership_path(Booru.current)) do %>
+  <%= form_tag(booru_membership_path(Booru.current.slug)) do %>
     <%= submit_tag "Join" %>
   <% end %>
 <% end %>

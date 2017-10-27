@@ -5,10 +5,10 @@
       <ul>
         <li><h1>Posts</h1></li>
         <li><%= link_to("Help", booru_wiki_pages_path(Booru.main, :title => "help:posts")) %></li>
-        <li><%= link_to("Listing", booru_posts_path(Booru.current)) %></li>
-        <li><%= link_to("Changes", booru_post_versions_path(Booru.current)) %></li>
-        <li><%= link_to("Upload", new_booru_upload_path(Booru.current)) %></li>
-        <li><%= link_to("Upload Listing", booru_uploads_path(Booru.current)) %></li>
+        <li><%= link_to("Listing", booru_posts_path(Booru.current.slug)) %></li>
+        <li><%= link_to("Changes", booru_post_versions_path(Booru.current.slug)) %></li>
+        <li><%= link_to("Upload", new_booru_upload_path(Booru.current.slug)) %></li>
+        <li><%= link_to("Upload Listing", booru_uploads_path(Booru.current.slug)) %></li>
       </ul>
       <ul>
         <li><h1>Tools</h1></li>
@@ -22,21 +22,21 @@
       <ul>
         <li><h1>Tags</h1></li>
         <li><%= link_to("Help", booru_wiki_pages_path(Booru.main, :title => "help:tags")) %></li>
-        <li><%= link_to("Cheat sheet", booru_wiki_pages_path(Booru.current, :title => "help:cheatsheet")) %></li>
+        <li><%= link_to("Cheat sheet", booru_wiki_pages_path(Booru.current.slug, :title => "help:cheatsheet")) %></li>
         <li><%= link_to("Listing", tags_path) %></li>
       </ul>
       <ul>
         <li><h1>Notes</h1></li>
         <li><%= link_to("Help", booru_wiki_pages_path(Booru.main, :title => "help:notes")) %></li>
-        <li><%= link_to("Changes", booru_note_versions_path(Booru.current)) %></li>
-        <li><%= link_to("Listing", booru_notes_path(Booru.current)) %></li>
+        <li><%= link_to("Changes", booru_note_versions_path(Booru.current.slug)) %></li>
+        <li><%= link_to("Listing", booru_notes_path(Booru.current.slug)) %></li>
       </ul>
       <ul>
         <li><h1>Pools</h1></li>
         <li><%= link_to("Help", booru_wiki_pages_path(Booru.main, :title => "help:pools")) %></li>
-        <li><%= link_to("Listing", booru_pools_path(Booru.current)) %></li>
+        <li><%= link_to("Listing", booru_pools_path(Booru.current.slug)) %></li>
         <% if PoolArchive.enabled? %>
-          <li><%= link_to("Changes", booru_pool_versions_path(Booru.current)) %></li>
+          <li><%= link_to("Changes", booru_pool_versions_path(Booru.current.slug)) %></li>
         <% end %>
       </ul>
     </section>
@@ -44,27 +44,27 @@
       <ul>
         <li><h1>Comments</h1></li>
         <li><%= link_to("Help", booru_wiki_pages_path(Booru.main, :title => "help:comments")) %></li>
-        <li><%= link_to("Listing", booru_comments_path(Booru.current)) %></li>
-        <li><%= link_to("RSS", booru_comments_path(Booru.current, :atom)) %></li>
+        <li><%= link_to("Listing", booru_comments_path(Booru.current.slug)) %></li>
+        <li><%= link_to("RSS", booru_comments_path(Booru.current.slug, :atom)) %></li>
       </ul>
       <ul>
         <li><h1>Forum</h1></li>
         <li><%= link_to("Help", booru_wiki_pages_path(Booru.main, :title => "help:forum")) %></li>
-        <li><%= link_to("Listing", booru_forum_topics_path(Booru.current)) %></li>
-        <li><%= link_to("RSS", booru_forum_topics_path(Booru.current, :atom)) %></li>
+        <li><%= link_to("Listing", booru_forum_topics_path(Booru.current.slug)) %></li>
+        <li><%= link_to("RSS", booru_forum_topics_path(Booru.current.slug, :atom)) %></li>
       </ul>
       <ul>
         <li><h1>Wiki</h1></li>
         <li><%= link_to("Help", booru_wiki_pages_path(Booru.main, :title => "help:wiki")) %></li>
-        <li><%= link_to("Listing", booru_wiki_pages_path(Booru.current)) %></li>
-        <li><%= link_to("Changes", booru_wiki_page_versions_path(Booru.current)) %></li>
+        <li><%= link_to("Listing", booru_wiki_pages_path(Booru.current.slug)) %></li>
+        <li><%= link_to("Changes", booru_wiki_page_versions_path(Booru.current.slug)) %></li>
       </ul>
     </section>
     <section>
       <ul>
         <li><h1>Users</h1></li>
         <li><%= link_to("Help", booru_wiki_pages_path(Booru.main, :title => "help:users")) %></li>
-        <li><%= link_to("Bans", booru_bans_path(Booru.current)) %></li>
+        <li><%= link_to("Bans", booru_bans_path(Booru.current.slug)) %></li>
         <li><%= link_to("Listing", users_path) %></li>
         <% unless CurrentUser.is_anonymous? %>
           <li><%= link_to("Profile", user_path(CurrentUser.user)) %></li>
@@ -77,11 +77,11 @@
       </ul>
       <ul>
         <li><h1>Admin</h1></li>
-        <li><%= link_to("Mod Actions", booru_mod_actions_path(Booru.current)) %></li>
+        <li><%= link_to("Mod Actions", booru_mod_actions_path(Booru.current.slug)) %></li>
         <li><%= link_to("Jobs", delayed_jobs_path) %></li>
 
         <% if CurrentUser.is_moderator? %>
-          <li><%= link_to("IP Bans", booru_ip_bans_path(Booru.current)) %></li>
+          <li><%= link_to("IP Bans", booru_ip_bans_path(Booru.current.slug)) %></li>
         <% end %>
 
         <% if CurrentUser.is_admin? %>

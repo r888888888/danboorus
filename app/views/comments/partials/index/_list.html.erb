@@ -6,7 +6,7 @@
   <div class="row notices">
     <% if post.comments.hidden(CurrentUser.user).count > 0 || (params[:controller] == "comments" && post.comments.count > 6) %>
       <span class="info" id="threshold-comments-notice-for-<%= post.id %>">
-        <%= link_to "Show all comments", booru_comments_path(Booru.current, :post_id => post.id, :include_below_threshold => true), :remote => true %>
+        <%= link_to "Show all comments", booru_comments_path(Booru.current.slug, :post_id => post.id, :include_below_threshold => true), :remote => true %>
       </span>
     <% end %>
   </div>
@@ -27,7 +27,7 @@
 
   <% if CurrentUser.is_basic? %>
     <div class="new-comment">
-      <p><%= link_to "Post comment", new_booru_comment_path(Booru.current), :class => "expand-comment-response" %></p>
+      <p><%= link_to "Post comment", new_booru_comment_path(Booru.current.slug), :class => "expand-comment-response" %></p>
       <%= render "comments/form", :post => post, :comment => post.comments.new %>
     </div>
   <% end %>

@@ -4,10 +4,10 @@
 
     <section id="content">
       <h1 id="wiki-page-title">
-        <%= link_to @wiki_page.pretty_title, booru_posts_path(Booru.current, :tags => @wiki_page.title) %>
+        <%= link_to @wiki_page.pretty_title, booru_posts_path(Booru.current.slug, :tags => @wiki_page.title) %>
       </h1>
       <div id="wiki-page-body" class="prose">
-        <p>This wiki page does not exist. <%= link_to "Create new wiki page", new_booru_wiki_page_path(Booru.current, :wiki_page => {:title => params[:title]}) %>.</p>
+        <p>This wiki page does not exist. <%= link_to "Create new wiki page", new_booru_wiki_page_path(Booru.current.slug, :wiki_page => {:title => params[:title]}) %>.</p>
       </div>
 
       <%= wiki_page_post_previews(@wiki_page) %>

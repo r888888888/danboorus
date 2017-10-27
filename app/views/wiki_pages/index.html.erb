@@ -15,7 +15,7 @@
         <tbody>
           <% @wiki_pages.each do |wiki_page| %>
             <tr>
-              <td><%= link_to wiki_page.pretty_title, booru_wiki_page_path(Booru.current, wiki_page, :noredirect => 1) %></td>
+              <td><%= link_to wiki_page.pretty_title, booru_wiki_page_path(Booru.current.slug, wiki_page, :noredirect => 1) %></td>
               <td><%= wiki_page.updated_at.strftime("%Y-%m-%d %H:%M") %> by <%= h link_to_user wiki_page.updater %></td>
             </tr>
           <% end %>

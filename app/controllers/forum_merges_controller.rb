@@ -9,7 +9,7 @@ class ForumTopicsController < ApplicationController
   def create
     @merged_topic = ForumTopic.find(params[:merged_id])
     @forum_topic.merge(@merged_topic)
-    redirect_to booru_forum_topic_path(Booru.current, @merged_topic)
+    redirect_to booru_forum_topic_path(Booru.current.slug, @merged_topic)
   end
 
 private

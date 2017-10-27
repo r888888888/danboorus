@@ -11,7 +11,7 @@
   <tbody>
     <% @dashboard.comments.each do |activity| %>
       <tr>
-        <td><%= link_to activity.comment.body, booru_post_path(Booru.current, (activity.comment.post_id) %></td>
+        <td><%= link_to activity.comment.body, booru_post_path(Booru.current.slug, (activity.comment.post_id) %></td>
         <td><%= mod_link_to_user(activity.comment.creator) %></td>
         <td><%= activity.count %></td>
         <td><%= activity.comment.score %></td>

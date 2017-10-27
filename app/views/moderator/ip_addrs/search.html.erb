@@ -2,7 +2,7 @@
   <div id="a-search">
     <h1>Search IP Addresses</h1>
 
-    <%= form_tag(booru_moderator_ip_addrs_path(Booru.current), :method => :get, :class => "simple_form") do %>
+    <%= form_tag(booru_moderator_ip_addrs_path(Booru.current.slug), :method => :get, :class => "simple_form") do %>
       <%= search_field "user_name", :label => "User" %>
       <%= search_field "ip_addr", :label => "IP Addr" %>
       <%= submit_tag "Search" %>

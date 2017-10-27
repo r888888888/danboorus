@@ -37,7 +37,7 @@
             [<%= link_to "tag changes report", reports_upload_tags_path(user_id: user.id) %>]
           <% end %>
           <% if CurrentUser.is_moderator? %>
-            [<%= link_to "sample", booru_posts_path(Booru.current, :tags => "user:#{user.name} order:random limit:300") %>]
+            [<%= link_to "sample", booru_posts_path(Booru.current.slug, :tags => "user:#{user.name} order:random limit:300") %>]
           <% end %>
         </td>
       </tr>
@@ -47,7 +47,7 @@
         <td>
           <%= presenter.deleted_upload_count(self) %>
           <% if CurrentUser.is_moderator? %>
-            [<%= link_to "sample", booru_posts_path(Booru.current, :tags => "user:#{user.name} order:random limit:300 status:deleted") %>]
+            [<%= link_to "sample", booru_posts_path(Booru.current.slug, :tags => "user:#{user.name} order:random limit:300 status:deleted") %>]
           <% end %>
 
         </td>
@@ -58,7 +58,7 @@
         <td>
           <%= presenter.favorite_count(self) %>
           <% if CurrentUser.is_moderator? %>
-            [<%= link_to "sample", booru_posts_path(Booru.current, :tags => "fav:#{user.name} order:random limit:300") %>]
+            [<%= link_to "sample", booru_posts_path(Booru.current.slug, :tags => "fav:#{user.name} order:random limit:300") %>]
           <% end %>
         </td>
       </tr>
@@ -117,7 +117,7 @@
           <tr>
             <th>Saved Searches</th>
             <td>
-              <%= link_to "View", booru_posts_path(Booru.current, tags: "search:all") %>
+              <%= link_to "View", booru_posts_path(Booru.current.slug, tags: "search:all") %>
             </td>
           </tr>
         <% end %>

@@ -13,7 +13,7 @@
       <tbody>
         <% @uploads.each do |upload| %>
           <tr>
-            <td><%= link_to upload.id, booru_upload_path(Booru.current, upload) %></td>
+            <td><%= link_to upload.id, booru_upload_path(Booru.current.slug, upload) %></td>
             <td><%= link_to_user upload.uploader %></td>
             <td><%= upload.presenter.status(self) %></td>
             <td><%= compact_time upload.created_at %></td>

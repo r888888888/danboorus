@@ -87,7 +87,7 @@ class UserPresenter
 
   def upload_count(template)
     if Booru.current
-      template.link_to(user.post_upload_count, template.booru_posts_path(Booru.current, :tags => "user:#{user.name}"))
+      template.link_to(user.post_upload_count, template.booru_posts_path(Booru.current.slug, :tags => "user:#{user.name}"))
     else
       user.post_upload_count
     end
@@ -95,7 +95,7 @@ class UserPresenter
 
   def deleted_upload_count(template)
     if Booru.current
-      template.link_to(Post.for_user(user.id).deleted.count, template.booru_posts_path(Booru.current, :tags => "status:deleted user:#{user.name}"))
+      template.link_to(Post.for_user(user.id).deleted.count, template.booru_posts_path(Booru.current.slug, :tags => "status:deleted user:#{user.name}"))
     else
       Post.for_user(user.id).deleted.count
     end
@@ -107,7 +107,7 @@ class UserPresenter
 
   def comment_count(template)
     if Booru.current
-      template.link_to(user.comment_count, template.booru_comments_path(Booru.current, :search => {:creator_id => user.id}, :group_by => "comment"))
+      template.link_to(user.comment_count, template.booru_comments_path(Booru.current.slug, :search => {:creator_id => user.id}, :group_by => "comment"))
     else
       user.comment_count
     end
@@ -116,7 +116,7 @@ class UserPresenter
   def commented_posts_count(template)
     count = Post.fast_count("commenter:#{user.name}")
     if Booru.current
-      template.link_to(count, template.booru_posts_path(Booru.current, :tags => "commenter:#{user.name} order:comment"))
+      template.link_to(count, template.booru_posts_path(Booru.current.slug, :tags => "commenter:#{user.name} order:comment"))
     else
       count
     end
@@ -124,7 +124,7 @@ class UserPresenter
 
   def post_version_count(template)
     if Booru.current
-      template.link_to(user.post_update_count, template.booru_post_versions_path(Booru.current, :lr => user.id, :search => {:updater_id => user.id}))
+      template.link_to(user.post_update_count, template.booru_post_versions_path(Booru.current.slug, :lr => user.id, :search => {:updater_id => user.id}))
     else
       user.post_update_count
     end
@@ -132,7 +132,7 @@ class UserPresenter
 
   def note_version_count(template)
     if Booru.current
-      template.link_to(user.note_update_count, template.booru_note_versions_path(Booru.current, :search => {:updater_id => user.id}))
+      template.link_to(user.note_update_count, template.booru_note_versions_path(Booru.current.slug, :search => {:updater_id => user.id}))
     else
       user.note_update_count
     end
@@ -141,7 +141,7 @@ class UserPresenter
   def noted_posts_count(template)
     count = Post.fast_count("noteupdater:#{user.name}")
     if Booru.current
-      template.link_to(count, template.booru_posts_path(Booru.current, :tags => "noteupdater:#{user.name} order:note"))
+      template.link_to(count, template.booru_posts_path(Booru.current.slug, :tags => "noteupdater:#{user.name} order:note"))
     else
       count
     end
@@ -149,7 +149,7 @@ class UserPresenter
 
   def wiki_page_version_count(template)
     if Booru.current
-      template.link_to(user.wiki_page_version_count, template.booru_wiki_page_versions_path(Booru.current, :search => {:updater_id => user.id}))
+      template.link_to(user.wiki_page_version_count, template.booru_wiki_page_versions_path(Booru.current.slug, :search => {:updater_id => user.id}))
     else
       user.wiki_page_version_count
     end
@@ -157,7 +157,7 @@ class UserPresenter
 
   def forum_post_count(template)
     if Booru.current
-      template.link_to(user.forum_post_count, template.booru_forum_posts_path(Booru.current, :search => {:creator_id => user.id}))
+      template.link_to(user.forum_post_count, template.booru_forum_posts_path(Booru.current.slug, :search => {:creator_id => user.id}))
     else
       user.forum_post_count
     end

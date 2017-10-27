@@ -2,7 +2,7 @@
   <div id="a-search">
     <h1>Search Notes</h1>
 
-    <%= simple_form_for(:search, url: booru_notes_path(Booru.current), method: :get, defaults: { required: false }) do |f| %>
+    <%= simple_form_for(:search, url: booru_notes_path(Booru.current.slug), method: :get, defaults: { required: false }) do |f| %>
       <%= f.hidden_field :group_by, value: "note" %>
 
       <%= f.input :body_matches, label: "Body" %>

@@ -13,7 +13,7 @@ module Moderator
         if params[:commit] == "Delete"
           @post.delete!(params[:reason], :move_favorites => params[:move_favorites].present?)
         end
-        redirect_to(booru_post_path(Booru.current, (@post))
+        redirect_to(booru_post_path(Booru.current.slug, (@post))
       end
 
       def undelete
@@ -27,7 +27,7 @@ module Moderator
         if params[:commit] == "Submit"
           @post.give_favorites_to_parent
         end
-        redirect_to(booru_post_path(Booru.current, (@post))
+        redirect_to(booru_post_path(Booru.current.slug, (@post))
       end
 
       def expunge

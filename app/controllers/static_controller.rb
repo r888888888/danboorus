@@ -7,7 +7,7 @@ class StaticController < ApplicationController
   def accept_terms_of_service
     cookies.permanent[:accepted_tos] = "1"
     url = params[:url] if params[:url] && params[:url].start_with?("/")
-    redirect_to(url || booru_posts_path(Booru.current))
+    redirect_to(url || booru_posts_path(Booru.current.slug))
   end
 
   def not_found

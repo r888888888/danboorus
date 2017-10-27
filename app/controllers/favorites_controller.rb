@@ -5,7 +5,7 @@ class FavoritesController < ApplicationController
 
   def index
     if params[:tags]
-      redirect_to(booru_posts_path(Booru.current, (:tags => params[:tags]))
+      redirect_to(booru_posts_path(Booru.current.slug, (:tags => params[:tags]))
     else
       user_id = params[:user_id] || CurrentUser.user.id
       @user = User.find(user_id)
@@ -29,7 +29,7 @@ class FavoritesController < ApplicationController
 
     respond_with(@post) do |format|
       format.html do
-        redirect_to(booru_post_path(Booru.current, (@post))
+        redirect_to(booru_post_path(Booru.current.slug, (@post))
       end
       format.js
       format.json do
@@ -47,10 +47,10 @@ class FavoritesController < ApplicationController
 
     if @post
       @post.remove_favorite!(CurrentUser.user)
-      path = booru_post_path(Booru.current, @post)
+      path = booru_post_path(Booru.current.slug, @post)
     else
       Favorite.remove(booru_id: Booru.current.id, post_id: params[:id], user: CurrentUser.user)
-      path = booru_posts_path(Booru.current)
+      path = booru_posts_path(Booru.current.slug)
     end
 
     respond_with(@post) do |format|

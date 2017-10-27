@@ -17,5 +17,5 @@
     <% end %>
     <div id="<%= preview_id %>" class="dtext-preview prose"></div>
   </div>
-   <span class="hint">All text is formatted using <%= link_to "DText", booru_wiki_pages_path(Booru.current, (:title => "help:dtext"), :target => "_blank" %></span>
+   <span class="hint">All text is formatted using <%= link_to "DText", booru_wiki_pages_path(Booru.current.slug, (:title => "help:dtext"), :target => "_blank" %></span>
 </div>

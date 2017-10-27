@@ -4,7 +4,7 @@
 
     <p>Merge <strong><%= @forum_topic.title %></strong> into:</p>
 
-    <%= form_tag(create_merge_booru_forum_topic_path(Booru.current, @forum_topic)) do %>
+    <%= form_tag(create_merge_booru_forum_topic_path(Booru.current.slug, @forum_topic)) do %>
       <div>
         <label>
           Forum Topic ID:

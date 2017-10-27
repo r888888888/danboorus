@@ -58,9 +58,9 @@
       <h2>Statistics</h2>
       <ul>
         <li>Level: <%= @change_request.user.level_string %></li>
-        <li>Uploads: <%= link_to @change_request.user.post_upload_count, booru_posts_path(Booru.current, tags: "user:#{@change_request.user.name}") %></li>
-        <li>Updates: <%= link_to @change_request.user.post_update_count, booru_post_versions_path(Booru.current, :search => {:updater_id => @change_request.user.id}) %></li>
-        <li>Notes: <%= link_to @change_request.user.note_update_count, booru_note_versions_path(Booru.current, :search => {:updater_id => @change_request.user.id}) %></li>
+        <li>Uploads: <%= link_to @change_request.user.post_upload_count, booru_posts_path(Booru.current.slug, tags: "user:#{@change_request.user.name}") %></li>
+        <li>Updates: <%= link_to @change_request.user.post_update_count, booru_post_versions_path(Booru.current.slug, :search => {:updater_id => @change_request.user.id}) %></li>
+        <li>Notes: <%= link_to @change_request.user.note_update_count, booru_note_versions_path(Booru.current.slug, :search => {:updater_id => @change_request.user.id}) %></li>
         <li>Favorites: <%= @change_request.user.favorite_count %></li>
       </ul>
     </section>

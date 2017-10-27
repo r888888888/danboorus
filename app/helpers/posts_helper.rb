@@ -49,7 +49,7 @@ module PostsHelper
     end
 
     if CurrentUser.is_basic? && !source_search.blank?
-      source_link + "&nbsp;".html_safe + link_to("&raquo;".html_safe, booru_posts_path(Booru.current, :tags => source_search), :rel => "nofollow")
+      source_link + "&nbsp;".html_safe + link_to("&raquo;".html_safe, booru_posts_path(Booru.current.slug, :tags => source_search), :rel => "nofollow")
     else
       source_link
     end
@@ -63,17 +63,17 @@ module PostsHelper
     html = ""
 
     html << "This post belongs to a "
-    html << link_to("parent", booru_posts_path(Booru.current, :tags => "parent:#{post.parent_id}"))
+    html << link_to("parent", booru_posts_path(Booru.current.slug, :tags => "parent:#{post.parent_id}"))
     html << " (deleted)" if parent_post_set.parent.first.is_deleted?
 
     sibling_count = parent_post_set.children.count - 1
     if sibling_count > 0
       html << " and has "
       text = sibling_count == 1 ? "a sibling" : "#{sibling_count} siblings"
-      html << link_to(text, booru_posts_path(Booru.current, :tags => "parent:#{post.parent_id}"))
+      html << link_to(text, booru_posts_path(Booru.current.slug, :tags => "parent:#{post.parent_id}"))
     end
 
-    html << " (#{link_to("learn more", booru_wiki_pages_path(Booru.current, (:title => "help:post_relationships"))}) "
+    html << " (#{link_to("learn more", booru_wiki_pages_path(Booru.current.slug, :title => "help:post_relationships"))}) "
 
     html << link_to("&laquo; hide".html_safe, "#", :id => "has-parent-relationship-preview-link")
 
@@ -85,9 +85,9 @@ module PostsHelper
 
     html << "This post has "
     text = children_post_set.children.count == 1 ? "a child" : "#{children_post_set.children.count} children"
-    html << link_to(text, booru_posts_path(Booru.current, :tags => "parent:#{post.id}"))
+    html << link_to(text, booru_posts_path(Booru.current.slug, :tags => "parent:#{post.id}"))
 
-    html << " (#{link_to("learn more", booru_wiki_pages_path(Booru.current, (:title => "help:post_relationships"))}) "
+    html << " (#{link_to("learn more", booru_wiki_pages_path(Booru.current.slug, :title => "help:post_relationships"))}) "
 
     html << link_to("&laquo; hide".html_safe, "#", :id => "has-children-relationship-preview-link")
 

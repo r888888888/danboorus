@@ -1,3 +1,3 @@
-<%= form_tag(booru_forum_posts_path(Booru.current), :method => :get) do %>
+<%= form_tag(booru_forum_posts_path(Booru.current.slug), :method => :get) do %>
   <%= text_field "search", "body_matches", :id => "quick_search_body_matches", :placeholder => "Search forum" %>
 <% end %>

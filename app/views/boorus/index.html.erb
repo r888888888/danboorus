@@ -1,10 +1,12 @@
 <div id="c-boorus">
   <div id="a-index">
-    <h1>Booru Listing</h1>
+    <h1>Boorudex</h1>
+
+    <p>Here's a list of all the available Boorus.</p>
 
     <ul>
       <% @boorus.each do |booru| %>
-        <li><strong><%= link_to booru.name, booru_posts_path(Booru.current, subdomain: booru.slug) %></strong>: <%= booru.desc %></li>
+        <li><strong><%= link_to booru.name, booru_posts_path(booru.slug) %></strong><% if booru.desc.present? %>: <%= booru.desc %><% end %></li>
       <% end %>
     </ul>
   </div>

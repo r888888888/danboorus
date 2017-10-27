@@ -34,7 +34,7 @@ class ForumPostsController < ApplicationController
 
   def show
     if request.format == "text/html" && @forum_post.id == @forum_post.topic.original_post.id
-      redirect_to(booru_forum_topic_path(Booru.current, @forum_post.topic, page: params[:page]))
+      redirect_to(booru_forum_topic_path(Booru.current.slug, @forum_post.topic, page: params[:page]))
     else
       respond_with(@forum_post)
     end
@@ -43,13 +43,13 @@ class ForumPostsController < ApplicationController
   def create
     @forum_post = ForumPost.create(create_params)
     page = @forum_post.topic.last_page if @forum_post.topic.last_page > 1
-    respond_with(@forum_post, location: booru_forum_topic_path(Booru.current, @forum_post.topic, page: page))
+    respond_with(@forum_post, location: booru_forum_topic_path(Booru.current.slug, @forum_post.topic, page: page))
   end
 
   def update
     @forum_post.update(update_params(@forum_post))
     page = @forum_post.forum_topic_page if @forum_post.forum_topic_page > 1
-    respond_with(@forum_post, location: booru_forum_topic_path(Booru.current, @forum_post.topic, page: page, anchor: "forum_post_#{@forum_post.id}"))
+    respond_with(@forum_post, location: booru_forum_topic_path(Booru.current.slug, @forum_post.topic, page: page, anchor: "forum_post_#{@forum_post.id}"))
   end
 
 private

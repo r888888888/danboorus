@@ -20,10 +20,10 @@
               <span class="new">NEW</span>
             <% end %>
 
-            <%= link_to topic.title, booru_forum_topic_path(Booru.current, topic) %>
+            <%= link_to topic.title, booru_forum_topic_path(Booru.current.slug, topic) %>
 
             <% if topic.response_count > Danbooru.config.posts_per_page %>
-              <%= link_to "page #{topic.last_page}", booru_forum_topic_path(Booru.current, topic, :page => topic.last_page), :class => "last-page" %>
+              <%= link_to "page #{topic.last_page}", booru_forum_topic_path(Booru.current.slug, topic, :page => topic.last_page), :class => "last-page" %>
             <% end %>
 
             <% if topic.is_locked? %>

@@ -26,12 +26,12 @@ class WikiPagesControllerTest < ActionController::TestCase
 
       should "list all wiki_pages (with search)" do
         get :index, {:search => {:title => "abc"}}
-        assert_redirected_to(booru_wiki_page_path(Booru.current, @wiki_page_abc))
+        assert_redirected_to(booru_wiki_page_path(Booru.current.slug, @wiki_page_abc))
       end
 
       should "list wiki_pages without tags with order=post_count" do
         get :index, {:search => {:title => "abc", :order => "post_count"}}
-        assert_redirected_to(booru_wiki_page_path(Booru.current, @wiki_page_abc))
+        assert_redirected_to(booru_wiki_page_path(Booru.current.slug, @wiki_page_abc))
       end
     end
 
@@ -52,7 +52,7 @@ class WikiPagesControllerTest < ActionController::TestCase
 
       should "redirect for a nonexistent title" do
         get :show, {:id => "what"}
-        assert_redirected_to(show_or_new_booru_wiki_pages_path(Booru.current, (title: "what"))
+        assert_redirected_to(show_or_new_booru_wiki_pages_path(Booru.current.slug, (title: "what"))
       end
 
       should "render for a negated tag" do

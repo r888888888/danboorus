@@ -1,5 +1,5 @@
 class BoorusController < ApplicationController
-  before_filter :basic_only
+  before_filter :basic_only, only: [:edit, :update, :destroy, :create]
   before_filter :find_booru, only: [:edit, :update, :show, :destroy]
   respond_to :html
 

@@ -184,7 +184,7 @@ Rails.application.routes.draw do
   get "/static/contact" => "static#contact", :as => "contact"
   get "/static/pricing" => "static#pricing"
 
-  root :to => "boorus#new"
+  root :to => "boorus#index"
 
   get "*other", :to => "static#not_found"
 end

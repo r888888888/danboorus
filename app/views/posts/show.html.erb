@@ -1,7 +1,7 @@
 <div id="c-posts">
   <div id="a-show">
     <aside id="sidebar">
-      <%= render "posts/partials/common/search", :path => booru_posts_path(Booru.current), :tags => params[:tags], :tags_dom_id => "tags" %>
+      <%= render "posts/partials/common/search", :path => booru_posts_path(Booru.current.slug), :tags => params[:tags], :tags_dom_id => "tags" %>
 
       <%= render "posts/partials/index/blacklist" %>
 
@@ -23,8 +23,8 @@
         <section id="post-history">
           <h1>History</h1>
           <ul>
-            <li><%= fast_link_to "Tags", booru_post_versions_path(Booru.current, :search => {:post_id => @post.id}) %></li>
-            <li><%= fast_link_to "Notes", booru_note_versions_path(Booru.current, :search => {:post_id => @post.id}) %></li>
+            <li><%= fast_link_to "Tags", booru_post_versions_path(Booru.current.slug, :search => {:post_id => @post.id}) %></li>
+            <li><%= fast_link_to "Notes", booru_note_versions_path(Booru.current.slug, :search => {:post_id => @post.id}) %></li>
           </ul>
         </section>
 
@@ -46,7 +46,7 @@
       </section>
 
       <section id="mark-as-translated-section" style="display: none;">
-        <%= form_tag(mark_as_translated_booru_post_path(Booru.current, @post), :class => "simple_form", :method => :put) do |f| %>
+        <%= form_tag(mark_as_translated_booru_post_path(Booru.current.slug, @post), :class => "simple_form", :method => :put) do |f| %>
           <%= hidden_field_tag :tags_query, params[:tags] %>
           <%= hidden_field_tag :pool_id, params[:pool_id] %>
 

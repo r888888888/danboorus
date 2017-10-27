@@ -19,7 +19,7 @@
     <tbody>
       <% post_versions.each do |post_version| %>
         <tr id="post-version-<%= post_version.id %>" <% if params[:hilite].to_i == post_version.id %>class="hilite"<% end %>>
-          <td><%= link_to("#{post_version.post_id}.#{post_version.id}", booru_post_path(Booru.current, (post_version.post_id)) %></td>
+          <td><%= link_to("#{post_version.post_id}.#{post_version.id}", booru_post_path(Booru.current.slug, (post_version.post_id)) %></td>
           <td><%= compact_time(post_version.updated_at) %></td>
           <td>
             <% if post_version.updater %>
@@ -40,7 +40,7 @@
                 <% if post_version.version != 1 %>
                   <%= link_to "Undo", undo_post_version_path(post_version), :method => :put, :remote => true %> |
                 <% end %>
-                <%= link_to "Revert to", revert_booru_post_path(Booru.current, (post_version.post_id, :version_id => post_version.id), :method => :put, :remote => true %>
+                <%= link_to "Revert to", revert_booru_post_path(Booru.current.slug, (post_version.post_id, :version_id => post_version.id), :method => :put, :remote => true %>
               <% end %>
             </td>
           <% end %>

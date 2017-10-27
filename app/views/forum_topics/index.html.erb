@@ -4,11 +4,11 @@
 
     <p>
       Categories:
-      <%= link_to "All", booru_forum_topics_path(Booru.current) %>, 
+      <%= link_to "All", booru_forum_topics_path(Booru.current.slug) %>, 
       <% if CurrentUser.is_moderator? %>
-        <%= link_to "Mod+", booru_forum_topics_path(Booru.current, :search => {:mod_only => true}) %>,
+        <%= link_to "Mod+", booru_forum_topics_path(Booru.current.slug, :search => {:mod_only => true}) %>,
       <% end %>
-      <%= ForumTopic::CATEGORIES.map {|id, name| link_to_unless_current(name, booru_forum_topics_path(Booru.current, :search => {:category_id => id}))}.join(", ").html_safe %>
+      <%= ForumTopic::CATEGORIES.map {|id, name| link_to_unless_current(name, booru_forum_topics_path(Booru.current.slug, :search => {:category_id => id}))}.join(", ").html_safe %>
     </p>
 
     <%= render "listing", :forum_topics => @forum_topics %>

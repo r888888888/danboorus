@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   layout "default"
   # force_ssl :if => lambda {Rails.env.production?}
 
-  rescue_from Exception, :with => :rescue_exception
+  # rescue_from Exception, :with => :rescue_exception
   rescue_from User::PrivilegeError, :with => :access_denied
   rescue_from ActiveModel::ForbiddenAttributesError, :with => :access_denied
   rescue_from SessionLoader::AuthenticationFailure, :with => :authentication_failed
@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def load_booru
-    if params[:boru_id]
+    if params[:booru_id]
       Booru.current = Booru.find_by_slug(params[:booru_id])
     else
       Booru.current = nil
@@ -32,14 +32,6 @@ class ApplicationController < ActionController::Base
 
   def reset_booru
     Booru.current = nil
-  end
-
-  def default_url_options
-    if Booru.current
-      {booru_id: Booru.current.slug}
-    else
-      nil
-    end
   end
 
   def enable_cors
