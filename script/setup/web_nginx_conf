@@ -8,6 +8,10 @@ server {
   server_name danboor.us;
   root /var/www/html/public;
 
+  location /.well-known {
+    break;
+  }
+
   location ~ ^/proxy/(.+) {
     set $s3_bucket 's3-us-west-1.amazonaws.com';
     set $url_full $1;
