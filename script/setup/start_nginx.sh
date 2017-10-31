@@ -13,7 +13,7 @@ docker service create \
   --mount="type=bind,src=$CACHE_DIR,dst=$CACHE_DIR" \
   --config="source=nginx-ssl-danboor-us-bundle,target=/etc/nginx/conf.d/danboor-us-bundle.crt" \
   --config="source=nginx-ssl-danboor-us-key,target=/etc/nginx/conf.d/danboor-us.key" \
-  --config="source=nginx-danbooru-conf,target=/etc/nginx/sites-enabled/danboor-us.conf" \
+  --config="source=nginx-danbooru-conf,target=/etc/nginx/conf.d/danboor-us.conf" \
   --replicas=1 \
   --constraint="node.hostname == $DOCKER_HOST" \
   --network=danboorunet \
