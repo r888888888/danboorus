@@ -34,7 +34,7 @@ class CommentsController < ApplicationController
           if @comment.post
             redirect_to booru_post_path(Booru.current.slug, @comment.post), :notice => @comment.errors.full_messages.join("; ")
           else
-            redirect_to booru_posts_path(Booru.current.slug, :notice => @comment.errors.full_messages.join("; ")
+            redirect_to booru_posts_path(Booru.current.slug), :notice => @comment.errors.full_messages.join("; ")
           end
         else
           redirect_to booru_post_path(Booru.current.slug, @comment.post), :notice => "Comment posted"
