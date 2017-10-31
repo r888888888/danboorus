@@ -12,7 +12,7 @@ docker service create \
   --mount="type=bind,src=$DATA_DIR,dst=$DATA_DIR" \
   --mount="type=bind,src=$LOG_DIR,dst=$LOG_DIR" \
   --publish=$WEB_PORT:$WEB_PORT \
-  --replicas=1 \
+  --replicas=$REPLICAS \
   --network=danboorunet \
   --secret=danboorus_env \
   --constraint="node.labels.$DOCKER_LABEL == true" \
