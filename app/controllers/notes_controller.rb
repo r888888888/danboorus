@@ -18,7 +18,7 @@ class NotesController < ApplicationController
   def show
     @note = Note.find(params[:id])
     respond_with(@note) do |format|
-      format.html { redirect_to(booru_post_path(Booru.current.slug, (@note.post, anchor: "note-#{@note.id}")) }
+      format.html { redirect_to(booru_post_path(Booru.current.slug, @note.post, anchor: "note-#{@note.id}")) }
     end
   end
 

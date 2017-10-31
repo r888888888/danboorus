@@ -5,7 +5,7 @@ class FavoritesController < ApplicationController
 
   def index
     if params[:tags]
-      redirect_to(booru_posts_path(Booru.current.slug, (:tags => params[:tags]))
+      redirect_to(booru_posts_path(Booru.current.slug, :tags => params[:tags]))
     else
       user_id = params[:user_id] || CurrentUser.user.id
       @user = User.find(user_id)
@@ -29,7 +29,7 @@ class FavoritesController < ApplicationController
 
     respond_with(@post) do |format|
       format.html do
-        redirect_to(booru_post_path(Booru.current.slug, (@post))
+        redirect_to(booru_post_path(Booru.current.slug, @post))
       end
       format.js
       format.json do

@@ -18,7 +18,7 @@ class PoolElementsController < ApplicationController
     @pool = Pool.find(params[:pool_id])
     @post = Post.find(params[:post_id])
     @pool.remove!(@post)
-    respond_with(@pool, :location => booru_post_path(Booru.current.slug, (@post))
+    respond_with(@pool, :location => booru_post_path(Booru.current.slug, @post))
   end
 
   def all_select
