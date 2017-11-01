@@ -122,8 +122,6 @@ class PostQueryBuilder
       relation = relation.where("posts.is_deleted = FALSE")
     elsif q[:status_neg] == "active"
       relation = relation.where("posts.is_deleted = TRUE")
-    elsif CurrentUser.user.hide_deleted_posts? && !CurrentUser.admin_mode?
-      relation = relation.where("posts.is_deleted = FALSE")
     end
 
     if q[:filetype]

@@ -1,5 +1,4 @@
 <ul itemscope itemtype="http://schema.org/ImageObject">
-  <li>ID: <%= post.id %></li>
   <li>Uploader: <%= link_to_user(post.uploader) + "&nbsp;".html_safe + link_to("&raquo;".html_safe, booru_posts_path(Booru.current.slug, :tags => "user:#{post.uploader.name}"), :rel => "nofollow") %></li>
   <li>
     Date: <%= link_to time_ago_in_words_tagged(post.created_at), booru_posts_path(Booru.current.slug, :tags => "date:#{post.created_at.to_date}"), :rel => "nofollow" %>
@@ -13,13 +12,11 @@
   </li>
   <li>Source: <%= post_source_tag(post) %></li>
   <li>Rating: <%= post.pretty_rating %></li>
-  <li>Score: <span id="score-for-post-<%= post.id %>"><%= post.score %></span> (<span id="vote-links-for-post-<%= post.id %>">vote <%= link_to "up", booru_post_votes_path(Booru.current.slug, :post_id => post.id, :score => "up"), :remote => true, :method => :post %>/<%= link_to "down", booru_post_votes_path(Booru.current.slug, :post_id => post.id, :score => "down"), :remote => true, :method => :post %></span><%= link_to "undo vote", booru_post_votes_path(Booru.current.slug, post), :remote => true, :method => :delete, :id => "unvote-link-for-post-#{post.id}", :class => "unvote-post-link" %>)</li>
-  <li>Favorites: <span id="favcount-for-post-<%= post.id %>"><%= post.fav_count %></span>
-  <% if CurrentUser.is_gold? %>
-    <%= link_to "Show &raquo;".html_safe, "#", :id => "show-favlist-link" %>
-    <%= link_to "&laquo; Hide".html_safe, "#", :id => "hide-favlist-link", :style => "display: none;" %>
-    <div id="favlist" style="display: none;"><%= post_favlist(post) %></div>
-  <% end %></li>
+  <li>
+    Score: 
+    <span id="score-for-post-<%= post.id %>"><%= post.score %></span> 
+    (<span id="vote-links-for-post-<%= post.id %>">vote <%= link_to "up", booru_post_votes_path(Booru.current.slug, :post_id => post.id, :score => "up"), :remote => true, :method => :post %>/<%= link_to "down", booru_post_votes_path(Booru.current.slug, :post_id => post.id, :score => "down"), :remote => true, :method => :post %></span><%= link_to "undo vote", booru_post_votes_path(Booru.current.slug, post), :remote => true, :method => :delete, :id => "unvote-link-for-post-#{post.id}", :class => "unvote-post-link" %>)
+  </li>
   <li>
     Status:
 

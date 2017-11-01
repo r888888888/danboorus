@@ -25,9 +25,7 @@ class User < ApplicationRecord
     has_mail
     receive_email_notifications
     always_resize_images
-    hide_deleted_posts
     enable_auto_complete
-    show_deleted_children
     has_saved_searches
   )
 
@@ -35,11 +33,9 @@ class User < ApplicationRecord
   has_bit_flags BOOLEAN_ATTRIBUTES, :field => "bit_prefs"
 
   attr_accessor :password, :old_password
-  # attr_accessible :dmail_filter_attributes, :password, :old_password, :password_confirmation, :password_hash, :email, :last_logged_in_at, :last_forum_read_at, :has_mail, :receive_email_notifications, :comment_threshold, :always_resize_images, :blacklisted_tags, :name, :ip_addr, :time_zone, :default_image_size, :per_page, :hide_deleted_posts, :enable_auto_complete, :custom_style, :show_deleted_children, :as => [:moderator, :gold, :platinum, :member, :anonymous, :default, :admin]
-  # attr_accessible :level, :as => :admin
 
   validates :name, user_name: true, on: :create
-  validates_uniqueness_of :email, :case_sensitive => false, :if => lambda {|rec| rec.email.present? && rec.email_changed? }
+  validates_uniqueness_of :email, :case_sensitive => false
   validates_length_of :password, :minimum => 5, :if => lambda {|rec| rec.new_record? || rec.password.present?}
   validates_inclusion_of :default_image_size, :in => %w(large original)
   validates_inclusion_of :per_page, :in => 1..100
@@ -423,10 +419,6 @@ class User < ApplicationRecord
     end
 
     def can_remove_from_pools?
-      true
-    end
-
-    def can_view_flagger?(flagger_id)
       true
     end
 

@@ -838,13 +838,7 @@ class Post < ApplicationRecord
     end
 
     def get_count_from_cache(tags)
-      count = Cache.get(count_cache_key(tags))
-
-      if count.nil? && !CurrentUser.hide_deleted_posts?
-        count = select_value_sql("SELECT post_count FROM tags WHERE name = ?", tags.to_s)
-      end
-
-      count
+      Cache.get(count_cache_key(tags))
     end
 
     def set_count_in_cache(tags, count, expiry = nil)
@@ -860,10 +854,6 @@ class Post < ApplicationRecord
     end
 
     def count_cache_key(tags)
-      if CurrentUser.user && CurrentUser.hide_deleted_posts? && tags !~ /(?:^|\s)(?:-)?status:.+/
-        tags = "#{tags} -status:deleted".strip
-      end
-
       "pfc:#{Cache.sanitize(tags)}"
     end
 
@@ -1000,7 +990,6 @@ class Post < ApplicationRecord
 
     def has_visible_children?
       return true if has_active_children?
-      return true if has_children? && CurrentUser.user.show_deleted_children?
       return true if has_children? && is_deleted?
       return false
     end

@@ -37,13 +37,7 @@ class UserPresenter
     ids = SavedSearch.post_ids(CurrentUser.user.id)
 
     if ids.any?
-      arel = Post.where("id in (?)", ids.map(&:to_i)).order("id desc").limit(10)
-
-      if CurrentUser.user.hide_deleted_posts?
-        arel = arel.undeleted
-      end
-
-      arel
+      Post.where("id in (?)", ids.map(&:to_i)).order("id desc").limit(10)
     else
       Post.where("false")
     end
@@ -54,15 +48,7 @@ class UserPresenter
   end
 
   def uploads
-    @uploads ||= begin
-      arel = Post.where("uploader_id = ?", user.id).order("id desc").limit(6)
-
-      if CurrentUser.user.hide_deleted_posts?
-        arel = arel.undeleted
-      end
-
-      arel
-    end
+    @uploads ||= Post.where("uploader_id = ?", user.id).order("id desc").limit(6)
   end
 
   def has_uploads?
@@ -71,13 +57,7 @@ class UserPresenter
 
   def favorites
     @favorites ||= begin
-      arel = user.favorites.limit(6).joins(:post).reorder("favorites.id desc")
-
-      if CurrentUser.user.hide_deleted_posts?
-        arel = arel.where("posts.is_deleted = false")
-      end
-
-      arel.map(&:post).compact
+      user.favorites.limit(6).joins(:post).reorder("favorites.id desc").map(&:post).compact
     end
   end
 

@@ -18,7 +18,6 @@
     if ($("#c-posts").length && $("#a-show").length) {
       this.initialize_links();
       this.initialize_post_relationship_previews();
-      this.initialize_favlist();
       this.initialize_post_sections();
       this.initialize_post_image_resize_links();
       this.initialize_post_image_resize_to_window_link();
@@ -231,29 +230,6 @@
       preview_link.html("show &raquo;");
       Danbooru.Cookie.put("show-relationship-previews", "0");
     }
-  }
-
-  Danbooru.Post.initialize_favlist = function() {
-    $("#favlist").hide();
-    $("#hide-favlist-link").hide();
-    var fav_count = $("#show-favlist-link").prev().text();
-    if (fav_count === "0") {
-      $("#show-favlist-link").hide();
-    }
-
-    $("#show-favlist-link").click(function(e) {
-      $("#favlist").show();
-      $(this).hide();
-      $("#hide-favlist-link").show();
-      e.preventDefault();
-    });
-
-    $("#hide-favlist-link").click(function(e) {
-      $("#favlist").hide();
-      $(this).hide();
-      $("#show-favlist-link").show();
-      e.preventDefault();
-    });
   }
 
   Danbooru.Post.initialize_post_previews = function() {

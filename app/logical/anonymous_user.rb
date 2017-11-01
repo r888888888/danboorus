@@ -100,10 +100,6 @@ class AnonymousUser
     false
   end
 
-  def can_view_flagger?(flagger_id)
-    false
-  end
-
   def blacklisted_tags
     ["spoilers"].join("\n")
   end
@@ -183,10 +179,6 @@ class AnonymousUser
 
   def custom_style
     nil
-  end
-
-  def show_deleted_children?
-    false
   end
 
   def saved_searches
