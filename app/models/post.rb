@@ -72,9 +72,6 @@ class Post < ApplicationRecord
       Post.delete_files(id, file_path, large_file_path, preview_file_path, force: true)
     end
 
-    def distribute_files
-    end
-
     def complete_preview_file_url
       "http://#{Danbooru.config.hostname}/#{preview_file_url}"
     end
@@ -174,14 +171,6 @@ class Post < ApplicationRecord
   end
 
   module ImageMethods
-    def device_scale
-      if large_image_width > 320
-        320.0 / (large_image_width + 10)
-      else
-        1.0
-      end
-    end
-
     def twitter_card_supported?
       image_width.to_i >= 280 && image_height.to_i >= 150
     end
@@ -1302,9 +1291,7 @@ class Post < ApplicationRecord
   include ValidationMethods
   include Danbooru::HasBitFlags
 
-  BOOLEAN_ATTRIBUTES = %w(
-    has_embedded_notes
-  )
+  BOOLEAN_ATTRIBUTES = []
   has_bit_flags BOOLEAN_ATTRIBUTES
 
   def visible?

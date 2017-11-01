@@ -95,9 +95,9 @@ private
     x = params.fetch(:post, {})
 
     if CurrentUser.is_moderator?
-      x = x.permit(:source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes, :is_rating_locked, :is_note_locked, :is_status_locked)
+      x = x.permit(:source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :is_rating_locked, :is_note_locked, :is_status_locked)
     elsif CurrentUser.is_basic?
-      x = x.permit(:source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id, :has_embedded_notes)
+      x = x.permit(:source, :rating, :tag_string, :old_tag_string, :old_parent_id, :old_source, :old_rating, :parent_id)
     end
 
     x

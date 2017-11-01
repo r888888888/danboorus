@@ -83,7 +83,6 @@ namespace :images do
       upload.image_height = post.image_height
       upload.sha256 = post.sha256
       upload.download_from_source(post.file_path)
-      post.distribute_files
     end
   end
 
@@ -102,7 +101,6 @@ namespace :images do
     upload.image_height = post.image_height
     upload.sha256 = post.sha256
     upload.generate_resizes(post.file_path)
-    post.distribute_files
   end
     
   desc "Generate thumbnail-sized images of posts"
@@ -121,7 +119,6 @@ namespace :images do
       if post.is_image? && !File.exists?(post.large_file_path)
         puts "resizing large #{post.id}"
         Danbooru.resize(post.file_path, post.large_file_path, Danbooru.config.large_image_width, nil, 90)
-        post.distribute_files
       end
     end
   end
