@@ -38,7 +38,7 @@ class Dmail < ApplicationRecord
   end
 
   concerning :FactoryMethods do
-    module ClassMethods
+    class_methods do
       def create_split(params)
         copy = nil
 

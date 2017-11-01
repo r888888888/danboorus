@@ -1,7 +1,7 @@
 class Booru < ApplicationRecord
 	PROTECTED_NAMES = %w(www sagiri web muramasa)
 
-	validates_length_of :name, maximum: 63
+	validates_length_of :name, maximum: 63, minimum: 3
 	validates_uniqueness_of :name
 	validates_uniqueness_of :slug
 	validates_exclusion_of :name, in: PROTECTED_NAMES

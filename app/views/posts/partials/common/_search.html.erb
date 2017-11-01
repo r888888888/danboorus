@@ -21,8 +21,6 @@
         <% if SavedSearch.enabled? && CurrentUser.show_saved_searches? %>
           <li><%= link_to "Save search", saved_searches_path, :id => "save-search" %></li>
         <% end %>
-
-        <li><%= link_to "Search wiki", booru_wiki_pages_path(Booru.current.slug, :id => "wiki-search") %></li>
       </ul>
     </div>
   <% end %>

@@ -28,7 +28,7 @@ class Comment < ApplicationRecord
   )
 
   concerning :SearchMethods do
-    module ClassMethods
+    class_methods do
       def recent
         reorder("comments.id desc").limit(6)
       end

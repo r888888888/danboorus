@@ -29,7 +29,7 @@ class ForumPost < ApplicationRecord
   )
 
   concerning :SearchMethods do
-    module ClassMethods
+    class_methods do
       def body_matches(body)
         where("forum_posts.text_index @@ plainto_tsquery(E?)", body.to_escaped_for_tsquery)
       end

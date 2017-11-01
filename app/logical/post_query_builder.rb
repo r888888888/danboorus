@@ -89,8 +89,12 @@ class PostQueryBuilder
       q = Tag.parse_query(query_string)
     end
 
-    if relation.nil?
-      relation = Booru.current.posts
+    if relation.nil? 
+      if Booru.current
+        relation = Booru.current.posts
+      else
+        relation = Post.where("true")
+      end
     end
 
     if q[:tag_count].to_i > Danbooru.config.tag_query_limit

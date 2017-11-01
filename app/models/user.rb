@@ -16,7 +16,6 @@ class User < ApplicationRecord
   Roles = Levels.constants.map(&:downcase) + [
     :anonymous,
     :banned,
-    :verified,
     :moderator
   ]
 

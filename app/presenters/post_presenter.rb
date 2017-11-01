@@ -19,7 +19,7 @@ class PostPresenter < Presenter
       return ""
     end
 
-    path = options[:path_prefix] || "/posts"
+    path = options[:path_prefix] || "/b/#{Booru.current.slug}/posts"
 
     html =  %{<article itemscope itemtype="http://schema.org/ImageObject" id="post_#{post.id}" class="#{preview_class(post, options[:pool])}" #{data_attributes(post)}>}
     if options[:tags].present? && !CurrentUser.is_anonymous?
@@ -79,7 +79,7 @@ class PostPresenter < Presenter
       data-pixiv-id="#{post.pixiv_id}"
       data-sha256="#{post.sha256}"
       data-file-ext="#{post.file_ext}"
-      data-file-url="#{post.s3_file_url}"
+      data-file-url="#{post.file_url}"
       data-large-file-url="#{post.large_file_url}"
       data-preview-file-url="#{post.preview_file_url}"
       data-source="#{h(post.source)}"
