@@ -44,7 +44,7 @@ class User < ApplicationRecord
   validates_inclusion_of :default_image_size, :in => %w(large original)
   validates_inclusion_of :per_page, :in => 1..100
   validates_confirmation_of :password
-  validates_presence_of :email, :if => lambda {|rec| rec.new_record? && Danbooru.config.enable_email_verification?}
+  validates_presence_of :email
   validates_presence_of :comment_threshold
   validate :validate_ip_addr_is_not_banned, :on => :create
   before_validation :normalize_blacklisted_tags
@@ -364,22 +364,6 @@ class User < ApplicationRecord
   end
 
   module EmailMethods
-    def is_verified?
-      email_verification_key.blank?
-    end
-
-    def generate_email_verification_key
-      self.email_verification_key = SecureRandom.urlsafe_base64(32)
-    end
-
-    def verify!(key)
-      if email_verification_key == key
-        self.update_column(:email_verification_key, nil)
-      else
-        raise User::Error.new("Verification key does not match")
-      end
-    end
-
     def normalize_email
       self.email = nil if email.blank?
     end

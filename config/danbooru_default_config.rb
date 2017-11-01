@@ -152,12 +152,7 @@ module Danbooru
     end
 
     def remote_server_login
-      "albert"
-    end
-
-    # If enabled, users must verify their email addresses.
-    def enable_email_verification?
-      false
+      "danbooru"
     end
 
     # Any custom code you want to insert into the default layout without
