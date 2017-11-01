@@ -18,7 +18,7 @@ class Dmail < ApplicationRecord
   after_create :update_recipient
   after_create :send_dmail
 
-  module AddressMethods
+  concerning :AddressMethods do
     def to_name
       User.id_to_pretty_name(to_id)
     end
@@ -37,9 +37,7 @@ class Dmail < ApplicationRecord
     end
   end
 
-  module FactoryMethods
-    extend ActiveSupport::Concern
-
+  concerning :FactoryMethods do
     module ClassMethods
       def create_split(params)
         copy = nil
@@ -83,7 +81,7 @@ class Dmail < ApplicationRecord
     end
   end
 
-  module ApiMethods
+  concerning :ApiMethods do
     def hidden_attributes
       super + [:message_index]
     end
@@ -93,82 +91,79 @@ class Dmail < ApplicationRecord
     end
   end
   
-  module SearchMethods
-    def active
-      where("is_deleted = ?", false)
-    end
-
-    def deleted
-      where("is_deleted = ?", true)
-    end
-
-    def title_matches(query)
-      query = "*#{query}*" unless query =~ /\*/
-      where("lower(dmails.title) LIKE ?", query.mb_chars.downcase.to_escaped_for_sql_like)
-    end
-
-    def search_message(query)
-      where("message_index @@ plainto_tsquery(?)", query.to_escaped_for_tsquery_split)
-    end
-
-    def unread
-      where("is_read = false and is_deleted = false")
-    end
-
-    def visible
-      where("owner_id = ?", CurrentUser.id)
-    end
-
-    def to_name_matches(name)
-      where("to_id = (select _.id from users _ where lower(_.name) = ?)", name.mb_chars.downcase)
-    end
-
-    def from_name_matches(name)
-      where("from_id = (select _.id from users _ where lower(_.name) = ?)", name.mb_chars.downcase)
-    end
-
-    def search(params)
-      q = where("true")
-      return q if params.blank?
-
-      if params[:title_matches].present?
-        q = q.title_matches(params[:title_matches])
+  concerning :SearchMethods do
+    module ClassMethods
+      def active
+        where("is_deleted = ?", false)
       end
 
-      if params[:message_matches].present?
-        q = q.search_message(params[:message_matches])
+      def deleted
+        where("is_deleted = ?", true)
       end
 
-      if params[:to_name].present?
-        q = q.to_name_matches(params[:to_name])
+      def title_matches(query)
+        query = "*#{query}*" unless query =~ /\*/
+        where("lower(dmails.title) LIKE ?", query.mb_chars.downcase.to_escaped_for_sql_like)
       end
 
-      if params[:to_id].present?
-        q = q.where("to_id = ?", params[:to_id].to_i)
+      def search_message(query)
+        where("message_index @@ plainto_tsquery(?)", query.to_escaped_for_tsquery_split)
       end
 
-      if params[:from_name].present?
-        q = q.from_name_matches(params[:from_name])
+      def unread
+        where("is_read = false and is_deleted = false")
       end
 
-      if params[:from_id].present?
-        q = q.where("from_id = ?", params[:from_id].to_i)
+      def visible
+        where("owner_id = ?", CurrentUser.id)
       end
 
-      if params[:read] == "true"
-        q = q.where("is_read = true")
-      elsif params[:read] == "false"
-        q = q.unread
+      def to_name_matches(name)
+        where("to_id = (select _.id from users _ where lower(_.name) = ?)", name.mb_chars.downcase)
       end
 
-      q
+      def from_name_matches(name)
+        where("from_id = (select _.id from users _ where lower(_.name) = ?)", name.mb_chars.downcase)
+      end
+
+      def search(params)
+        q = where("true")
+        return q if params.blank?
+
+        if params[:title_matches].present?
+          q = q.title_matches(params[:title_matches])
+        end
+
+        if params[:message_matches].present?
+          q = q.search_message(params[:message_matches])
+        end
+
+        if params[:to_name].present?
+          q = q.to_name_matches(params[:to_name])
+        end
+
+        if params[:to_id].present?
+          q = q.where("to_id = ?", params[:to_id].to_i)
+        end
+
+        if params[:from_name].present?
+          q = q.from_name_matches(params[:from_name])
+        end
+
+        if params[:from_id].present?
+          q = q.where("from_id = ?", params[:from_id].to_i)
+        end
+
+        if params[:read] == "true"
+          q = q.where("is_read = true")
+        elsif params[:read] == "false"
+          q = q.unread
+        end
+
+        q
+      end
     end
   end
-
-  include AddressMethods
-  include FactoryMethods
-  include ApiMethods
-  extend SearchMethods
 
   def validate_sender_is_not_banned
     if from.is_banned?

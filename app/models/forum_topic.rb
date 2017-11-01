@@ -5,16 +5,12 @@ class ForumTopic < ApplicationRecord
     2 => "Bugs & Features"
   }
 
-  #attr_accessible :title, :original_post_attributes, :category_id, :as => [:basic, :gold, :platinum, :moderator, :admin, :default]
-  #attr_accessible :is_sticky, :is_locked, :is_deleted, :min_level, :as => [:admin, :moderator]
   belongs_to_booru
   belongs_to_creator
   belongs_to_updater
   has_many :posts, lambda {order("forum_posts.id asc")}, :class_name => "ForumPost", :foreign_key => "topic_id", :dependent => :destroy
   has_one :original_post, lambda {order("forum_posts.id asc")}, :class_name => "ForumPost", :foreign_key => "topic_id"
   has_many :subscriptions, :class_name => "ForumSubscription"
-  #before_validation :initialize_creator, :on => :create
-  #before_validation :initialize_updater
   before_validation :initialize_is_deleted, :on => :create
   validates_presence_of :title, :creator_id
   validates_associated :original_post

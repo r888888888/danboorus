@@ -28,68 +28,70 @@ class ForumPost < ApplicationRecord
     :body => lambda {|user_name| %{@#{creator_name} mentioned you in topic ##{topic_id} ("#{topic.title}":[/forum_topics/#{topic_id}?page=#{forum_topic_page}]):\n\n[quote]\n#{DText.excerpt(body, "@"+user_name)}\n[/quote]\n}},
   )
 
-  module SearchMethods
-    def body_matches(body)
-      where("forum_posts.text_index @@ plainto_tsquery(E?)", body.to_escaped_for_tsquery)
-    end
-
-    def topic_title_matches(title)
-      joins(:topic).where("forum_topics.text_index @@ plainto_tsquery(E?)", title.to_escaped_for_tsquery_split)
-    end
-
-    def for_user(user_id)
-      where("forum_posts.creator_id = ?", user_id)
-    end
-
-    def creator_name(name)
-      where("forum_posts.creator_id = ?", User.name_to_id(name))
-    end
-
-    def active
-      where("forum_posts.is_deleted = false")
-    end
-
-    def permitted
-      q = where(booru_id: Booru.current.id).joins(:topic)
-      if !CurrentUser.is_moderator?
-        q = q.where("forum_topics.mods_only = false")
-      end
-      q
-    end
-
-    def search(params)
-      q = permitted
-      return q if params.blank?
-
-      if params[:creator_id].present?
-        q = q.where("forum_posts.creator_id = ?", params[:creator_id].to_i)
+  concerning :SearchMethods do
+    module ClassMethods
+      def body_matches(body)
+        where("forum_posts.text_index @@ plainto_tsquery(E?)", body.to_escaped_for_tsquery)
       end
 
-      if params[:topic_id].present?
-        q = q.where("forum_posts.topic_id = ?", params[:topic_id].to_i)
+      def topic_title_matches(title)
+        joins(:topic).where("forum_topics.text_index @@ plainto_tsquery(E?)", title.to_escaped_for_tsquery_split)
       end
 
-      if params[:topic_title_matches].present?
-        q = q.topic_title_matches(params[:topic_title_matches])
+      def for_user(user_id)
+        where("forum_posts.creator_id = ?", user_id)
       end
 
-      if params[:body_matches].present?
-        q = q.body_matches(params[:body_matches])
+      def creator_name(name)
+        where("forum_posts.creator_id = ?", User.name_to_id(name))
       end
 
-      if params[:creator_name].present?
-        q = q.creator_name(params[:creator_name].tr(" ", "_"))
+      def active
+        where("forum_posts.is_deleted = false")
       end
 
-      if params[:topic_category_id].present?
-        q = q.joins(:topic).where("forum_topics.category_id = ?", params[:topic_category_id].to_i)
+      def permitted
+        q = where(booru_id: Booru.current.id).joins(:topic)
+        if !CurrentUser.is_moderator?
+          q = q.where("forum_topics.mods_only = false")
+        end
+        q
       end
 
-      q
+      def search(params)
+        q = permitted
+        return q if params.blank?
+
+        if params[:creator_id].present?
+          q = q.where("forum_posts.creator_id = ?", params[:creator_id].to_i)
+        end
+
+        if params[:topic_id].present?
+          q = q.where("forum_posts.topic_id = ?", params[:topic_id].to_i)
+        end
+
+        if params[:topic_title_matches].present?
+          q = q.topic_title_matches(params[:topic_title_matches])
+        end
+
+        if params[:body_matches].present?
+          q = q.body_matches(params[:body_matches])
+        end
+
+        if params[:creator_name].present?
+          q = q.creator_name(params[:creator_name].tr(" ", "_"))
+        end
+
+        if params[:topic_category_id].present?
+          q = q.joins(:topic).where("forum_topics.category_id = ?", params[:topic_category_id].to_i)
+        end
+
+        q
+      end
     end
   end
 
-  module ApiMethods
+  concerning :ApiMethods do
     def as_json(options = {})
       if !CurrentUser.is_moderator? && topic.mods_only
         options[:only] = [:id]
@@ -102,9 +104,6 @@ class ForumPost < ApplicationRecord
       super + [:text_index]
     end
   end
-
-  extend SearchMethods
-  include ApiMethods
 
   def self.new_reply(params)
     if params[:topic_id]
