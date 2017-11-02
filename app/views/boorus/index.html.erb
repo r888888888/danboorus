@@ -9,6 +9,8 @@
         <li><strong><%= link_to booru.name, booru_posts_path(booru.slug) %></strong><% if booru.desc.present? %>: <%= booru.desc %><% end %></li>
       <% end %>
     </ul>
+
+    <%= numbered_paginator(@boorus) %>
   </div>
 </div>
 
