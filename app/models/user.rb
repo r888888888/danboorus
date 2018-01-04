@@ -328,7 +328,7 @@ class User < ApplicationRecord
     end
 
     def is_moderator?
-      is_admin? || Booru.current.memberships.where(user_id: id, is_moderator: true).exists?
+      is_admin? || (Booru.current && Booru.current.memberships.where(user_id: id, is_moderator: true).exists?)
     end
 
     def is_mod?
