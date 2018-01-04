@@ -9,7 +9,7 @@ class BoorusController < ApplicationController
 
   def create
     @booru = Booru.create(booru_params.permit(:name, :desc))
-    respond_with(@booru)
+    respond_with(@booru, location: booru_path(@booru.slug))
   end
 
   def edit
@@ -36,6 +36,6 @@ private
   end
 
   def find_booru
-    @booru = Booru.find(params[:booru_id])
+    @booru = Booru.find_by_slug(params[:id])
   end
 end
